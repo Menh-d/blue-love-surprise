@@ -1439,19 +1439,20 @@ body {
   overflow: visible;
 }
 
-/* The 3x2 Acrylic Souvenir Target Frame (360px x 240px landscape) */
+/* The 2x3 Photo Jigsaw Target Frame (240px x 360px portrait) */
 .jigsaw-target-board {
   position: relative;
-  width: 360px;
-  height: 240px;
-  background: rgba(15, 23, 42, 0.72);
+  width: 240px;
+  height: 360px;
+  background: rgba(15, 23, 42, 0.76);
   border: 2px dashed rgba(147, 197, 253, 0.55);
-  border-radius: 14px;
+  border-radius: 16px;
   box-shadow:
     inset 0 3px 14px rgba(0, 0, 0, 0.6),
     0 10px 28px rgba(0, 0, 0, 0.4);
   overflow: visible;
   transition: all 0.5s ease;
+  z-index: 10;
 }
 
 .jigsaw-target-board.puzzle-completed {
@@ -1476,9 +1477,9 @@ body {
   inset: 0;
   background-size: cover;
   background-position: center;
-  opacity: 0.16;
-  border-radius: 10px;
-  filter: grayscale(40%) blur(0.5px);
+  opacity: 0.22;
+  border-radius: 14px;
+  filter: grayscale(35%) blur(0.5px);
   pointer-events: none;
 }
 
@@ -1486,7 +1487,7 @@ body {
   position: absolute;
   width: 120px;
   height: 120px;
-  border: 1px dashed rgba(255, 255, 255, 0.22);
+  border: 1px dashed rgba(255, 255, 255, 0.24);
   border-radius: 8px;
   display: flex;
   flex-direction: column;
@@ -1524,23 +1525,23 @@ body {
 }
 
 .jigsaw-slot-guide.slot-highlight {
-  background: rgba(59, 130, 246, 0.38);
+  background: rgba(59, 130, 246, 0.42);
   border: 2px solid #60a5fa;
-  box-shadow: 0 0 18px rgba(96, 165, 250, 0.85);
-  transform: scale(1.02);
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.9);
+  transform: scale(1.03);
 }
 
 .jigsaw-frame-plaque {
   position: absolute;
-  bottom: -18px;
+  bottom: -20px;
   left: 50%;
   transform: translateX(-50%);
   background: linear-gradient(135deg, #1e3a8a, #0f172a);
   border: 1.5px solid #93c5fd;
-  padding: 5px 22px;
+  padding: 6px 24px;
   border-radius: 999px;
   font-family: 'Outfit', sans-serif;
-  font-size: 0.82rem;
+  font-size: 0.84rem;
   font-weight: 800;
   color: #ffffff;
   letter-spacing: 1px;
@@ -1557,7 +1558,6 @@ body {
 
 /* The Photo Jigsaw Piece Element */
 .jigsaw-piece-element {
-  position: absolute;
   touch-action: none;
   cursor: grab;
   user-select: none;
@@ -1566,23 +1566,16 @@ body {
 
 .jigsaw-piece-element.in-tray {
   position: relative;
-  width: 114px;
-  height: 114px;
+  width: 102px;
+  height: 102px;
   z-index: 10;
-  transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.25), filter 0.25s ease;
+  transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.25), filter 0.2s ease;
 }
 
-.jigsaw-tray-slot:nth-child(1) .jigsaw-piece-element.in-tray { transform: rotate(-3deg); }
-.jigsaw-tray-slot:nth-child(2) .jigsaw-piece-element.in-tray { transform: rotate(2.5deg); }
-.jigsaw-tray-slot:nth-child(3) .jigsaw-piece-element.in-tray { transform: rotate(-2deg); }
-.jigsaw-tray-slot:nth-child(4) .jigsaw-piece-element.in-tray { transform: rotate(3deg); }
-.jigsaw-tray-slot:nth-child(5) .jigsaw-piece-element.in-tray { transform: rotate(-3.5deg); }
-.jigsaw-tray-slot:nth-child(6) .jigsaw-piece-element.in-tray { transform: rotate(2deg); }
-
 .jigsaw-piece-element.in-tray:hover {
-  transform: translateY(-6px) rotate(0deg) scale(1.08) !important;
+  transform: translateY(-5px) scale(1.08) !important;
   z-index: 50;
-  filter: drop-shadow(0 14px 22px rgba(37, 99, 235, 0.4));
+  filter: drop-shadow(0 12px 20px rgba(37, 99, 235, 0.45));
 }
 
 .jigsaw-piece-element.is-placed {
@@ -1592,7 +1585,7 @@ body {
   cursor: default;
   z-index: 20;
   pointer-events: none;
-  animation: popSnap 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.35) forwards;
+  animation: popSnap 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.35) forwards;
 }
 
 .jigsaw-piece-element.is-selected {
@@ -1600,19 +1593,16 @@ body {
   border-radius: 12px;
   box-shadow: 0 0 20px rgba(56, 189, 248, 0.85);
   z-index: 60;
-  transform: translateY(-5px) scale(1.08) rotate(0deg) !important;
+  transform: translateY(-5px) scale(1.08) !important;
 }
 
 .jigsaw-piece-element.is-dragging {
-  position: fixed;
-  width: 168px !important;
-  height: 168px !important;
-  cursor: grabbing;
-  z-index: 9999 !important;
+  cursor: grabbing !important;
+  z-index: 99999 !important;
   pointer-events: none;
   transition: none !important;
   will-change: transform;
-  filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.65));
+  filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.65)) !important;
 }
 
 @keyframes popSnap {
@@ -1631,23 +1621,25 @@ body {
 /* Piece Tray Area Below Board */
 .jigsaw-tray-container {
   width: 100%;
-  max-width: 520px;
-  background: rgba(255, 255, 255, 0.94);
-  backdrop-filter: blur(14px);
+  max-width: 460px;
+  background: rgba(255, 255, 255, 0.95);
   border: 2px solid rgba(147, 197, 253, 0.85);
   border-radius: 22px;
-  padding: 16px 16px 20px;
+  padding: 16px 14px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   box-shadow: 0 14px 34px rgba(30, 58, 109, 0.18);
+  position: relative;
+  z-index: 50;
+  overflow: visible;
 }
 
 .jigsaw-tray-hint {
   width: 100%;
   text-align: center;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 700;
   color: #1e3a8a;
 }
@@ -1655,45 +1647,47 @@ body {
 .jigsaw-tray-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 14px 12px;
+  gap: 12px 10px;
   width: 100%;
   justify-items: center;
   align-items: center;
+  overflow: visible;
 }
 
 .jigsaw-tray-slot {
-  width: 108px;
-  height: 108px;
+  width: 102px;
+  height: 102px;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(241, 245, 249, 0.75);
+  background: rgba(241, 245, 249, 0.8);
   border: 1.5px dashed rgba(147, 197, 253, 0.6);
-  border-radius: 14px;
+  border-radius: 12px;
   transition: all 0.25s ease;
+  overflow: visible;
 }
 
 @media (max-width: 440px) {
   .jigsaw-interactive-arena {
-    padding: 16px 10px 20px;
-    border-radius: 20px;
+    padding: 14px 8px 18px;
+    gap: 16px;
   }
   .jigsaw-target-board {
-    transform: scale(0.92);
+    transform: scale(0.94);
     transform-origin: center center;
     margin: -8px 0;
   }
   .jigsaw-tray-container {
-    padding: 12px 10px 16px;
+    padding: 12px 8px 16px;
   }
   .jigsaw-tray-slot {
-    width: 96px;
-    height: 96px;
+    width: 92px;
+    height: 92px;
   }
   .jigsaw-piece-element.in-tray {
-    width: 100px;
-    height: 100px;
+    width: 92px;
+    height: 92px;
   }
 }
 
