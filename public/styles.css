@@ -446,7 +446,8 @@ body {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  animation: fadeInUpPage 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+  will-change: opacity, transform;
 }
 
 #page-2.page-section {
@@ -454,26 +455,43 @@ body {
   width: 100vw;
   height: 100dvh;
   overflow: hidden;
-  animation: fadeInSky 0.75s ease forwards;
-}
-
-@keyframes fadeInSky {
-  from { opacity: 0; }
-  to { opacity: 1; }
 }
 
 .page-section.active {
   display: flex;
+  opacity: 1;
 }
 
-@keyframes fadeInUpPage {
+.page-section.page-enter-smooth {
+  display: flex;
+  animation: smoothPageEntrance 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.page-section.page-exit-smooth {
+  display: flex !important;
+  animation: smoothPageExit 0.24s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
+  pointer-events: none;
+}
+
+@keyframes smoothPageEntrance {
   from {
     opacity: 0;
-    transform: translateY(24px) scale(0.98);
+    transform: translateY(18px) scale(0.985);
   }
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes smoothPageExit {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-14px) scale(0.985);
   }
 }
 
@@ -1121,11 +1139,20 @@ body {
 
 .archive-string-active {
   stroke: #2563eb;
-  stroke-width: 0.72;
+  stroke-width: 0.78;
   stroke-linecap: round;
   stroke-linejoin: round;
   fill: none;
-  filter: drop-shadow(0 2px 3px rgba(30, 58, 109, 0.28));
+  filter: drop-shadow(0 2px 4px rgba(30, 58, 109, 0.35));
+  stroke-dasharray: 220;
+  stroke-dashoffset: 220;
+  animation: drawConnectingString 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes drawConnectingString {
+  to {
+    stroke-dashoffset: 0;
+  }
 }
 
 .archive-center-note {
@@ -1295,8 +1322,10 @@ body {
   object-fit: cover;
   display: block;
   opacity: 0;
-  transform: scale(0.92);
-  transition: opacity 0.65s ease, transform 0.65s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform: scale(0.94);
+  filter: sepia(0.45) blur(2.5px) brightness(1.15);
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1), filter 0.8s ease;
+  will-change: opacity, transform, filter;
 }
 
 .archive-polaroid-item.revealed .archive-message-cover {
@@ -1308,6 +1337,7 @@ body {
 .archive-polaroid-item.revealed .archive-photo-img {
   opacity: 1;
   transform: scale(1);
+  filter: sepia(0) blur(0) brightness(1);
 }
 
 .archive-polaroid-footer {
@@ -1545,8 +1575,10 @@ body {
   height: 168px !important;
   cursor: grabbing;
   z-index: 9999 !important;
-  transform: scale(1.08) rotate(2deg);
-  filter: drop-shadow(0 20px 28px rgba(0, 0, 0, 0.6));
+  pointer-events: none;
+  transition: none !important;
+  will-change: transform;
+  filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.65));
 }
 
 @keyframes popSnap {
@@ -1671,19 +1703,32 @@ body {
   max-width: 220px;
   opacity: 0;
   transform: scale(0.85);
-  transition: opacity 0.8s ease 0.2s, transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.2s;
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  will-change: transform, opacity;
 }
 
 .collage-camera-plane.zoomed-out-collage .collage-side-polaroid {
   opacity: 1;
 }
 
-.collage-camera-plane.zoomed-out-collage .collage-side-polaroid:nth-child(odd) {
-  transform: rotate(-3deg) scale(1);
+.collage-camera-plane.zoomed-out-collage .collage-side-polaroid:nth-child(1) {
+  transition-delay: 0.1s;
+  transform: rotate(-3.5deg) scale(1);
 }
 
-.collage-camera-plane.zoomed-out-collage .collage-side-polaroid:nth-child(even) {
+.collage-camera-plane.zoomed-out-collage .collage-side-polaroid:nth-child(2) {
+  transition-delay: 0.22s;
   transform: rotate(3deg) scale(1);
+}
+
+.collage-camera-plane.zoomed-out-collage .collage-side-polaroid:nth-child(3) {
+  transition-delay: 0.34s;
+  transform: rotate(-2.5deg) scale(1);
+}
+
+.collage-camera-plane.zoomed-out-collage .collage-side-polaroid:nth-child(4) {
+  transition-delay: 0.46s;
+  transform: rotate(4deg) scale(1);
 }
 
 .collage-side-polaroid img {

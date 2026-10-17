@@ -391,10 +391,16 @@
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     let hearts = [];
+    let dpr = 1;
 
     const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.floor(window.innerWidth * dpr);
+      canvas.height = Math.floor(window.innerHeight * dpr);
+      canvas.style.width = window.innerWidth + "px";
+      canvas.style.height = window.innerHeight + "px";
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(dpr, dpr);
     };
     window.addEventListener("resize", resize);
     resize();
@@ -409,23 +415,23 @@
     class Heart {
       constructor(spreadY) {
         this.reset();
-        if (spreadY) this.y = Math.random() * canvas.height;
+        if (spreadY) this.y = Math.random() * window.innerHeight;
       }
       reset() {
-        this.x = Math.random() * canvas.width;
-        this.y = canvas.height + Math.random() * 25;
+        this.x = Math.random() * window.innerWidth;
+        this.y = window.innerHeight + Math.random() * 25;
         this.size = Math.random() * 14 + 8;
-        this.speed = Math.random() * 1.1 + 0.45;
+        this.speed = Math.random() * 0.95 + 0.45;
         this.opacity = Math.random() * 0.36 + 0.14;
         this.sway = Math.random() * 1.4 - 0.7;
         this.swaySpeed = Math.random() * 0.02 + 0.005;
         this.swayTime = Math.random() * 100;
         this.rgb = bluePalette[Math.floor(Math.random() * bluePalette.length)];
       }
-      update() {
-        this.y -= this.speed;
-        this.swayTime += this.swaySpeed;
-        this.x += Math.sin(this.swayTime) * this.sway;
+      update(dtFactor) {
+        this.y -= this.speed * dtFactor;
+        this.swayTime += this.swaySpeed * dtFactor;
+        this.x += Math.sin(this.swayTime) * this.sway * dtFactor;
         if (this.y < -this.size) this.reset();
       }
       draw() {
@@ -458,15 +464,18 @@
 
     for (let i = 0; i < 36; i++) hearts.push(new Heart(true));
 
-    function loop() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let lastTime = performance.now();
+    function loop(currentTime) {
+      const dt = Math.min((currentTime - lastTime) / 16.67, 2.5) || 1;
+      lastTime = currentTime;
+      ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
       hearts.forEach((h) => {
-        h.update();
+        h.update(dt);
         h.draw();
       });
       requestAnimationFrame(loop);
     }
-    loop();
+    requestAnimationFrame(loop);
   }
 
   function escapeHtml(str) {
@@ -1443,6 +1452,8 @@
       let startY = 0;
       let initialLeft = 0;
       let initialTop = 0;
+      let trayCenterX = 0;
+      let trayCenterY = 0;
 
       const onPointerDown = (e) => {
         if (state.jigsawPlaced[pieceId]) return;
@@ -1455,8 +1466,8 @@
         startY = e.clientY;
 
         const rect = el.getBoundingClientRect();
-        initialLeft = rect.left;
-        initialTop = rect.top;
+        trayCenterX = rect.left + rect.width / 2;
+        trayCenterY = rect.top + rect.height / 2;
 
         try {
           el.setPointerCapture(e.pointerId);
@@ -1474,30 +1485,42 @@
           if (Math.hypot(dx, dy) > 6) {
             isDragging = true;
             hasMovedPastThreshold = true;
+            const DRAG_SIZE = 168;
+            initialLeft = trayCenterX - DRAG_SIZE / 2;
+            initialTop = trayCenterY - DRAG_SIZE / 2;
+
             el.classList.add("is-dragging");
             el.style.position = "fixed";
             el.style.left = `${initialLeft}px`;
             el.style.top = `${initialTop}px`;
+            el.style.width = `${DRAG_SIZE}px`;
+            el.style.height = `${DRAG_SIZE}px`;
             el.style.zIndex = "9999";
+            el.style.transition = "none";
+            el.style.willChange = "transform";
+            el.style.transform = "translate3d(0, 0, 0) scale(1.06) rotate(1.5deg)";
           } else {
             return;
           }
         }
 
-        el.style.left = `${initialLeft + dx}px`;
-        el.style.top = `${initialTop + dy}px`;
+        // Pure GPU transformation on mouse/touch movement (no layout reflows!)
+        el.style.transform = `translate3d(${dx}px, ${dy}px, 0) scale(1.06) rotate(1.5deg)`;
 
         // Check proximity to target slot
         const slotEl = document.getElementById(`jigsaw-slot-${pieceId}`);
         if (slotEl) {
           const sRect = slotEl.getBoundingClientRect();
-          const pCenter = { x: e.clientX, y: e.clientY };
           const sCenter = {
             x: sRect.left + sRect.width / 2,
             y: sRect.top + sRect.height / 2,
           };
-          const dist = Math.hypot(pCenter.x - sCenter.x, pCenter.y - sCenter.y);
-          slotEl.classList.toggle("slot-highlight", dist < 85);
+          const curPieceCenter = {
+            x: trayCenterX + dx,
+            y: trayCenterY + dy,
+          };
+          const dist = Math.hypot(curPieceCenter.x - sCenter.x, curPieceCenter.y - sCenter.y);
+          slotEl.classList.toggle("slot-highlight", dist < 95);
         }
       };
 
@@ -1524,27 +1547,52 @@
         }
 
         isDragging = false;
-        el.classList.remove("is-dragging");
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
 
         const slotEl = document.getElementById(`jigsaw-slot-${pieceId}`);
         let snapped = false;
         if (slotEl) {
           slotEl.classList.remove("slot-highlight");
           const sRect = slotEl.getBoundingClientRect();
-          const pCenter = { x: e.clientX, y: e.clientY };
           const sCenter = {
             x: sRect.left + sRect.width / 2,
             y: sRect.top + sRect.height / 2,
           };
-          const dist = Math.hypot(pCenter.x - sCenter.x, pCenter.y - sCenter.y);
-          if (dist < 90) {
+          const curPieceCenter = {
+            x: trayCenterX + dx,
+            y: trayCenterY + dy,
+          };
+          const dist = Math.hypot(curPieceCenter.x - sCenter.x, curPieceCenter.y - sCenter.y);
+
+          if (dist < 95) {
             snapped = true;
-            snapJigsawPiece(pieceId);
+            // Magnetic spring animation straight to the slot target
+            const p = JIGSAW_PIECES_CONFIG[pieceId];
+            const bRect = targetBoard.getBoundingClientRect();
+            const targetSlotLeft = bRect.left + p.col * 120 - 24;
+            const targetSlotTop = bRect.top + p.row * 120 - 24;
+            const deltaX = targetSlotLeft - initialLeft;
+            const deltaY = targetSlotTop - initialTop;
+
+            el.style.transition = "transform 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.25), filter 0.22s ease";
+            el.style.transform = `translate3d(${deltaX}px, ${deltaY}px, 0) scale(1) rotate(0deg)`;
+
+            setTimeout(() => {
+              el.classList.remove("is-dragging");
+              snapJigsawPiece(pieceId);
+            }, 210);
           }
         }
 
         if (!snapped) {
-          renderTemplateShell();
+          // Spring smoothly back to tray
+          el.style.transition = "transform 0.24s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.24s ease";
+          el.style.transform = "translate3d(0, 0, 0) scale(0.85) rotate(0deg)";
+          setTimeout(() => {
+            el.classList.remove("is-dragging");
+            renderTemplateShell();
+          }, 220);
         }
       };
 
@@ -1794,23 +1842,47 @@
     }
   }
 
+  let isNavigatingPage = false;
   function goToPage(pageNum) {
     if (state.autoTransitionTimer) {
       clearTimeout(state.autoTransitionTimer);
       state.autoTransitionTimer = null;
     }
-    state.activePage = pageNum;
-    const stageCard = document.getElementById("constellation-stage-card");
-    if (stageCard) stageCard.classList.remove("transitioning-out");
+    if (isNavigatingPage || state.activePage === pageNum) return;
 
-    document.querySelectorAll(".page-section").forEach((sec, idx) => {
-      sec.classList.toggle("active", idx + 1 === pageNum);
-    });
+    const currentSec = document.querySelector(".page-section.active");
+    const targetSec = document.getElementById(`page-${pageNum}`);
+    if (!targetSec) return;
+
+    isNavigatingPage = true;
     music.playChime();
-    if (pageNum === 2) {
-      updateConstellationInPlace();
+
+    if (currentSec) {
+      currentSec.classList.add("page-exit-smooth");
     }
-    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    setTimeout(() => {
+      state.activePage = pageNum;
+      const stageCard = document.getElementById("constellation-stage-card");
+      if (stageCard) stageCard.classList.remove("transitioning-out");
+
+      document.querySelectorAll(".page-section").forEach((sec, idx) => {
+        sec.classList.remove("active", "page-exit-smooth", "page-enter-smooth");
+        if (idx + 1 === pageNum) {
+          sec.classList.add("active", "page-enter-smooth");
+        }
+      });
+
+      if (pageNum === 2) {
+        updateConstellationInPlace();
+      }
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
+      setTimeout(() => {
+        if (targetSec) targetSec.classList.remove("page-enter-smooth");
+        isNavigatingPage = false;
+      }, 400);
+    }, currentSec ? 240 : 0);
   }
 
   // ==================== TYPEWRITER EFFECT ON PAGE 1 ====================
@@ -1856,34 +1928,47 @@
     const canvas = document.getElementById("canvas-confetti");
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.floor(window.innerWidth * dpr);
+    canvas.height = Math.floor(window.innerHeight * dpr);
+    canvas.style.width = window.innerWidth + "px";
+    canvas.style.height = window.innerHeight + "px";
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.scale(dpr, dpr);
 
-    const colors = ["#3b82f6", "#60a5fa", "#93c5fd", "#2563eb", "#1d4ed8", "#fbbf24"];
+    const colors = ["#3b82f6", "#60a5fa", "#93c5fd", "#2563eb", "#1d4ed8", "#fbbf24", "#ffffff"];
     const particles = Array.from({ length: 110 }, () => ({
-      x: Math.random() * canvas.width,
-      y: Math.random() * -canvas.height,
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * -window.innerHeight,
       size: Math.random() * 11 + 6,
-      speedY: Math.random() * 3.5 + 2.2,
-      speedX: Math.random() * 2 - 1,
+      speedY: Math.random() * 2.8 + 1.8,
+      speedX: Math.random() * 1.8 - 0.9,
+      sway: Math.random() * 1.2 + 0.4,
+      swaySpeed: Math.random() * 0.03 + 0.01,
+      swayTime: Math.random() * 10,
       color: colors[Math.floor(Math.random() * colors.length)],
       rotation: Math.random() * Math.PI * 2,
-      rotSpeed: Math.random() * 0.05 - 0.025,
+      rotSpeed: Math.random() * 0.04 - 0.02,
       isHeart: Math.random() > 0.35,
     }));
 
     state.confettiActive = true;
+    let lastTime = performance.now();
 
-    function animate() {
+    function animate(currentTime) {
       if (!state.confettiActive) return;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const dt = Math.min((currentTime - lastTime) / 16.67, 2.5) || 1;
+      lastTime = currentTime;
+
+      ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
       particles.forEach((p) => {
-        p.y += p.speedY;
-        p.x += p.speedX;
-        p.rotation += p.rotSpeed;
-        if (p.y > canvas.height + 20) {
-          p.y = -20;
-          p.x = Math.random() * canvas.width;
+        p.y += p.speedY * dt;
+        p.swayTime += p.swaySpeed * dt;
+        p.x += (p.speedX + Math.sin(p.swayTime) * p.sway) * dt;
+        p.rotation += p.rotSpeed * dt;
+        if (p.y > window.innerHeight + 25) {
+          p.y = -25;
+          p.x = Math.random() * window.innerWidth;
         }
         ctx.save();
         ctx.translate(p.x, p.y);
@@ -1905,7 +1990,7 @@
       });
       requestAnimationFrame(animate);
     }
-    animate();
+    requestAnimationFrame(animate);
   }
 
   // ==================== DIGITAL WISHBOX LIVE PERSONALIZATION STUDIO ====================
