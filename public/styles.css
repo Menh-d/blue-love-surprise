@@ -457,6 +457,15 @@ body {
   overflow: hidden;
 }
 
+#page-4.page-section {
+  min-height: 100dvh;
+  height: auto;
+  overflow-y: auto;
+  justify-content: flex-start;
+  padding-top: 54px;
+  padding-bottom: 74px;
+}
+
 .page-section.active {
   display: flex;
   opacity: 1;
@@ -1427,7 +1436,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: 28px;
   position: relative;
   overflow: visible;
 }
@@ -1437,6 +1446,9 @@ body {
   position: relative;
   width: 240px;
   height: 360px;
+  min-height: 360px;
+  flex-shrink: 0;
+  margin: 0 auto;
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(12px);
   border: 2px dashed rgba(59, 130, 246, 0.45);
@@ -1558,11 +1570,12 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
-  margin-top: 6px;
+  gap: 16px;
+  margin-top: 10px;
   position: relative;
   z-index: 50;
   overflow: visible;
+  flex-shrink: 0;
 }
 
 .jigsaw-scatter-hint {
@@ -1674,12 +1687,15 @@ body {
 @media (max-width: 440px) {
   .jigsaw-interactive-arena {
     padding: 10px 4px 16px;
-    gap: 14px;
+    gap: 24px;
   }
   .jigsaw-target-board {
-    transform: scale(0.92);
-    transform-origin: center center;
-    margin: -10px 0;
+    transform: none;
+    margin: 0 auto;
+  }
+  .jigsaw-scatter-zone {
+    margin-top: 6px;
+    gap: 14px;
   }
   .jigsaw-scatter-board {
     gap: 12px 14px;
@@ -1700,13 +1716,13 @@ body {
   position: relative;
   width: 100%;
   max-width: 960px;
-  min-height: 480px;
+  min-height: auto;
   border-radius: 26px;
   overflow: visible;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 10px;
+  padding: 0;
 }
 
 .collage-camera-plane {
@@ -1722,7 +1738,7 @@ body {
   align-items: center;
   justify-content: center;
   width: 100%;
-  transform: scale(1);
+  transform: none !important;
 }
 
 .collage-camera-plane.zoomed-on-jigsaw .collage-side-polaroid {
@@ -2003,23 +2019,5 @@ body {
     bottom: auto !important;
     transform: rotate(-1deg) !important;
     width: min(290px, 90vw);
-  }
-  .jigsaw-target-board {
-    width: 285px;
-    height: 190px;
-  }
-  .jigsaw-slot-guide {
-    width: 95px;
-    height: 95px;
-  }
-  .jigsaw-piece-element {
-    width: 122px;
-    height: 122px;
-  }
-  .collage-camera-plane {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .collage-camera-plane.zoomed-on-jigsaw {
-    transform: scale(1.15);
   }
 }
