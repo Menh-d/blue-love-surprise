@@ -146,13 +146,18 @@
     },
   ];
 
-  // 6 Jigsaw Puzzle Pieces Metadata (matching the exact 3x2 acrylic magnet set in _ - 2026-10-17T185035.226.jpeg)
+  // 6 Acrylic Souvenir Jigsaw Magnets (exact 3 cols x 2 rows matching _ - 2026-10-17T185035.226.jpeg)
   const JIGSAW_PIECES_CONFIG = [
     {
       id: 0,
       row: 0,
       col: 0,
-      title: "ມຸມເທິງຊ້າຍ",
+      icon: "🌊",
+      title: "ມື້ທຳອິດທີ່ພົບກັນ",
+      sub: "FIRST DAY",
+      colorStart: "#0284c7",
+      colorEnd: "#0369a1",
+      image: "./media/med-do-fan-01.jpeg",
       hint: "ເທິງຊ້າຍ",
       edges: { top: 0, right: 1, bottom: 1, left: 0 },
     },
@@ -160,41 +165,66 @@
       id: 1,
       row: 0,
       col: 1,
-      title: "ມຸມເທິງຂວາ",
-      hint: "ເທິງຂວາ",
-      edges: { top: 0, right: 0, bottom: -1, left: -1 },
+      icon: "☕",
+      title: "ຄາເຟ່ແຫ່ງຮອຍຍິ້ມ",
+      sub: "SWEET SMILE",
+      colorStart: "#6366f1",
+      colorEnd: "#4f46e5",
+      image: "./media/med-do-fan-02.jpeg",
+      hint: "ເທິງກາງ",
+      edges: { top: 0, right: 1, bottom: -1, left: -1 },
     },
     {
       id: 2,
-      row: 1,
-      col: 0,
-      title: "ກາງຊ້າຍ",
-      hint: "ກາງຊ້າຍ",
-      edges: { top: -1, right: -1, bottom: 1, left: 0 },
+      row: 0,
+      col: 2,
+      icon: "🌅",
+      title: "ແຄມຂອງຍາມແລງ",
+      sub: "SUNSET VIBE",
+      colorStart: "#2563eb",
+      colorEnd: "#1d4ed8",
+      image: "./media/med-do-fan-03.jpeg",
+      hint: "ເທິງຂວາ",
+      edges: { top: 0, right: 0, bottom: 1, left: -1 },
     },
     {
       id: 3,
       row: 1,
-      col: 1,
-      title: "ກາງຂວາ",
-      hint: "ກາງຂວາ",
-      edges: { top: 1, right: 0, bottom: -1, left: 1 },
-    },
-    {
-      id: 4,
-      row: 2,
       col: 0,
-      title: "ມຸມລຸ່ມຊ້າຍ",
+      icon: "🛵",
+      title: "ທຸກການເດີນທາງ",
+      sub: "OUR JOURNEY",
+      colorStart: "#f59e0b",
+      colorEnd: "#d97706",
+      image: "./media/med-do-fan-04.jpeg",
       hint: "ລຸ່ມຊ້າຍ",
       edges: { top: -1, right: 1, bottom: 0, left: 0 },
     },
     {
-      id: 5,
-      row: 2,
+      id: 4,
+      row: 1,
       col: 1,
-      title: "ມຸມລຸ່ມຂວາ",
+      icon: "🎂",
+      title: "ສຸກສັນວັນເກີດແຟນ",
+      sub: "HAPPY BIRTHDAY",
+      colorStart: "#f43f5e",
+      colorEnd: "#e11d48",
+      image: "./media/med-do-fan-05.jpeg",
+      hint: "ລຸ່ມກາງ",
+      edges: { top: 1, right: -1, bottom: 0, left: -1 },
+    },
+    {
+      id: 5,
+      row: 1,
+      col: 2,
+      icon: "💙",
+      title: "YOU & ME FOREVER",
+      sub: "LOVE PROMISE",
+      colorStart: "#1e3a8a",
+      colorEnd: "#0f172a",
+      image: "./media/med-do-fan-06.jpeg",
       hint: "ລຸ່ມຂວາ",
-      edges: { top: 1, right: 0, bottom: 0, left: -1 },
+      edges: { top: -1, right: 0, bottom: 0, left: 1 },
     },
   ];
 
@@ -720,8 +750,8 @@
     return d;
   }
 
-  // ==================== REAL PHOTO JIGSAW PIECE SVG GENERATOR ====================
-  // Cuts a single high-definition hero couple photo into 6 interlocking jigsaw pieces (2 cols x 3 rows)
+  // ==================== 3D SOUVENIR ACRYLIC MAGNET JIGSAW PIECE SVG ====================
+  // Matches exact physical souvenir aesthetic from _ - 2026-10-17T185035.226.jpeg
   function renderPhotoJigsawPieceSvg(pieceIdx) {
     const p = JIGSAW_PIECES_CONFIG[pieceIdx];
     const pathD = buildJigsawPathD(
@@ -730,52 +760,64 @@
       p.edges.bottom,
       p.edges.left
     );
-    const photoUrl =
-      CONFIG.jigsawImage || CONFIG.pinImage || "/api/media/med-do-fan-01";
-
-    // Full photo size in normalized SVG units: 2 cols * 100 = 200, 3 rows * 100 = 300
-    const imgTotalWidth = 200;
-    const imgTotalHeight = 300;
-    const imgOffsetX = -p.col * 100;
-    const imgOffsetY = -p.row * 100;
+    const photoUrl = resolveMediaUrl(p.image);
 
     return `
       <svg class="photo-jigsaw-svg" viewBox="-20 -20 140 140" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <clipPath id="photoPieceClip${pieceIdx}">
+          <clipPath id="acrylicClip${pieceIdx}">
             <path d="${pathD}" />
           </clipPath>
-          <linearGradient id="photoGloss${pieceIdx}" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.5" />
-            <stop offset="25%" stop-color="#ffffff" stop-opacity="0.12" />
-            <stop offset="60%" stop-color="#ffffff" stop-opacity="0" />
+          <linearGradient id="acrylicHeaderGrad${pieceIdx}" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="${p.colorStart}" />
+            <stop offset="100%" stop-color="${p.colorEnd}" />
+          </linearGradient>
+          <linearGradient id="acrylicGlassShine${pieceIdx}" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.55" />
+            <stop offset="30%" stop-color="#ffffff" stop-opacity="0.12" />
+            <stop offset="65%" stop-color="#ffffff" stop-opacity="0" />
           </linearGradient>
         </defs>
 
-        <!-- Base Jigsaw Piece Clipped from Full Couple Photo -->
-        <g clip-path="url(#photoPieceClip${pieceIdx})">
-          <!-- Fallback Soft Blue Backdrop -->
-          <rect x="-20" y="-20" width="140" height="140" fill="#bfdbfe" />
+        <!-- Base Acrylic Souvenir Magnet Clipped to Puzzle Silhouette -->
+        <g clip-path="url(#acrylicClip${pieceIdx})">
+          <!-- Glass/Acrylic Card Backdrop -->
+          <rect x="-20" y="-20" width="140" height="140" fill="#f8fafc" />
 
-          <!-- Full Couple Photo Offset to Display Exactly this Piece's Segment -->
+          <!-- Couple Memory Photo Centered inside Magnet Tile -->
           <image
             href="${escapeHtml(photoUrl)}"
-            x="${imgOffsetX}"
-            y="${imgOffsetY}"
-            width="${imgTotalWidth}"
-            height="${imgTotalHeight}"
+            x="4"
+            y="23"
+            width="92"
+            height="58"
             preserveAspectRatio="xMidYMid slice"
           />
 
-          <!-- Diagonal Gloss Shine -->
-          <path d="M -20,-20 L 140,-20 L -20,100 Z" fill="url(#photoGloss${pieceIdx})" pointer-events="none" />
+          <!-- Top Souvenir Ribbon Banner (matching Nanjing Souvenir Magnets) -->
+          <rect x="-20" y="-20" width="140" height="43" fill="url(#acrylicHeaderGrad${pieceIdx})" />
+          <text x="50" y="8" text-anchor="middle" fill="#ffffff" font-size="6.8" font-weight="800" font-family="'Outfit', sans-serif" letter-spacing="0.5">
+            ${escapeHtml(p.sub)}
+          </text>
+          <text x="50" y="19" text-anchor="middle" fill="#ffffff" font-size="7.4" font-weight="700" font-family="'Noto Sans Lao', sans-serif">
+            ${p.icon} ${escapeHtml(p.title)}
+          </text>
+
+          <!-- Bottom Souvenir Stamp Strip -->
+          <rect x="-20" y="81" width="140" height="39" fill="rgba(15, 23, 42, 0.92)" />
+          <text x="50" y="93" text-anchor="middle" fill="#93c5fd" font-size="6.2" font-weight="800" font-family="'Outfit', sans-serif" letter-spacing="0.8">
+            DO &amp; FAN 💙 SOUVENIR
+          </text>
+
+          <!-- Diagonal Glass Gloss Shine Highlight -->
+          <polygon points="-20,-20 140,-20 -20,100" fill="url(#acrylicGlassShine${pieceIdx})" pointer-events="none" />
 
           <!-- Corner Piece Number Badge shown only while in tray -->
           ${
             !state.jigsawPlaced[pieceIdx]
               ? `
-            <circle cx="16" cy="16" r="9.5" fill="rgba(30, 58, 109, 0.88)" stroke="#ffffff" stroke-width="1.3" />
-            <text x="16" y="19.5" text-anchor="middle" fill="#ffffff" font-size="8.5" font-weight="800" font-family="'Outfit', sans-serif">
+            <circle cx="14" cy="14" r="8" fill="rgba(15, 23, 42, 0.9)" stroke="#ffffff" stroke-width="1.2" />
+            <text x="14" y="17" text-anchor="middle" fill="#ffffff" font-size="7.5" font-weight="800" font-family="'Outfit', sans-serif">
               ${pieceIdx + 1}
             </text>
           `
@@ -783,20 +825,20 @@
           }
         </g>
 
-        <!-- 3D Embossed Jigsaw Outer Border -->
+        <!-- 3D Beveled Outer Gloss Stroke -->
         <path
           d="${pathD}"
           fill="none"
-          stroke="rgba(255, 255, 255, 0.92)"
-          stroke-width="1.8"
+          stroke="rgba(255, 255, 255, 0.96)"
+          stroke-width="2.2"
           stroke-linejoin="round"
           pointer-events="none"
         />
         <path
           d="${pathD}"
           fill="none"
-          stroke="rgba(15, 23, 42, 0.3)"
-          stroke-width="0.75"
+          stroke="rgba(15, 23, 42, 0.35)"
+          stroke-width="0.9"
           stroke-linejoin="round"
           pointer-events="none"
         />
@@ -904,7 +946,7 @@
                       ${
                         !isPlaced
                           ? `<span class="slot-number-badge">${p.id + 1}</span>
-                             <span class="slot-hint-text">${escapeHtml(p.hint)}</span>`
+                             <span class="slot-hint-text">${p.icon} ${escapeHtml(p.title)}</span>`
                           : ""
                       }
                     </div>
@@ -933,7 +975,7 @@
                   allPlaced
                     ? `
                   <div class="jigsaw-frame-plaque">
-                    <span>DO & FAN 💙 YOU & ME</span>
+                    <span>✨ DO &amp; FAN 💙 SOUVENIR COLLECTION ✨</span>
                   </div>
                 `
                     : ""
@@ -946,7 +988,7 @@
                   ? `
                   <div class="jigsaw-tray-container" id="jigsaw-tray-container">
                     <div class="jigsaw-tray-hint">
-                      👇 ຈັບຊິ້ນສ່ວນຮູບພາບມາຕໍ່ໃສ່ກອບ (ຫຼື ແຕະຊິ້ນສ່ວນແລ້ວແຕະຊ່ອງ)
+                      👇 ຈັບຊິ້ນສ່ວນແມ່ເຫຼັກມາຕໍ່ໃສ່ກະດານ (ລາກ ຫຼື ແຕະຊິ້ນສ່ວນແລ້ວແຕະບ່ອນວາງ)
                     </div>
                     <div class="jigsaw-tray-grid">
                       ${JIGSAW_PIECES_CONFIG.map((p) => {
@@ -959,6 +1001,7 @@
                               class="jigsaw-piece-element in-tray ${isSelected ? "is-selected" : ""}"
                               data-draggable-piece="${p.id}"
                               id="draggable-piece-${p.id}"
+                              title="${escapeHtml(p.title)}"
                             >
                               ${renderPhotoJigsawPieceSvg(p.id)}
                             </div>
