@@ -530,15 +530,15 @@
   function getConstellationCameraTransform() {
     const completed = state.starsConnected >= HEART_STARS.length;
     if (completed || state.manualOverviewZoom) {
-      return "translate(0%, 0%) scale(1)";
+      return "translate3d(0%, 0%, 0) scale(1)";
     }
     const targetStar = HEART_STARS[state.starsConnected] || HEART_STARS[0];
-    const scale = 2.3;
-    const rawTx = (50 - targetStar.x) * 0.68 * scale;
-    const rawTy = (50 - targetStar.y) * 0.68 * scale;
-    const tx = Math.max(-42, Math.min(42, rawTx));
-    const ty = Math.max(-36, Math.min(36, rawTy));
-    return `translate(${tx.toFixed(2)}%, ${ty.toFixed(2)}%) scale(${scale})`;
+    const scale = 2.1;
+    const rawTx = (50 - targetStar.x) * 0.65 * scale;
+    const rawTy = (50 - targetStar.y) * 0.65 * scale;
+    const tx = Math.max(-38, Math.min(38, rawTx));
+    const ty = Math.max(-32, Math.min(32, rawTy));
+    return `translate3d(${tx.toFixed(2)}%, ${ty.toFixed(2)}%, 0) scale(${scale})`;
   }
 
   function getHeartPolygonPoints() {
@@ -546,20 +546,21 @@
   }
 
   function renderConstellationSvgLines() {
+    const completed = state.starsConnected >= HEART_STARS.length;
     const activeLines = [];
     for (let i = 1; i < state.starsConnected; i++) {
       const from = HEART_STARS[i - 1];
       const to = HEART_STARS[i];
+      const isLatest = i === state.starsConnected - 1 && !completed;
       activeLines.push(
-        `<line class="constellation-active-line" x1="${from.x}" y1="${from.y}" x2="${to.x}" y2="${to.y}" />`
+        `<line class="constellation-active-line ${isLatest ? "is-newest-line" : "is-solid-line"}" x1="${from.x}" y1="${from.y}" x2="${to.x}" y2="${to.y}" />`
       );
     }
-    const completed = state.starsConnected >= HEART_STARS.length;
     if (completed) {
       const last = HEART_STARS[HEART_STARS.length - 1];
       const first = HEART_STARS[0];
       activeLines.push(
-        `<line class="constellation-active-line" x1="${last.x}" y1="${last.y}" x2="${first.x}" y2="${first.y}" />`
+        `<line class="constellation-active-line is-newest-line" x1="${last.x}" y1="${last.y}" x2="${first.x}" y2="${first.y}" />`
       );
     }
     return `
@@ -1184,11 +1185,8 @@
               </div>
             </div>
 
-            <div
-              class="constellation-camera"
-              id="constellation-camera"
-              style="transform: ${getConstellationCameraTransform()};"
-            >
+            <!-- Fixed Celestial Night Sky Background (Never re-composited on camera zoom!) -->
+            <div class="constellation-bg-stars-layer" aria-hidden="true">
               ${BG_TWINKLE_STARS.map(
                 (st) => `
                 <span
@@ -1197,6 +1195,14 @@
                 ></span>
               `
               ).join("")}
+            </div>
+
+            <!-- Moving Constellation Camera Layer (Only translates and scales the 8 heart nodes) -->
+            <div
+              class="constellation-camera"
+              id="constellation-camera"
+              style="transform: ${getConstellationCameraTransform()};"
+            >
 
               <div class="constellation-heart-arena">
                 <svg
@@ -1393,7 +1399,10 @@
   }
 
   function advanceConstellationStar() {
-    if (state.starsConnected >= HEART_STARS.length) return;
+    if (state.starsConnected >= HEART_STARS.length) {
+      goToPage(3);
+      return;
+    }
     state.manualOverviewZoom = false;
     state.starsConnected += 1;
 
@@ -1403,15 +1412,10 @@
 
       if (state.autoTransitionTimer) clearTimeout(state.autoTransitionTimer);
       state.autoTransitionTimer = setTimeout(() => {
-        if (state.activePage !== 2) return;
-        const stageCard = document.getElementById("constellation-stage-card");
-        if (stageCard) stageCard.classList.add("transitioning-out");
-        setTimeout(() => {
-          if (state.activePage === 2) {
-            goToPage(3);
-          }
-        }, 850);
-      }, 2400);
+        if (state.activePage === 2) {
+          goToPage(3);
+        }
+      }, 1300);
     } else {
       music.playTone(480 + state.starsConnected * 55, 0.28, 0.085);
       updateConstellationInPlace();
@@ -1738,10 +1742,18 @@
         if (state.autoTransitionTimer) clearTimeout(state.autoTransitionTimer);
         state.starsConnected = 0;
         state.manualOverviewZoom = false;
-        const stageCard = document.getElementById("constellation-stage-card");
-        if (stageCard) stageCard.classList.remove("transitioning-out");
         music.playChime();
         updateConstellationInPlace();
+      });
+    }
+
+    const constellationCard = document.getElementById("constellation-stage-card");
+    if (constellationCard) {
+      constellationCard.addEventListener("click", (e) => {
+        if (e.target.closest("button")) return;
+        if (state.starsConnected >= HEART_STARS.length) {
+          goToPage(3);
+        }
       });
     }
 
