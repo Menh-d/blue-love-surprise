@@ -936,23 +936,26 @@
                 }
               </div>
 
-              <!-- Unplaced Pieces Tray Area Below Board (Shown while puzzle is being assembled) -->
+              <!-- Unplaced Pieces Scattered Zone (Free organic layout, no rigid boxes!) -->
               ${
                 !allPlaced
                   ? `
-                  <div class="jigsaw-tray-container" id="jigsaw-tray-container">
-                    <div class="jigsaw-tray-hint">
-                      👇 ຈັບຊິ້ນສ່ວນຮູບພາບມາຕໍ່ໃສ່ກອບ (ລາກ ຫຼື ແຕະຊິ້ນສ່ວນແລ້ວແຕະບ່ອນວາງ)
+                  <div class="jigsaw-scatter-zone" id="jigsaw-scatter-zone">
+                    <div class="jigsaw-scatter-hint">
+                      👇 ຄລິກເມົ້າຄ້າງ (Hold) ທີ່ຊິ້ນສ່ວນແລ້ວລາກມາປະກອບໃສ່ກອບ
                     </div>
-                    <div class="jigsaw-tray-grid">
-                      ${JIGSAW_PIECES_CONFIG.map((p) => {
+                    <div class="jigsaw-scatter-board">
+                      ${JIGSAW_PIECES_CONFIG.map((p, idx) => {
                         if (state.jigsawPlaced[p.id]) return "";
                         const isSelected = state.selectedJigsawPiece === p.id;
 
                         return `
-                          <div class="jigsaw-tray-slot" id="tray-slot-${p.id}">
+                          <div
+                            class="jigsaw-scatter-piece-wrapper piece-scatter-${idx}"
+                            id="scatter-slot-${p.id}"
+                          >
                             <div
-                              class="jigsaw-piece-element in-tray ${isSelected ? "is-selected" : ""}"
+                              class="jigsaw-piece-element is-scattered ${isSelected ? "is-selected" : ""}"
                               data-draggable-piece="${p.id}"
                               id="draggable-piece-${p.id}"
                               title="ຊິ້ນສ່ວນທີ ${p.id + 1} (${escapeHtml(p.hint)})"
@@ -1446,142 +1449,127 @@
 
     pieces.forEach((el) => {
       const pieceId = Number(el.getAttribute("data-draggable-piece"));
-      let isPointerDown = false;
-      let isDragging = false;
-      let hasMovedPastThreshold = false;
-      let startX = 0;
-      let startY = 0;
+
+      // Stop native browser image dragging on all elements
+      el.addEventListener("dragstart", (e) => e.preventDefault());
 
       const onPointerDown = (e) => {
         if (state.jigsawPlaced[pieceId]) return;
-        if (e.button !== undefined && e.button !== 0) return;
+        if (e.button !== undefined && e.button !== 0) return; // Only primary mouse button
 
-        isPointerDown = true;
-        isDragging = false;
-        hasMovedPastThreshold = false;
-        startX = e.clientX;
-        startY = e.clientY;
+        e.preventDefault(); // Stop native drag/selection immediately!
 
-        try {
-          el.setPointerCapture(e.pointerId);
-        } catch (err) {}
-      };
+        const startX = e.clientX;
+        const startY = e.clientY;
+        let isDragging = false;
+        let hasMovedPastThreshold = false;
 
-      const onPointerMove = (e) => {
-        // MUST check isPointerDown so mouse hover never moves or hides the piece!
-        if (!isPointerDown || state.jigsawPlaced[pieceId]) return;
+        const onPointerMove = (moveEvt) => {
+          moveEvt.preventDefault();
+          const dx = moveEvt.clientX - startX;
+          const dy = moveEvt.clientY - startY;
 
-        const dx = e.clientX - startX;
-        const dy = e.clientY - startY;
-
-        if (!isDragging) {
-          if (Math.hypot(dx, dy) > 5) {
-            isDragging = true;
-            hasMovedPastThreshold = true;
-            el.classList.add("is-dragging");
-            el.style.zIndex = "99999";
-            el.style.transition = "none";
-          } else {
-            return;
-          }
-        }
-
-        // Pure GPU transformation on mouse/touch movement (no layout reflows, no position:fixed jumps!)
-        el.style.transform = `translate3d(${dx}px, ${dy}px, 0) scale(1.15)`;
-
-        // Check proximity to target slot
-        const slotEl = document.getElementById(`jigsaw-slot-${pieceId}`);
-        if (slotEl) {
-          const pRect = el.getBoundingClientRect();
-          const sRect = slotEl.getBoundingClientRect();
-          const pCenter = { x: pRect.left + pRect.width / 2, y: pRect.top + pRect.height / 2 };
-          const sCenter = { x: sRect.left + sRect.width / 2, y: sRect.top + sRect.height / 2 };
-          const dist = Math.hypot(pCenter.x - sCenter.x, pCenter.y - sCenter.y);
-          slotEl.classList.toggle("slot-highlight", dist < 85);
-        }
-      };
-
-      const onPointerUp = (e) => {
-        if (!isPointerDown) return;
-        isPointerDown = false;
-
-        try {
-          el.releasePointerCapture(e.pointerId);
-        } catch (err) {}
-
-        if (!isDragging) {
-          // Pure click/tap: select or auto-snap on double click
-          if (!hasMovedPastThreshold) {
-            if (state.selectedJigsawPiece === pieceId) {
-              snapJigsawPiece(pieceId);
+          if (!isDragging) {
+            if (Math.hypot(dx, dy) > 4) {
+              isDragging = true;
+              hasMovedPastThreshold = true;
+              el.classList.add("is-dragging");
+              el.style.zIndex = "999999";
+              el.style.transition = "none";
+              document.body.style.cursor = "grabbing";
+              document.body.style.userSelect = "none";
             } else {
-              state.selectedJigsawPiece = pieceId;
-              music.playChime();
-              renderTemplateShell();
+              return;
             }
           }
-          return;
-        }
 
-        isDragging = false;
-        const dx = e.clientX - startX;
-        const dy = e.clientY - startY;
+          // Move piece with GPU acceleration (1:1 with cursor, scale up for grab feel)
+          el.style.transform = `translate3d(${dx}px, ${dy}px, 0) scale(1.18) rotate(0deg)`;
 
-        const slotEl = document.getElementById(`jigsaw-slot-${pieceId}`);
-        let snapped = false;
+          // Proximity detection to matching slot on target board
+          const slotEl = document.getElementById(`jigsaw-slot-${pieceId}`);
+          if (slotEl) {
+            const pRect = el.getBoundingClientRect();
+            const sRect = slotEl.getBoundingClientRect();
+            const pCenter = { x: pRect.left + pRect.width / 2, y: pRect.top + pRect.height / 2 };
+            const sCenter = { x: sRect.left + sRect.width / 2, y: sRect.top + sRect.height / 2 };
+            const dist = Math.hypot(pCenter.x - sCenter.x, pCenter.y - sCenter.y);
+            slotEl.classList.toggle("slot-highlight", dist < 85);
+          }
+        };
 
-        if (slotEl) {
-          slotEl.classList.remove("slot-highlight");
-          const pRect = el.getBoundingClientRect();
-          const sRect = slotEl.getBoundingClientRect();
-          const pCenter = { x: pRect.left + pRect.width / 2, y: pRect.top + pRect.height / 2 };
-          const sCenter = { x: sRect.left + sRect.width / 2, y: sRect.top + sRect.height / 2 };
-          const dist = Math.hypot(pCenter.x - sCenter.x, pCenter.y - sCenter.y);
+        const onPointerUp = (upEvt) => {
+          window.removeEventListener("pointermove", onPointerMove);
+          window.removeEventListener("pointerup", onPointerUp);
+          window.removeEventListener("pointercancel", onPointerUp);
 
-          if (dist < 85) {
-            snapped = true;
-            // Magnetic spring animation straight to the slot target
-            const targetDx = dx + (sCenter.x - pCenter.x);
-            const targetDy = dy + (sCenter.y - pCenter.y);
+          document.body.style.cursor = "";
+          document.body.style.userSelect = "";
 
-            el.style.transition = "transform 0.18s cubic-bezier(0.175, 0.885, 0.32, 1.25)";
-            el.style.transform = `translate3d(${targetDx}px, ${targetDy}px, 0) scale(1)`;
+          if (!isDragging) {
+            // It was a pure click/tap
+            if (!hasMovedPastThreshold) {
+              if (state.selectedJigsawPiece === pieceId) {
+                snapJigsawPiece(pieceId);
+              } else {
+                state.selectedJigsawPiece = pieceId;
+                music.playChime();
+                renderTemplateShell();
+              }
+            }
+            return;
+          }
 
+          isDragging = false;
+          const dx = upEvt.clientX - startX;
+          const dy = upEvt.clientY - startY;
+
+          const slotEl = document.getElementById(`jigsaw-slot-${pieceId}`);
+          let snapped = false;
+
+          if (slotEl) {
+            slotEl.classList.remove("slot-highlight");
+            const pRect = el.getBoundingClientRect();
+            const sRect = slotEl.getBoundingClientRect();
+            const pCenter = { x: pRect.left + pRect.width / 2, y: pRect.top + pRect.height / 2 };
+            const sCenter = { x: sRect.left + sRect.width / 2, y: sRect.top + sRect.height / 2 };
+            const dist = Math.hypot(pCenter.x - sCenter.x, pCenter.y - sCenter.y);
+
+            if (dist < 85) {
+              snapped = true;
+              // Magnetic spring animation straight to the slot target
+              const targetDx = dx + (sCenter.x - pCenter.x);
+              const targetDy = dy + (sCenter.y - pCenter.y);
+
+              el.style.transition = "transform 0.18s cubic-bezier(0.175, 0.885, 0.32, 1.25)";
+              el.style.transform = `translate3d(${targetDx}px, ${targetDy}px, 0) scale(1) rotate(0deg)`;
+
+              setTimeout(() => {
+                el.classList.remove("is-dragging");
+                el.style.zIndex = "";
+                snapJigsawPiece(pieceId);
+              }, 180);
+            }
+          }
+
+          if (!snapped) {
+            // Spring smoothly back to scattered resting position
+            el.style.transition = "transform 0.24s cubic-bezier(0.2, 0.8, 0.2, 1)";
+            el.style.transform = "";
             setTimeout(() => {
               el.classList.remove("is-dragging");
-              snapJigsawPiece(pieceId);
-            }, 180);
+              el.style.zIndex = "";
+              renderTemplateShell();
+            }, 240);
           }
-        }
+        };
 
-        if (!snapped) {
-          // Spring smoothly back to tray
-          el.style.transition = "transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1)";
-          el.style.transform = "translate3d(0, 0, 0) scale(1)";
-          setTimeout(() => {
-            el.classList.remove("is-dragging");
-            el.style.zIndex = "";
-            renderTemplateShell();
-          }, 220);
-        }
-      };
-
-      const onPointerCancel = (e) => {
-        if (!isPointerDown) return;
-        isPointerDown = false;
-        isDragging = false;
-        try {
-          el.releasePointerCapture(e.pointerId);
-        } catch (err) {}
-        el.classList.remove("is-dragging");
-        el.style.zIndex = "";
-        renderTemplateShell();
+        window.addEventListener("pointermove", onPointerMove);
+        window.addEventListener("pointerup", onPointerUp);
+        window.addEventListener("pointercancel", onPointerUp);
       };
 
       el.addEventListener("pointerdown", onPointerDown);
-      el.addEventListener("pointermove", onPointerMove);
-      el.addEventListener("pointerup", onPointerUp);
-      el.addEventListener("pointercancel", onPointerCancel);
     });
 
     // Tap target slot to place selected piece
