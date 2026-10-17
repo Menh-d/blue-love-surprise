@@ -198,13 +198,23 @@
     },
   ];
 
+  function resolveMediaUrl(url) {
+    if (!url) return "./assets/couple-placeholder.svg";
+    if (url.startsWith("/api/media/")) {
+      const id = url.replace("/api/media/", "");
+      return `./media/${id}.jpeg`;
+    }
+    return url;
+  }
+
   // Live editable config
   const CONFIG = {
     receiverName: "ຄົນພິເສດ",
     senderName: "Do",
     pinCode: "1402",
     pinHint: "ແຕະວາງຫົວໃຈສີຟ້າ 3 ດວງໃຫ້ລຽງກັນ 💙",
-    pinImage: "/api/media/med-do-fan-01",
+    pinImage: "./media/med-do-fan-01.jpeg",
+    jigsawImage: "./media/med-do-fan-01.jpeg",
     pinCaption: "You & Me 💙",
     anniversaryDate: "2025-10-17",
     letterSalutation: "ເຖິງ ຄົນພິເສດຂອງຂ້ອຍ,",
@@ -223,14 +233,14 @@
     couponTitle: "ຄູປອງວັນເກີດຕາມໃຈເຈົ້າ 1 ມື້ເຕັມ 💙",
     couponCode: "BLUE-BIRTHDAY",
     polaroids: [
-      { image: "/api/media/med-do-fan-01", caption: "ຮອຍຍິ້ມທີ່ເຮັດໃຫ້ໃຈຟູ 💙" },
-      { image: "/api/media/med-do-fan-02", caption: "ຈັບມືກັນໄວ້ດົນໆເດີ້ ✨" },
-      { image: "/api/media/med-do-fan-03", caption: "ຍ່າງຫຼິ້ນສວນໄຜ່ກັບກວາງນ້ອຍ 🦌" },
-      { image: "/api/media/med-do-fan-04", caption: "ດີໃຈທີ່ມີເຈົ້າຢູ່ຂ້າງໆ 💎" },
-      { image: "/api/media/med-do-fan-05", caption: "ເດດເບິ່ງໜັງຄູ່ກັນ 🎬" },
-      { image: "/api/media/med-do-fan-06", caption: "ທຸກມຸມທີ່ມີເຈົ້າຄືຄວາມສຸກ 🌟" },
-      { image: "/api/media/med-do-fan-07", caption: "ຢູ່ຍິ້ມນຳກັນແບບນີ້ຕະຫຼອດໄປ 💫" },
-      { image: "/api/media/med-do-fan-08", caption: "ຄ່ຳຄືນທີ່ອົບອຸ່ນຂອງເຮົາ 🌙" },
+      { image: "./media/med-do-fan-01.jpeg", caption: "ຮອຍຍິ້ມທີ່ເຮັດໃຫ້ໃຈຟູ 💙" },
+      { image: "./media/med-do-fan-02.jpeg", caption: "ຈັບມືກັນໄວ້ດົນໆເດີ້ ✨" },
+      { image: "./media/med-do-fan-03.jpeg", caption: "ຍ່າງຫຼິ້ນສວນໄຜ່ກັບກວາງນ້ອຍ 🦌" },
+      { image: "./media/med-do-fan-04.jpeg", caption: "ດີໃຈທີ່ມີເຈົ້າຢູ່ຂ້າງໆ 💎" },
+      { image: "./media/med-do-fan-05.jpeg", caption: "ເດດເບິ່ງໜັງຄູ່ກັນ 🎬" },
+      { image: "./media/med-do-fan-06.jpeg", caption: "ທຸກມຸມທີ່ມີເຈົ້າຄືຄວາມສຸກ 🌟" },
+      { image: "./media/med-do-fan-07.jpeg", caption: "ຢູ່ຍິ້ມນຳກັນແບບນີ້ຕະຫຼອດໄປ 💫" },
+      { image: "./media/med-do-fan-08.jpeg", caption: "ຄ່ຳຄືນທີ່ອົບອຸ່ນຂອງເຮົາ 🌙" },
     ],
   };
 
@@ -636,7 +646,7 @@
                 </div>
                 <img
                   class="archive-photo-img"
-                  src="${escapeHtml(pol.image)}"
+                  src="${escapeHtml(resolveMediaUrl(pol.image))}"
                   alt="Memory ${idx + 1}"
                   onerror="this.src='${DEFAULT_PLACEHOLDER_IMG}'"
                 />
@@ -851,7 +861,7 @@
               .map(
                 (p) => `
                 <div class="collage-side-polaroid">
-                  <img src="${escapeHtml(p.image)}" alt="Memory" onerror="this.src='${DEFAULT_PLACEHOLDER_IMG}'" />
+                  <img src="${escapeHtml(resolveMediaUrl(p.image))}" alt="Memory" onerror="this.src='${DEFAULT_PLACEHOLDER_IMG}'" />
                   <div class="collage-side-caption">${escapeHtml(p.caption)}</div>
                 </div>
               `
@@ -958,7 +968,7 @@
               .map(
                 (p) => `
                 <div class="collage-side-polaroid">
-                  <img src="${escapeHtml(p.image)}" alt="Memory" onerror="this.src='${DEFAULT_PLACEHOLDER_IMG}'" />
+                  <img src="${escapeHtml(resolveMediaUrl(p.image))}" alt="Memory" onerror="this.src='${DEFAULT_PLACEHOLDER_IMG}'" />
                   <div class="collage-side-caption">${escapeHtml(p.caption)}</div>
                 </div>
               `
