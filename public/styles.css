@@ -1254,279 +1254,385 @@ body {
 /* ==========================================================================
    PAGE 3: ARCHIVE PINBOARD MEMORY PHOTO PATH
    Matches '/Users/graphic/Downloads/MSR Foto – Bilder und Erinnerungen aus dem Archiv.jpeg'
+/* ==========================================================================
+   PAGE 3: SCRAPBOOK MEMORY PINBOARD (MATCHING USER REFERENCE STYLE)
+   3 Alternating Rows: Lined Note Card + Polaroid Photo + 3D Pushpins
    ========================================================================== */
-.archive-board-container {
+.scrapbook-board-container {
   position: relative;
   width: 100%;
-  max-width: 1080px;
-  height: calc(100dvh - 146px);
-  max-height: 570px;
+  max-width: 660px;
+  height: calc(100dvh - 165px);
+  max-height: 520px;
   min-height: 380px;
   margin: 0 auto;
-  background: transparent !important;
-  background-image: none !important;
-  border: none !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 6px 4px 4px;
   overflow: visible;
   flex: 1 1 auto;
 }
 
-.archive-string-svg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 6;
-}
-
-.archive-string-bg {
-  stroke: rgba(37, 99, 235, 0.22);
-  stroke-width: 0.45;
-  stroke-dasharray: 1.5 1.5;
-  fill: none;
-}
-
-.archive-string-active {
-  stroke: #2563eb;
-  stroke-width: 0.78;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  fill: none;
-  filter: drop-shadow(0 2px 4px rgba(30, 58, 109, 0.35));
-  stroke-dasharray: 220;
-  stroke-dashoffset: 220;
-  animation: drawConnectingString 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes drawConnectingString {
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-.archive-center-note {
-  position: absolute;
-  left: 50%;
-  top: 24%;
-  transform: translate(-50%, -50%) rotate(-1.5deg);
-  width: clamp(160px, 18vw, 195px);
-  background: #ffffff;
-  background-image:
-    linear-gradient(rgba(59, 130, 246, 0.18) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(59, 130, 246, 0.18) 1px, transparent 1px);
-  background-size: 14px 14px;
-  padding: 16px 12px 14px;
-  border-radius: 4px;
-  box-shadow: 0 10px 24px rgba(30, 58, 109, 0.12);
-  border-top: 5px dotted #cbd5e1;
-  z-index: 4;
-  text-align: center;
-}
-
-.archive-center-note::before {
-  content: "";
-  position: absolute;
-  top: -12px;
-  left: 50%;
-  transform: translateX(-50%) rotate(2deg);
-  width: 78px;
-  height: 20px;
-  background: rgba(219, 234, 254, 0.85);
-  border: 1px solid rgba(147, 197, 253, 0.6);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-}
-
-.archive-center-title {
-  font-family: var(--font-sans);
-  font-size: 1.25rem;
-  font-weight: 800;
-  letter-spacing: 0.05em;
-  color: #1e3a6d;
-  line-height: 1.1;
-  text-transform: uppercase;
-}
-
-.archive-center-sub {
-  font-size: 0.74rem;
-  color: var(--text-secondary);
-  margin-top: 4px;
-  font-weight: 600;
-}
-
-.archive-polaroid-item {
-  position: absolute;
-  width: clamp(155px, 17vw, 190px);
-  background: #ffffff;
-  padding: 8px 8px 10px;
-  border-radius: 4px;
-  box-shadow: 0 12px 28px rgba(30, 58, 109, 0.16);
+.scrapbook-set-tabs {
+  display: inline-flex;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(8px);
+  padding: 3px 6px;
+  border-radius: 999px;
   border: 1px solid rgba(147, 197, 253, 0.5);
-  z-index: 8;
-  cursor: pointer;
-  transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.35s ease;
+  box-shadow: 0 2px 8px rgba(30, 58, 109, 0.08);
+  margin: 3px auto 4px;
 }
 
-.archive-polaroid-item:hover {
-  z-index: 15;
-  box-shadow: 0 18px 36px rgba(37, 99, 235, 0.28);
-}
-
-.archive-polaroid-item.next-target {
-  box-shadow: 0 0 0 3px #3b82f6, 0 16px 36px rgba(37, 99, 235, 0.32);
-}
-
-.archive-washi-tape {
-  position: absolute;
-  top: -10px;
-  left: 50%;
-  transform: translateX(-50%) rotate(-2deg);
-  background: rgba(219, 234, 254, 0.94);
-  border-left: 2px dashed rgba(147, 197, 253, 0.8);
-  border-right: 2px dashed rgba(147, 197, 253, 0.8);
-  padding: 2px 12px;
-  font-family: var(--font-serif);
-  font-size: 0.68rem;
+.scrapbook-set-tab {
+  background: transparent;
+  border: none;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
   color: #1e3a6d;
-  text-transform: uppercase;
-  box-shadow: 0 2px 5px rgba(30, 58, 109, 0.1);
-  white-space: nowrap;
-  z-index: 9;
+  padding: 3px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.25s ease;
 }
 
-.archive-pushpin {
-  position: absolute;
-  top: -7px;
-  left: 14px;
-  width: 17px;
-  height: 17px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #60a5fa 0%, #2563eb 55%, #1e3a8a 100%);
-  box-shadow:
-    2px 3px 6px rgba(15, 23, 42, 0.35),
-    inset 0 1px 2px rgba(255, 255, 255, 0.6);
-  z-index: 12;
+.scrapbook-set-tab.active {
+  background: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
 }
 
-.archive-pushpin::after {
-  content: "";
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.65);
-}
-
-.archive-polaroid-item.next-target .archive-pushpin {
-  animation: pulseTargetStar 1.3s infinite ease-in-out;
-}
-
-.archive-polaroid-window {
-  width: 100%;
-  aspect-ratio: 9 / 13;
+.scrapbook-row {
   position: relative;
-  overflow: hidden;
-  background: #ffffff;
-  border-radius: 3px;
-  border: 1px solid rgba(30, 58, 109, 0.08);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 100%;
+  height: 31%;
+  min-height: 118px;
+  max-height: 158px;
 }
 
-.archive-message-cover {
+/* Lined Note Card (Index Card / Ruled Paper) */
+.scrapbook-card-item {
   position: absolute;
-  inset: 0;
-  padding: 8px 10px;
+  background-color: #fcfbfa;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 19px,
+    rgba(147, 197, 253, 0.42) 19px,
+    rgba(147, 197, 253, 0.42) 20px
+  );
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.12), 0 2px 6px rgba(15, 23, 42, 0.05);
+  padding: 8px 12px 8px 16px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  background: linear-gradient(145deg, #f0f7ff 0%, #dbeafe 100%);
-  transition: opacity 0.55s ease, transform 0.55s ease;
+  justify-content: flex-start;
+  cursor: pointer;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+  user-select: none;
+  height: calc(100% - 10px);
+  top: 6px;
 }
 
-.archive-message-text {
-  font-family: var(--font-serif);
-  font-size: clamp(0.72rem, 1.05vw, 0.82rem);
+.scrapbook-card-item::before {
+  /* faint red vertical margin line */
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 12px;
+  width: 1px;
+  background-color: rgba(248, 113, 113, 0.35);
+  pointer-events: none;
+}
+
+.scrapbook-card-item.side-left {
+  left: 0;
+  width: 60%;
+  max-width: 380px;
+  z-index: 2;
+}
+
+.scrapbook-card-item.side-right {
+  left: 40%;
+  width: 60%;
+  max-width: 380px;
+  z-index: 2;
+}
+
+.scrapbook-card-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(37, 99, 235, 0.18);
+  z-index: 8;
+}
+
+.scrapbook-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2px;
+  margin-left: 4px;
+}
+
+.scrapbook-card-title {
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  font-weight: 800;
   color: #1e3a6d;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.scrapbook-card-badge {
+  font-size: 0.62rem;
   font-weight: 600;
-  line-height: 1.35;
-  margin-bottom: 6px;
+  color: #2563eb;
+  background: rgba(219, 234, 254, 0.7);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.scrapbook-card-message {
+  font-family: var(--font-serif);
+  font-size: clamp(0.72rem, 1.05vw, 0.8rem);
+  font-weight: 500;
+  color: #1e293b;
+  line-height: 20px;
+  margin: 0;
+  margin-left: 4px;
   display: -webkit-box;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-.archive-tap-badge {
-  font-size: 0.68rem;
-  font-weight: 700;
-  color: #ffffff;
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  padding: 3px 10px;
-  border-radius: 999px;
-  box-shadow: 0 3px 8px rgba(37, 99, 235, 0.3);
+/* 3D Pushpin */
+.scrapbook-pin-wrapper {
+  position: absolute;
+  top: -13px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 12;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 4px rgba(15, 23, 42, 0.25));
 }
 
-.archive-photo-img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
+.scrapbook-pin-svg {
   display: block;
-  opacity: 0;
-  transform: scale(0.96);
-  filter: sepia(0.35) blur(2px) brightness(1.1);
-  transition: opacity 0.65s ease, transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), filter 0.75s ease;
-  will-change: opacity, transform, filter;
 }
 
-.archive-polaroid-item.revealed .archive-message-cover {
+/* Polaroid Photo Frame */
+.scrapbook-polaroid-item {
+  position: absolute;
+  background-color: #ffffff;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.09);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.16), 0 3px 6px rgba(15, 23, 42, 0.08);
+  padding: 6px 6px 14px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+  transform: rotate(var(--rot));
+  z-index: 5;
+  top: 0;
+  height: 100%;
+}
+
+.scrapbook-polaroid-item.side-right {
+  left: 54%;
+  width: 44%;
+  max-width: 175px;
+}
+
+.scrapbook-polaroid-item.side-left {
+  left: 4%;
+  width: 44%;
+  max-width: 175px;
+}
+
+.scrapbook-polaroid-item:hover {
+  transform: scale(1.05) rotate(var(--rot)) !important;
+  box-shadow: 0 18px 36px rgba(37, 99, 235, 0.28);
+  z-index: 18;
+}
+
+.scrapbook-polaroid-item.next-target {
+  box-shadow: 0 0 0 3px #3b82f6, 0 14px 28px rgba(37, 99, 235, 0.32);
+}
+
+.scrapbook-polaroid-item.next-target .scrapbook-pin-wrapper {
+  animation: pulseTargetStar 1.3s infinite ease-in-out;
+}
+
+.scrapbook-polaroid-window {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  position: relative;
+  overflow: hidden;
+  background: #111827; /* Matches black placeholder from user reference */
+  border-radius: 2px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 auto;
+}
+
+.scrapbook-film-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #182234 0%, #0b1120 100%);
+  color: #93c5fd;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+
+.scrapbook-polaroid-item.revealed .scrapbook-film-overlay {
   opacity: 0;
   transform: scale(1.08);
   pointer-events: none;
 }
 
-.archive-polaroid-item.revealed .archive-photo-img {
+.scrapbook-photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000000;
+  display: block;
+  opacity: 0;
+  transform: scale(0.96);
+  filter: sepia(0.35) blur(2px) brightness(1.1);
+  transition: opacity 0.65s ease, transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), filter 0.75s ease;
+}
+
+.scrapbook-polaroid-item.revealed .scrapbook-photo-img {
   opacity: 1;
   transform: scale(1);
   filter: sepia(0) blur(0) brightness(1);
 }
 
-.archive-polaroid-footer {
-  margin-top: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
+.scrapbook-polaroid-caption {
   font-family: var(--font-cursive);
-  font-size: 0.95rem;
-  color: var(--text-primary);
+  font-size: 0.76rem;
   font-weight: 600;
+  color: #334155;
+  margin-top: 4px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 100%;
+  text-align: center;
 }
 
-.archive-check-icon {
-  display: inline-flex;
+/* Lightbox Modal */
+.scrapbook-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.scrapbook-lightbox.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.scrapbook-lightbox-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(8px);
+}
+
+.scrapbook-lightbox-dialog {
+  position: relative;
+  background: #ffffff;
+  padding: 12px 12px 18px 12px;
+  border-radius: 8px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  max-width: 90vw;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 10001;
+  animation: lightboxPopIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes lightboxPopIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.scrapbook-lightbox-close {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  border: 1.5px solid #3b82f6;
-  color: #2563eb;
-  font-size: 0.62rem;
-  font-family: var(--font-sans);
-  flex-shrink: 0;
+  background: #ef4444;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease;
+}
+
+.scrapbook-lightbox-close:hover {
+  transform: scale(1.1);
+}
+
+.scrapbook-lightbox-img {
+  max-width: 80vw;
+  max-height: 60vh;
+  object-fit: contain;
+  border-radius: 4px;
+  background: #000000;
+}
+
+.scrapbook-lightbox-caption {
+  font-family: var(--font-cursive);
+  font-size: 1.15rem;
+  color: #1e3a6d;
+  font-weight: 700;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.scrapbook-lightbox-message {
+  font-family: var(--font-serif);
+  font-size: 0.88rem;
+  color: #475569;
+  margin-top: 4px;
+  text-align: center;
+  max-width: 400px;
 }
 
 /* ==========================================================================

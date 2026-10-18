@@ -93,54 +93,77 @@
     delay: ((i * 0.31) % 3.2).toFixed(2),
   }));
 
-  // 5 Pinboard Archive Polaroid Stops (matches MSR Foto – Bilder und Erinnerungen aus dem Archiv.jpeg)
-  const ARCHIVE_LAYOUT = [
+  // 6 Scrapbook Memories matching the user's reference style (3 rows per set: Lined Note Card + Polaroid + 3D Pushpins)
+  const SCRAPBOOK_MEMORIES = [
     {
-      tape: "MOMENT 01",
-      left: "4%",
-      top: "3%",
-      rotate: "-4deg",
-      pinX: 6,
-      pinY: 4,
-      centerPinX: 50,
-      centerPinY: 7,
+      id: 0,
+      title: "MOMENT 01",
+      image: "./media/med-do-fan-01.jpeg",
+      caption: "ຮອຍຍິ້ມທີ່ເຮັດໃຫ້ໃຈຟູ 💙",
       message: "ຈື່ມື້ທີ່ເຮົາແນມຫາກັນແລ້ວຍິ້ມໃຫ້ກັນແບບນີ້ໄດ້ບໍ່? ຮອຍຍິ້ມເຈົ້າໜ້າຮັກທີ່ສຸດເລີຍ 💙",
     },
     {
-      tape: "SWEET LIGHT",
-      left: "74%",
-      top: "3%",
-      rotate: "3.5deg",
-      pinX: 76,
-      pinY: 4,
+      id: 1,
+      title: "MOMENT 02",
+      image: "./media/med-do-fan-02.jpeg",
+      caption: "ຈັບມືກັນໄວ້ດົນໆເດີ້ ✨",
       message: "ທຸກຄັ້ງທີ່ໄດ້ຈັບມືເຈົ້າ ມັນຄືຊ່ວງເວລາທີ່ອົບອຸ່ນໃຈທີ່ສຸດໃນໂລກເລີຍ ✨",
     },
     {
-      tape: "OUR WALK",
-      left: "74%",
-      top: "52%",
-      rotate: "-3deg",
-      pinX: 76,
-      pinY: 53,
+      id: 2,
+      title: "MOMENT 03",
+      image: "./media/med-do-fan-03.jpeg",
+      caption: "ຍ່າງຫຼິ້ນສວນໄຜ່ນຳກັນ 🦌",
       message: "ມື້ທີ່ເຮົາໄປຍ່າງຫຼິ້ນສວນໄຜ່ກັບກວາງນ້ອຍນຳກັນ ມ່ວນ ແລະ ມີຄວາມສຸກຫຼາຍ 🦌💙",
     },
     {
-      tape: "DATE NIGHT",
-      left: "39%",
-      top: "52%",
-      rotate: "2.5deg",
-      pinX: 41,
-      pinY: 53,
-      message: "ໄປເບິ່ງໜັງຄູ່ກັນ ນັ່ງຂ້າງໆກັນ ຢາກຢຸດເວລາໄວ້ແບບນີ້ດົນໆເລີຍ 🎬💎",
+      id: 3,
+      title: "MOMENT 04",
+      image: "./media/med-do-fan-04.jpeg",
+      caption: "ດີໃຈທີ່ມີເຈົ້າຢູ່ຂ້າງໆ 💎",
+      message: "ບໍ່ວ່າຈະໄປໃສ ຫຼື ເຮັດຫຍັງ ຂໍພຽງແຕ່ມີເຈົ້າຢູ່ຂ້າງໆ ທຸກຢ່າງກະພິເສດຂຶ້ນມາທັນທີ 💎",
     },
     {
-      tape: "FOREVER US",
-      left: "4%",
-      top: "52%",
-      rotate: "3.5deg",
-      pinX: 6,
-      pinY: 53,
+      id: 4,
+      title: "MOMENT 05",
+      image: "./media/med-do-fan-05.jpeg",
+      caption: "ເດດເບິ່ງໜັງຄູ່ກັນ 🎬",
+      message: "ໄປເບິ່ງໜັງຄູ່ກັນ ນັ່ງຂ້າງໆກັນ ຢາກຢຸດເວລາໄວ້ແບບນີ້ດົນໆເລີຍ 🎬💙",
+    },
+    {
+      id: 5,
+      title: "MOMENT 06",
+      image: "./media/med-do-fan-06.jpeg",
+      caption: "ທຸກມຸມທີ່ມີເຈົ້າຄືຄວາມສຸກ 🌟",
       message: "ຂອບໃຈທີ່ເຂົ້າມາເປັນຄວາມຊົງຈຳທີ່ດີທີ່ສຸດໃນທຸກໆມື້ຂອງຂ້ອຍເດີ້ 🌙💙",
+    },
+  ];
+
+  // Alternating Scrapbook Row Configurations matching the user's uploaded reference image:
+  // Row 1: Card Left (Red Pin) + Polaroid Right (Blue Pin, tilted +8.5deg)
+  // Row 2: Polaroid Left (Yellow Pin, tilted -9.5deg) + Card Right (Green Pin)
+  // Row 3: Card Left (Blue Pin) + Polaroid Right (Red Pin, tilted +7.5deg)
+  const SCRAPBOOK_ROW_CONFIGS = [
+    {
+      cardSide: "left",
+      cardPin: "red",
+      polSide: "right",
+      polPin: "blue",
+      polRotate: "8.5deg",
+    },
+    {
+      polSide: "left",
+      polPin: "yellow",
+      polRotate: "-9.5deg",
+      cardSide: "right",
+      cardPin: "green",
+    },
+    {
+      cardSide: "left",
+      cardPin: "blue",
+      polSide: "right",
+      polPin: "red",
+      polRotate: "7.5deg",
     },
   ];
 
@@ -249,7 +272,9 @@
     starsConnected: 0, // 0..8 on Page 2
     manualOverviewZoom: false,
     autoTransitionTimer: null,
-    archiveOpened: [false, false, false, false, false], // 5 polaroids on Page 3
+    archiveOpened: [false, false, false, false, false, false], // 6 memories on Page 3
+    archiveSet: 0, // 0 = set 1 (0..2), 1 = set 2 (3..5)
+    lightboxPhoto: null, // Holds active enlarged photo data
     jigsawPlaced: [false, false, false, false, false, false], // 6 pieces on Page 4
     selectedJigsawPiece: null, // For tap-to-place fallback
     collageZoomedOut: false,
@@ -569,101 +594,117 @@
     `;
   }
 
-  // ==================== ARCHIVE PINBOARD MEMORY PATH (MSR FOTO STYLE) ====================
-  function renderArchivePinboard() {
-    const openedCount = state.archiveOpened.filter(Boolean).length;
+  // ==================== REALISTIC 3D PUSHPIN SVG ====================
+  function renderPushpinSvg(color) {
+    const colorMap = {
+      red: { light: "#fca5a5", main: "#ef4444", dark: "#b91c1c", darkest: "#7f1d1d" },
+      blue: { light: "#93c5fd", main: "#3b82f6", dark: "#1d4ed8", darkest: "#1e3a8a" },
+      yellow: { light: "#fef08a", main: "#eab308", dark: "#ca8a04", darkest: "#78350f" },
+      green: { light: "#86efac", main: "#10b981", dark: "#047857", darkest: "#064e3b" },
+    };
+    const c = colorMap[color] || colorMap.red;
+    return `
+      <svg class="scrapbook-pin-svg" viewBox="0 0 28 36" width="22" height="28" aria-hidden="true">
+        <defs>
+          <radialGradient id="pin-grad-${color}" cx="35%" cy="30%" r="65%">
+            <stop offset="0%" stop-color="${c.light}" />
+            <stop offset="35%" stop-color="${c.main}" />
+            <stop offset="80%" stop-color="${c.dark}" />
+            <stop offset="100%" stop-color="${c.darkest}" />
+          </radialGradient>
+        </defs>
+        <ellipse cx="17" cy="31" rx="6.5" ry="3.2" fill="rgba(15, 23, 42, 0.38)" />
+        <ellipse cx="14" cy="24.5" rx="6.5" ry="3.2" fill="url(#pin-grad-${color})" />
+        <path d="M 9.5,12 C 9.5,18 8.5,22.5 14,24 C 19.5,22.5 18.5,18 18.5,12 Z" fill="url(#pin-grad-${color})" />
+        <circle cx="14" cy="9.5" r="7.5" fill="url(#pin-grad-${color})" />
+        <ellipse cx="11.5" cy="7" rx="2.5" ry="1.5" fill="#ffffff" opacity="0.85" transform="rotate(-30 11.5 7)" />
+      </svg>
+    `;
+  }
+
+  // ==================== SCRAPBOOK PINBOARD (3-ROW ALTERNATING STYLE) ====================
+  function renderScrapbookBoard() {
     const nextIdx = state.archiveOpened.findIndex((v) => !v);
-
-    const s0 = ARCHIVE_LAYOUT[0];
-    const s1 = ARCHIVE_LAYOUT[1];
-    const s2 = ARCHIVE_LAYOUT[2];
-    const s3 = ARCHIVE_LAYOUT[3];
-    const s4 = ARCHIVE_LAYOUT[4];
-
-    const fullPathPoints = [
-      `${s0.pinX},${s0.pinY}`,
-      `${s0.centerPinX},${s0.centerPinY}`,
-      `${s1.pinX},${s1.pinY}`,
-      `${s2.pinX},${s2.pinY}`,
-      `${s3.pinX},${s3.pinY}`,
-      `${s4.pinX},${s4.pinY}`,
-    ];
-
-    const activePoints = [`${s0.pinX},${s0.pinY}`];
-    if (openedCount >= 1) {
-      activePoints.push(`${s0.centerPinX},${s0.centerPinY}`);
-    }
-    if (openedCount >= 2) {
-      activePoints.push(`${s1.pinX},${s1.pinY}`);
-    }
-    if (openedCount >= 3) {
-      activePoints.push(`${s2.pinX},${s2.pinY}`);
-    }
-    if (openedCount >= 4) {
-      activePoints.push(`${s3.pinX},${s3.pinY}`);
-    }
-    if (openedCount >= 5) {
-      activePoints.push(`${s4.pinX},${s4.pinY}`);
-    }
+    const startIdx = state.archiveSet * 3;
+    const currentItems = SCRAPBOOK_MEMORIES.slice(startIdx, startIdx + 3);
 
     return `
-      <div class="archive-board-container" id="archive-board-container">
-        <svg class="archive-string-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
-          <polyline class="archive-string-bg" points="${fullPathPoints.join(" ")}" />
-          ${
-            activePoints.length > 1
-              ? `<polyline class="archive-string-active" points="${activePoints.join(" ")}" />`
-              : ""
-          }
-          <circle cx="${s0.centerPinX}" cy="${s0.centerPinY}" r="1.1" fill="#1d4ed8" />
-        </svg>
+      <div class="scrapbook-board-container" id="scrapbook-board-container">
+        ${currentItems.map((item, rowIdx) => {
+          const itemIdx = startIdx + rowIdx;
+          const isRevealed = state.archiveOpened[itemIdx];
+          const isNext = itemIdx === nextIdx;
+          const cfg = SCRAPBOOK_ROW_CONFIGS[rowIdx];
 
-        <div class="archive-center-note">
-          <div class="archive-center-title">OUR<br/>ARCHIVE 💙</div>
-          <div class="archive-center-sub">ບັນທຶກຮູບພາບ & ຄວາມຊົງຈຳ (${openedCount}/5)</div>
-          <div style="margin-top:8px; font-size:1.3rem;">📷 🎞️ ✨</div>
-        </div>
-
-        ${ARCHIVE_LAYOUT.map((lay, idx) => {
-          const pol = CONFIG.polaroids[idx] || CONFIG.polaroids[0];
-          const isRevealed = state.archiveOpened[idx];
-          const isNext = idx === nextIdx;
-
-          return `
-            <div
-              class="archive-polaroid-item ${isRevealed ? "revealed" : ""} ${
-            isNext ? "next-target" : ""
-          }"
-              data-archive-idx="${idx}"
-              style="left:${lay.left}; top:${lay.top}; transform:rotate(${lay.rotate});"
-            >
-              <div class="archive-washi-tape">${escapeHtml(lay.tape)}</div>
-              <div class="archive-pushpin"></div>
-
-              <div class="archive-polaroid-window">
-                <div class="archive-message-cover">
-                  <div class="archive-message-text">“${escapeHtml(lay.message)}”</div>
-                  <div class="archive-tap-badge">
-                    ${isNext ? "👆 ກົດເພື່ອເປີດເບິ່ງຮູບ" : "📸 ແຕະເພື່ອເປີດຮູບ"}
-                  </div>
-                </div>
-                <img
-                  class="archive-photo-img"
-                  src="${escapeHtml(resolveMediaUrl(pol.image))}"
-                  alt="Memory ${idx + 1}"
-                  onerror="this.src='${DEFAULT_PLACEHOLDER_IMG}'"
-                />
+          const cardHtml = `
+            <div class="scrapbook-card-item side-${cfg.cardSide}" data-archive-idx="${itemIdx}">
+              <div class="scrapbook-pin-wrapper">
+                ${renderPushpinSvg(cfg.cardPin)}
               </div>
-
-              <div class="archive-polaroid-footer">
-                <span class="archive-check-icon">${isRevealed ? "✓" : idx + 1}</span>
-                <span>${
-                  isRevealed ? escapeHtml(pol.caption) : "ຄວາມຊົງຈຳທີ " + (idx + 1)
-                }</span>
+              <div class="scrapbook-card-header">
+                <span class="scrapbook-card-title">${escapeHtml(item.title)}</span>
+                <span class="scrapbook-card-badge">${isRevealed ? "✓ ເປີດແລ້ວ" : "📸 ແຕະເປີດ"}</span>
+              </div>
+              <div class="scrapbook-card-message">
+                “${escapeHtml(item.message)}”
               </div>
             </div>
           `;
+
+          const polHtml = `
+            <div
+              class="scrapbook-polaroid-item side-${cfg.polSide} ${isRevealed ? "revealed" : ""} ${isNext ? "next-target" : ""}"
+              data-archive-idx="${itemIdx}"
+              data-is-polaroid="1"
+              style="--rot: ${cfg.polRotate};"
+            >
+              <div class="scrapbook-pin-wrapper">
+                ${renderPushpinSvg(cfg.polPin)}
+              </div>
+              <div class="scrapbook-polaroid-window">
+                <div class="scrapbook-film-overlay">
+                  <div style="font-size:1.1rem; margin-bottom:2px;">📸</div>
+                  <div style="font-size:0.68rem; font-weight:700;">ແຕະເປີດຮູບ</div>
+                </div>
+                <img
+                  class="scrapbook-photo-img"
+                  src="${escapeHtml(resolveMediaUrl(item.image))}"
+                  alt="${escapeHtml(item.title)}"
+                  onerror="this.src='${DEFAULT_PLACEHOLDER_IMG}'"
+                />
+              </div>
+              <div class="scrapbook-polaroid-caption">
+                ${isRevealed ? escapeHtml(item.caption) : "ຄວາມຊົງຈຳທີ " + (itemIdx + 1)}
+              </div>
+            </div>
+          `;
+
+          return `
+            <div class="scrapbook-row scrapbook-row-${rowIdx}">
+              ${cfg.cardSide === "left" ? cardHtml + polHtml : polHtml + cardHtml}
+            </div>
+          `;
         }).join("")}
+      </div>
+    `;
+  }
+
+  // ==================== LIGHTBOX MODAL FOR SCRAPBOOK PHOTO ====================
+  function renderScrapbookLightbox() {
+    if (!state.lightboxPhoto) return "";
+    return `
+      <div class="scrapbook-lightbox active" id="scrapbook-lightbox">
+        <div class="scrapbook-lightbox-backdrop" id="scrapbook-lightbox-backdrop"></div>
+        <div class="scrapbook-lightbox-dialog">
+          <button type="button" class="scrapbook-lightbox-close" id="btn-close-lightbox">✕</button>
+          <img
+            src="${escapeHtml(resolveMediaUrl(state.lightboxPhoto.image))}"
+            class="scrapbook-lightbox-img"
+            alt="${escapeHtml(state.lightboxPhoto.title)}"
+          />
+          <div class="scrapbook-lightbox-caption">${escapeHtml(state.lightboxPhoto.caption)}</div>
+          <div class="scrapbook-lightbox-message">“${escapeHtml(state.lightboxPhoto.message)}”</div>
+        </div>
       </div>
     `;
   }
@@ -1268,38 +1309,48 @@
           </div>
         </section>
 
-        <!-- PAGE 3: ARCHIVE PINBOARD MEMORY PHOTO PATH (MSR FOTO STYLE) -->
+        <!-- PAGE 3: SCRAPBOOK MEMORY PINBOARD (MATCHING USER REFERENCE STYLE) -->
         <section class="page-section ${state.activePage === 3 ? "active" : ""}" id="page-3">
-          <div class="page-content">
-            <div style="flex-shrink:0;">
+          <div class="page-content" style="justify-content:flex-start; padding-top:4px;">
+            <div style="flex-shrink:0; text-align:center;">
               ${renderPageDots(3)}
-              <h2 class="hero-title" style="font-size:clamp(1.22rem, 2.3vw, 1.58rem); margin:0; line-height:1.2;">
-                <span>ເສັ້ນທາງບັນທຶກ </span>
-                <span class="hero-title-highlight" style="font-size:clamp(1.3rem, 2.5vw, 1.75rem);">ຮູບພາບຄວາມຊົງຈຳຂອງເຮົາ 📌💙</span>
+              <h2 class="hero-title" style="font-size:clamp(1.15rem, 2.2vw, 1.48rem); margin:0; line-height:1.2;">
+                <span>ບັນທຶກຄວາມຊົງຈຳ </span>
+                <span class="hero-title-highlight" style="font-size:clamp(1.22rem, 2.4vw, 1.62rem);">ຂອງເຮົາສອງຄົນ 📌💙</span>
               </h2>
-              <p style="color:var(--text-secondary); font-size:clamp(0.75rem, 1.3vw, 0.84rem); margin:2px 0 0;">
-                ແຕະທີ່ຂໍ້ຄວາມໃນກອບ Polaroid ແຕ່ລະອັນ ເພື່ອເປີດເບິ່ງຮູບຄວາມຊົງຈຳ (${archiveOpenedCount} / 5)
+              <p style="color:var(--text-secondary); font-size:clamp(0.72rem, 1.2vw, 0.8rem); margin:2px 0 3px;">
+                ແຕະທີ່ກອບຮູບ Polaroid ຫຼື ໃບໂນ້ດ ເພື່ອເປີດເບິ່ງຮູບຄວາມຊົງຈຳ (${archiveOpenedCount} / 6)
               </p>
+
+              <!-- Sets toggle pills -->
+              <div class="scrapbook-set-tabs">
+                <button type="button" class="scrapbook-set-tab ${state.archiveSet === 0 ? "active" : ""}" data-set="0">
+                  📌 ຊຸດທີ 1 (1 - 3)
+                </button>
+                <button type="button" class="scrapbook-set-tab ${state.archiveSet === 1 ? "active" : ""}" data-set="1">
+                  📌 ຊຸດທີ 2 (4 - 6)
+                </button>
+              </div>
             </div>
 
-            ${renderArchivePinboard()}
+            ${renderScrapbookBoard()}
 
             <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:2px; flex-shrink:0;">
               ${
-                archiveOpenedCount < 5
+                archiveOpenedCount < 6
                   ? `
                   <button
                     type="button"
                     class="next-page-btn"
                     id="btn-open-next-archive"
-                    style="margin-top:0; padding:7px 16px; font-size:0.84rem; background:#ffffff; color:var(--accent-red); border:1.5px solid var(--accent-pink);"
+                    style="margin-top:0; padding:6px 14px; font-size:0.82rem; background:#ffffff; color:var(--accent-red); border:1.5px solid var(--accent-pink);"
                   >
-                    📸 ເປີດຮູບຄວາມຊົງຈຳອັນຕໍ່ໄປ (${archiveOpenedCount + 1}/5)
+                    📸 ເປີດຮູບຕໍ່ໄປ (${archiveOpenedCount + 1}/6)
                   </button>
                 `
                   : ""
               }
-              <button type="button" class="next-page-btn" data-target-page="4" style="margin-top:0; padding:7px 18px; font-size:0.84rem;">
+              <button type="button" class="next-page-btn" data-target-page="4" style="margin-top:0; padding:6px 16px; font-size:0.82rem;">
                 ໄປໜ້າຕໍ່ຈິກຊໍຄວາມຊົງຈຳ ➔
               </button>
             </div>
@@ -1314,6 +1365,7 @@
           </div>
         </section>
       </main>
+      ${renderScrapbookLightbox()}
     `;
 
     wireAllInteractions();
@@ -1710,7 +1762,7 @@
       });
     }
 
-    // 4. Page 3: Archive Pinboard Memory Path (MSR Foto Style)
+    // 4. Page 3: Scrapbook Pinboard Memory Path (User Reference Style)
     const openArchivePolaroid = (idx) => {
       if (idx < 0 || idx >= state.archiveOpened.length) return;
       state.archiveOpened[idx] = true;
@@ -1719,21 +1771,27 @@
 
       if (state.archiveOpened.every(Boolean)) {
         music.playStarArpeggio();
-        if (state.autoTransitionTimer) clearTimeout(state.autoTransitionTimer);
-        state.autoTransitionTimer = setTimeout(() => {
-          if (state.activePage === 3) {
-            goToPage(4);
-          }
-        }, 2000);
       }
     };
 
-    document.querySelectorAll("[data-archive-idx]").forEach((polEl) => {
-      polEl.addEventListener("click", () => {
-        const idx = Number(polEl.getAttribute("data-archive-idx"));
+    document.querySelectorAll("[data-archive-idx]").forEach((el) => {
+      el.addEventListener("click", () => {
+        const idx = Number(el.getAttribute("data-archive-idx"));
+        const isPolaroid = el.getAttribute("data-is-polaroid") === "1";
         if (!state.archiveOpened[idx]) {
           openArchivePolaroid(idx);
+        } else if (isPolaroid) {
+          state.lightboxPhoto = SCRAPBOOK_MEMORIES[idx];
+          renderTemplateShell();
         }
+      });
+    });
+
+    document.querySelectorAll(".scrapbook-set-tab").forEach((tabBtn) => {
+      tabBtn.addEventListener("click", () => {
+        const setNum = Number(tabBtn.getAttribute("data-set"));
+        state.archiveSet = setNum;
+        renderTemplateShell();
       });
     });
 
@@ -1741,9 +1799,23 @@
     if (openNextArchiveBtn) {
       openNextArchiveBtn.addEventListener("click", () => {
         const nextIdx = state.archiveOpened.findIndex((v) => !v);
-        if (nextIdx !== -1) openArchivePolaroid(nextIdx);
+        if (nextIdx !== -1) {
+          if (nextIdx >= 3 && state.archiveSet === 0) {
+            state.archiveSet = 1;
+          }
+          openArchivePolaroid(nextIdx);
+        }
       });
     }
+
+    const closeLightbox = () => {
+      state.lightboxPhoto = null;
+      renderTemplateShell();
+    };
+    const closeLightboxBtn = document.getElementById("btn-close-lightbox");
+    if (closeLightboxBtn) closeLightboxBtn.addEventListener("click", closeLightbox);
+    const lightboxBackdrop = document.getElementById("scrapbook-lightbox-backdrop");
+    if (lightboxBackdrop) lightboxBackdrop.addEventListener("click", closeLightbox);
 
     // 5. Page 4: Interactive Acrylic Jigsaw Drag-and-Drop & Tap
     initJigsawDragSystem();
@@ -1770,7 +1842,9 @@
         state.letterOpened = false;
         state.envelopeOpening = false;
         state.starsConnected = 0;
-        state.archiveOpened = [false, false, false, false, false];
+        state.archiveOpened = [false, false, false, false, false, false];
+        state.archiveSet = 0;
+        state.lightboxPhoto = null;
         state.jigsawPlaced = [false, false, false, false, false, false];
         state.selectedJigsawPiece = null;
         state.collageZoomedOut = false;
