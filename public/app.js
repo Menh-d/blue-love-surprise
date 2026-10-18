@@ -255,6 +255,7 @@
     pinImage: "./media/med-do-fan-01.jpeg",
     jigsawImage: "./media/med-do-fan-01.jpeg",
     pinCaption: "You & Me 💙",
+    plaqueText: "✨ DO & FAN 💙 YOU & ME FOREVER ✨",
     anniversaryDate: "2025-10-17",
     letterSalutation: "ເຖິງ ຄົນພິເສດຂອງຂ້ອຍ,",
     letterParagraph1:
@@ -567,8 +568,17 @@
   }
 
   // ==================== CONSTELLATION CAMERA & LINES ====================
-  function getConstellationCameraTransform() {
-    return "translate3d(0%, 0%, 0) scale(1)";
+  function getConstellationArenaTransform() {
+    const allDone = state.starsConnected >= HEART_STARS.length;
+    if (allDone) {
+      return "translate(-50%, -50%) scale(1) translate(0%, 0%)";
+    }
+    const targetIdx = Math.min(state.starsConnected, HEART_STARS.length - 1);
+    const targetStar = HEART_STARS[targetIdx];
+    const scale = window.innerWidth < 680 ? 2.2 : 2.5;
+    const offsetX = 50 - targetStar.x;
+    const offsetY = 50 - targetStar.y;
+    return `translate(-50%, -50%) scale(${scale}) translate(${offsetX}%, ${offsetY}%)`;
   }
 
   function getHeartPolygonPoints() {
@@ -655,6 +665,8 @@
           const isRevealed = state.archiveOpened[itemIdx];
           const isNext = itemIdx === nextIdx;
           const cfg = SCRAPBOOK_ROW_CONFIGS[itemIdx % SCRAPBOOK_ROW_CONFIGS.length];
+          const dynamicImg = (CONFIG.polaroids && CONFIG.polaroids[itemIdx]?.image) || item.image;
+          const dynamicCap = (CONFIG.polaroids && CONFIG.polaroids[itemIdx]?.caption) || item.caption;
 
           const cardHtml = `
             <div class="scrapbook-card-item side-${cfg.cardSide}" data-archive-idx="${itemIdx}">
@@ -688,13 +700,13 @@
                 </div>
                 <img
                   class="scrapbook-photo-img"
-                  src="${escapeHtml(resolveMediaUrl(item.image))}"
+                  src="${escapeHtml(resolveMediaUrl(dynamicImg))}"
                   alt="${escapeHtml(item.title)}"
                   onerror="this.src='${DEFAULT_PLACEHOLDER_IMG}'"
                 />
               </div>
               <div class="scrapbook-polaroid-caption">
-                ${isRevealed ? escapeHtml(item.caption) : "ຄວາມຊົງຈຳທີ " + (itemIdx + 1)}
+                ${isRevealed ? escapeHtml(dynamicCap) : "ຄວາມຊົງຈຳທີ " + (itemIdx + 1)}
               </div>
             </div>
           `;
@@ -1094,7 +1106,7 @@
                   />
                   <div class="jigsaw-seamless-glass-gloss"></div>
                   <div class="jigsaw-frame-plaque" id="jigsaw-frame-plaque">
-                    <span>✨ DO &amp; FAN 💙 YOU &amp; ME FOREVER ✨</span>
+                    <span>${escapeHtml(CONFIG.plaqueText || "✨ DO & FAN 💙 YOU & ME FOREVER ✨")}</span>
                   </div>
 
                   <!-- Reply bar directly anchored under the DO & FAN plaque -->
@@ -1186,7 +1198,8 @@
     const currentWhisper =
       state.starsConnected === 0
         ? "👆 ແຕະດາວແຫ່ງຄວາມຮັກດວງທີ 1 ທີ່ກຳລັງກະພິບ ເພື່ອເລີ່ມຕົ້ນການເດີນທາງ 💙"
-        : HEART_STARS[Math.min(state.starsConnected - 1, HEART_STARS.length - 1)].whisper;
+        : ((CONFIG.whispers && CONFIG.whispers[Math.min(state.starsConnected - 1, HEART_STARS.length - 1)]) ||
+          HEART_STARS[Math.min(state.starsConnected - 1, HEART_STARS.length - 1)].whisper);
 
     const archiveOpenedCount = state.archiveOpened.filter(Boolean).length;
 
@@ -1342,10 +1355,13 @@
             <div
               class="constellation-camera"
               id="constellation-camera"
-              style="transform: ${getConstellationCameraTransform()};"
             >
 
-              <div class="constellation-heart-arena">
+              <div
+                class="constellation-heart-arena"
+                id="constellation-heart-arena"
+                style="transform: ${getConstellationArenaTransform()};"
+              >
                 <svg
                   class="constellation-lines-svg"
                   id="constellation-lines-svg"
@@ -1494,8 +1510,9 @@
 
     const allDone = state.starsConnected >= HEART_STARS.length;
 
-    if (camera) {
-      camera.style.transform = getConstellationCameraTransform();
+    const arena = document.getElementById("constellation-heart-arena");
+    if (arena) {
+      arena.style.transform = getConstellationArenaTransform();
     }
     if (svg) {
       svg.innerHTML = renderConstellationSvgLines();
@@ -1509,7 +1526,8 @@
       whisperBar.textContent =
         state.starsConnected === 0
           ? "👆 ແຕະດາວແຫ່ງຄວາມຮັກດວງທີ 1 ທີ່ກຳລັງກະພິບ ເພື່ອເລີ່ມຕົ້ນການເດີນທາງ 💙"
-          : HEART_STARS[Math.min(state.starsConnected - 1, HEART_STARS.length - 1)].whisper;
+          : ((CONFIG.whispers && CONFIG.whispers[Math.min(state.starsConnected - 1, HEART_STARS.length - 1)]) ||
+            HEART_STARS[Math.min(state.starsConnected - 1, HEART_STARS.length - 1)].whisper);
     }
     if (centerHeart) {
       centerHeart.classList.toggle("revealed", allDone);
@@ -2015,7 +2033,12 @@
         if (!state.archiveOpened[idx]) {
           openArchivePolaroid(idx);
         } else if (isPolaroid) {
-          state.lightboxPhoto = SCRAPBOOK_MEMORIES[idx];
+          const baseItem = SCRAPBOOK_MEMORIES[idx];
+          state.lightboxPhoto = {
+            ...baseItem,
+            image: (CONFIG.polaroids && CONFIG.polaroids[idx]?.image) || baseItem.image,
+            caption: (CONFIG.polaroids && CONFIG.polaroids[idx]?.caption) || baseItem.caption,
+          };
           renderTemplateShell();
         }
       });
@@ -2422,24 +2445,17 @@
     initFloatingHeartsCanvas();
 
     const musicBtn = document.getElementById("music-toggle");
-    if (musicBtn) {
-      musicBtn.addEventListener("click", () => music.toggle());
-    }
-
-    const openStudioBtn = document.getElementById("btn-open-studio");
-    const closeStudioBtn = document.getElementById("btn-close-studio");
-    const studioDrawer = document.getElementById("wishbox-studio-drawer");
-
-    if (openStudioBtn && studioDrawer) {
-      openStudioBtn.addEventListener("click", () => {
-        renderLiveStudioDrawer();
-        studioDrawer.classList.add("open");
-      });
-    }
-    if (closeStudioBtn && studioDrawer) {
-      closeStudioBtn.addEventListener("click", () => {
-        studioDrawer.classList.remove("open");
-      });
+    function applyThemeColors() {
+      if (CONFIG.themeColors) {
+        const r = document.documentElement;
+        if (CONFIG.themeColors.accentRed) r.style.setProperty("--accent-red", CONFIG.themeColors.accentRed);
+        if (CONFIG.themeColors.accentPink) r.style.setProperty("--accent-pink", CONFIG.themeColors.accentPink);
+        if (CONFIG.themeColors.accentRose) r.style.setProperty("--accent-rose", CONFIG.themeColors.accentRose);
+        if (CONFIG.themeColors.textPrimary) r.style.setProperty("--text-primary", CONFIG.themeColors.textPrimary);
+        if (CONFIG.themeColors.bgTop && CONFIG.themeColors.bgBottom) {
+          document.body.style.background = `linear-gradient(160deg, ${CONFIG.themeColors.bgTop} 0%, ${CONFIG.themeColors.bgBottom} 100%)`;
+        }
+      }
     }
 
     try {
@@ -2473,6 +2489,7 @@
       }
     } catch (e) {}
 
+    applyThemeColors();
     renderTemplateShell();
   }
 

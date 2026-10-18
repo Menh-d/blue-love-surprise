@@ -4,7 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex, nofollow" />
-  <title>Blue WishBox 💙 — ກຸ່ມດາວຫົວໃຈ & ຈົດໝາຍສີຟ້າ</title>
+  <title>Blue Love Surprise 💙 — ກຸ່ມດາວຫົວໃຈ & ຈົດໝາຍສີຟ້າ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600;1,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
@@ -21,13 +24,8 @@
     </svg>
   </div>
 
-  <!-- Floating Top Controls (Live Personalization Studio Button + Music Toggle) -->
-  <header class="floating-top-bar">
-    <button type="button" id="btn-open-studio" class="studio-toggle-pill" title="ປັບແຕ່ງຂໍ້ມູນແບບ Digital WishBox">
-      <span>✏️</span>
-      <span>ປັບແຕ່ງຂໍ້ມູນ (Customize)</span>
-    </button>
-
+  <!-- Floating Top Controls (Music Toggle only, Customize button removed from visitor screen) -->
+  <header class="floating-top-bar" style="justify-content: flex-end;">
     <button type="button" id="music-toggle" class="music-toggle muted" aria-label="ເປີດ/ປິດສຽງເພງ">
       <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
@@ -37,18 +35,6 @@
 
   <!-- Main Stage Viewport -->
   <div id="stage-viewport"></div>
-
-  <!-- Live Personalization Studio Drawer (Matches digitalwishbox.com/edit/anniversary_template_1) -->
-  <aside id="wishbox-studio-drawer" class="wishbox-studio-drawer" aria-label="Personalization Studio">
-    <div class="wishbox-studio-header">
-      <div>
-        <div style="font-weight:800; font-size:1rem; color:#1E3A6D;">💙 Digital WishBox Studio</div>
-        <div style="font-size:0.75rem; color:#2563EB; font-weight:600;">⚡ ແກ້ໄຂປຶ໊ບ ອັບເດດໜ້າເວັບທັນທີ</div>
-      </div>
-      <button type="button" id="btn-close-studio" style="background:#EFF6FF; color:#1E3A6D; border:none; width:34px; height:34px; border-radius:50%; font-size:1.1rem; cursor:pointer;">✕</button>
-    </div>
-    <div class="wishbox-studio-body" id="wishbox-studio-body"></div>
-  </aside>
 
   <script src="./app.js"></script>
 </body>
