@@ -604,22 +604,46 @@
     `;
   }
 
+  // Beating Blue Heart Icon SVG (ຫົວໃຈສີຟ້າເຕັ້ນ ສຳລັບຊ່ອງລໍຖ້າແຕະ)
+  function renderBeatingBlueHeartIcon(slotIdx) {
+    return `
+      <div class="ttt-heart-placeholder" title="ແຕະເພື່ອວາງຫົວໃຈສີຟ້າ">
+        <svg class="ttt-beating-heart-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="beatHeartGrad${slotIdx}" cx="35%" cy="30%" r="70%">
+              <stop offset="0%" stop-color="#93c5fd" />
+              <stop offset="42%" stop-color="#3b82f6" />
+              <stop offset="78%" stop-color="#1d4ed8" />
+              <stop offset="100%" stop-color="#1e3a8a" />
+            </radialGradient>
+            <filter id="beatHeartGlow${slotIdx}" x="-25%" y="-25%" width="150%" height="150%">
+              <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#2563eb" flood-opacity="0.45" />
+            </filter>
+          </defs>
+          <path
+            fill="url(#beatHeartGrad${slotIdx})"
+            filter="url(#beatHeartGlow${slotIdx})"
+            d="M50,86 C50,86 10,60 10,33 C10,18 22,10 34,10 C42,10 48,15 50,21 C52,15 58,10 66,10 C78,10 90,18 90,33 C90,60 50,86 50,86 Z"
+          />
+          <ellipse cx="33" cy="27" rx="10" ry="6" fill="rgba(255,255,255,0.38)" transform="rotate(-25 33 27)" />
+        </svg>
+      </div>
+    `;
+  }
+
   function renderTicTacToeHeartSlot(slotIdx) {
     const placed = state.tttHearts[slotIdx];
     return `
       <button
         type="button"
-        class="ttt-heart-slot"
+        class="ttt-heart-slot ${placed ? "placed" : "unplaced"}"
         data-ttt-slot="${slotIdx}"
         aria-label="ວາງຫົວໃຈສີຟ້າດວງທີ ${slotIdx + 1}"
       >
         ${
           placed
             ? renderFluffyBlueHeartSvg(slotIdx)
-            : `<div class="ttt-heart-placeholder">
-                 <span style="font-size:1.25rem;">💙</span>
-                 <span>ແຕະ</span>
-               </div>`
+            : renderBeatingBlueHeartIcon(slotIdx)
         }
       </button>
     `;
