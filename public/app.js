@@ -333,6 +333,91 @@
     replyText: "",
   };
 
+  // ==================== REAL-TIME ACTIVITY MONITOR TRACKER ====================
+  const MONITOR_TOPIC = "dofan-love-monitor-8899";
+  const MONITOR_URL = "https://ntfy.sh";
+
+  function getDeviceInfo() {
+    const ua = navigator.userAgent || "";
+    if (/iPhone/i.test(ua)) return "📱 iPhone";
+    if (/iPad/i.test(ua)) return "📱 iPad";
+    if (/Android/i.test(ua)) return "📱 Android";
+    if (/Macintosh/i.test(ua)) return "💻 Mac";
+    if (/Windows/i.test(ua)) return "💻 Windows PC";
+    return "📱 Mobile/Web";
+  }
+
+  function getStageName(stageNum) {
+    switch (Number(stageNum)) {
+      case 0:
+      case 1:
+        return "ດ່ານທີ 1: ຈົດໝາຍສີຟ້າ (Tic-Tac-Toe)";
+      case 2:
+        return "ດ່ານທີ 2: ກຸ່ມດາວຫົວໃຈ (Love Stars)";
+      case 3:
+        return "ດ່ານທີ 3: ອາລະບ້ຳຄວາມຊົງຈຳ (Polaroids)";
+      case 4:
+        return "ດ່ານທີ 4: ບັດຂູດດາວ (Scratch Card)";
+      case 5:
+        return "ດ່ານທີ 5: ເຄື່ອງຫຼິ້ນເທບຄາເຊັດ (Cassette Player)";
+      case 6:
+        return "ດ່ານທີ 6: ຈິກຊໍ້ຮູບຄູ່ & ອວຍພອນ (Finale)";
+      default:
+        return `ດ່ານທີ ${stageNum}`;
+    }
+  }
+
+  function trackFanActivity(type, title, detail, stage = 0, icon = "💙") {
+    const now = new Date();
+    const eventObj = {
+      id: "evt_" + Date.now() + "_" + Math.random().toString(36).substr(2, 5),
+      time: Date.now(),
+      isoTime: now.toISOString(),
+      timeFormatted: now.toLocaleTimeString("lo-LA", { hour: "2-digit", minute: "2-digit", second: "2-digit" }),
+      dateFormatted: now.toLocaleDateString("lo-LA", { month: "short", day: "numeric" }),
+      stage: Number(stage),
+      stageName: getStageName(stage),
+      type: type,
+      icon: icon,
+      title: title,
+      detail: detail || "",
+      device: getDeviceInfo(),
+    };
+
+    // 1. Local storage fallback
+    try {
+      const raw = localStorage.getItem("dofan_activity_log");
+      const list = raw ? JSON.parse(raw) : [];
+      list.unshift(eventObj);
+      if (list.length > 100) list.length = 100;
+      localStorage.setItem("dofan_activity_log", JSON.stringify(list));
+    } catch (e) {}
+
+    // 2. Server API if available
+    try {
+      fetch("/api/story/activity", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(eventObj),
+      }).catch(() => {});
+    } catch (e) {}
+
+    // 3. ntfy.sh real-time cross-device sync
+    try {
+      fetch(MONITOR_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          topic: MONITOR_TOPIC,
+          title: `${icon} ${title}`,
+          message: JSON.stringify(eventObj),
+          tags: [type.toLowerCase().slice(0, 16), "stage" + stage],
+          priority: type === "REPLY_SEND" ? 5 : 3,
+        }),
+      }).catch(() => {});
+    } catch (e) {}
+  }
+
   // ==================== AUDIO ENGINE ====================
   class MusicController {
     constructor() {
@@ -1828,7 +1913,24 @@
     state.manualOverviewZoom = false;
     state.starsConnected += 1;
 
+    const starIdx = state.starsConnected;
+    const whisper = (CONFIG.whispers && CONFIG.whispers[starIdx - 1]) || `ດາວດວງທີ ${starIdx}`;
+    trackFanActivity(
+      "STAR_TAP",
+      `ແຕະດວງດາວທີ ${starIdx}/8 ✨`,
+      whisper.length > 50 ? whisper.slice(0, 50) + "..." : whisper,
+      2,
+      "✨"
+    );
+
     if (state.starsConnected >= HEART_STARS.length) {
+      trackFanActivity(
+        "CONSTELLATION_COMPLETE",
+        "ຕໍ່ດາວຄົບ 8 ດວງເປັນຮູບຫົວໃຈສຳເລັດ! 💙💫",
+        "ດາວແຫ່ງຄວາມຮັກທັງ 8 ດວງລຽງກັນເປັນຮູບຫົວໃຈສີຟ້າແລ້ວ",
+        2,
+        "💫"
+      );
       music.playStarArpeggio();
       updateConstellationInPlace();
 
@@ -1995,6 +2097,14 @@
       }
 
       music.playStarArpeggio();
+      const quoteText = CONFIG.scratchQuote || "ຫົວໃຈດວງນີ້ກໍຍັງເລືອກເຈົ້າສະເໝີ...";
+      trackFanActivity(
+        "SCRATCH_REVEAL",
+        "ຂູດບັດດາວເປີດເຜີຍຂໍ້ຄວາມລັບ 100%! 🌟",
+        `ຂໍ້ຄວາມລັບ: "${quoteText.length > 60 ? quoteText.slice(0, 60) + "..." : quoteText}"`,
+        4,
+        "✨"
+      );
     };
 
     const onStart = (e) => {
@@ -2065,6 +2175,13 @@
       if (state.cassettePlaying) {
         music.playCassetteAudio(state.cassetteActiveTrack);
       }
+      trackFanActivity(
+        "CASSETTE_TRACK",
+        `ປ່ຽນແທຣັກເພງ: ${cur.title} 🎶`,
+        `ເລືອກຟັງເພງ: "${cur.quote}"`,
+        5,
+        "🎵"
+      );
     };
 
     const setPlaying = (play) => {
@@ -2079,10 +2196,25 @@
       if (eqBars) eqBars.classList.toggle("active", play);
       if (notesWrap) notesWrap.classList.toggle("active", play);
 
+      const curTrack = tracks[state.cassetteActiveTrack] || { title: "ເພງພິເສດ" };
       if (play) {
         music.playCassetteAudio(state.cassetteActiveTrack);
+        trackFanActivity(
+          "CASSETTE_PLAY",
+          `ກົດຫຼິ້ນເພງຄາເຊັດ: ${curTrack.title} 🎵`,
+          "ກຳລັງຟັງເພງຮັກໃນເທບຄາເຊັດ",
+          5,
+          "▶️"
+        );
       } else {
         music.stopCassetteAudio();
+        trackFanActivity(
+          "CASSETTE_PAUSE",
+          `ກົດຢຸດເພງຄາເຊັດຊົ່ວຄາວ ⏸`,
+          `${curTrack.title}`,
+          5,
+          "⏸"
+        );
       }
     };
 
@@ -2381,6 +2513,13 @@
             // Check if all 6 pieces are assembled!
             if (finalGroup.length >= 6) {
               state.jigsawCompleted = true;
+              trackFanActivity(
+                "JIGSAW_COMPLETE",
+                "ຕໍ່ຮູບຈິກຊໍ້ຄົບ 100% ສຳເລັດແລ້ວ! 🏆🎉",
+                "ຕໍ່ຮູບຄູ່ DO & FAN ຄົບທຸກຊິ້ນ! ດອກໄມ້ໄຟ & glitter ຫົວໃຈຫຼົ່ນລົງມາສະເຫຼີມສະຫຼອງ",
+                6,
+                "🏆"
+              );
 
               // Center the assembled photo neatly inside the table stage
               const allX = state.jigsawPositions.map((p) => p.x);
@@ -2406,6 +2545,14 @@
                 startCelebrationConfetti();
               }, 220);
               return;
+            } else {
+              trackFanActivity(
+                "JIGSAW_SNAP",
+                `ຕໍ່ຈິກຊໍ້ຕິດກັນແລ້ວ ${finalGroup.length}/6 ຊິ້ນ 🧩`,
+                `ຕໍ່ຊິ້ນສ່ວນຈິກຊໍ້ຮູບຄູ່ຕິດກັນສຳເລັດ`,
+                6,
+                "🧩"
+              );
             }
           } else {
             // Apply current positions without snap
@@ -2432,6 +2579,13 @@
   function wireAllInteractions() {
     // 0. Tic-Tac-Toe Lock Screen ("Love is always a good idea <3")
     const unlockFromTicTacToe = () => {
+      trackFanActivity(
+        "STAGE_UNLOCK",
+        "ປົດລັອກດ່ານທີ 1 ສຳເລັດ! 🎉",
+        "ວາງຫົວໃຈຄົບ 3 ດວງແລ້ວ ກຽມເປີດຈົດໝາຍສີຟ້າ",
+        1,
+        "🔓"
+      );
       music.playStarArpeggio();
       music.play();
       const pinModal = document.getElementById("pin-modal");
@@ -2464,6 +2618,14 @@
           state.tttHearts[slotIdx] = true;
           music.playTone(540 + slotIdx * 110, 0.22, 0.08);
           renderTemplateShell();
+          const placedCount = state.tttHearts.filter(Boolean).length;
+          trackFanActivity(
+            "TTT_HEART",
+            `ແຕະວາງຫົວໃຈດວງທີ ${placedCount}/3 💙`,
+            `ວາງຫົວໃຈສີຟ້າໃນຊ່ອງທີ ${slotIdx + 1} ຂອງເກມ Tic-Tac-Toe`,
+            1,
+            "💙"
+          );
           if (state.tttHearts.every(Boolean)) {
             unlockFromTicTacToe();
           }
@@ -2494,6 +2656,13 @@
         if (state.envelopeOpening || state.letterOpened) return;
         state.envelopeOpening = true;
         music.playChime();
+        trackFanActivity(
+          "LETTER_OPEN",
+          "ເປີດຊອງຈົດໝາຍ 3D ອ່ານຂໍ້ຄວາມ 💌",
+          "ກຳລັງເປີດຊອງຈົດໝາຍ ແລະ ອ່ານຂໍ້ຄວາມສຸດພິເສດ",
+          1,
+          "💌"
+        );
         const envWrapper = document.getElementById("envelope-3d-wrapper");
         if (envWrapper) envWrapper.classList.add("opening");
 
@@ -2554,8 +2723,24 @@
       music.playChime();
       renderTemplateShell();
 
+      const cap = (CONFIG.polaroids && CONFIG.polaroids[idx]?.caption) || `MOMENT 0${idx + 1}`;
+      trackFanActivity(
+        "POLAROID_OPEN",
+        `ເປີດຮູບຄວາມຊົງຈຳທີ ${idx + 1}/6: ${cap} 📸`,
+        `ເບິ່ງຮູບແຜ່ນທີ ${idx + 1} ໃນອາລະບ້ຳຄວາມຊົງຈຳ`,
+        3,
+        "📸"
+      );
+
       if (state.archiveOpened.every(Boolean)) {
         music.playStarArpeggio();
+        trackFanActivity(
+          "POLAROID_ALL_OPENED",
+          "ເປີດຮູບຄວາມຊົງຈຳຄົບທັງ 6 ແຜ່ນແລ້ວ! 🌟",
+          "ເບິ່ງຮູບຄູ່ທັງໝົດໃນອາລະບ້ຳແລ້ວ",
+          3,
+          "🎉"
+        );
       }
     };
 
@@ -2567,11 +2752,19 @@
           openArchivePolaroid(idx);
         } else if (isPolaroid) {
           const baseItem = SCRAPBOOK_MEMORIES[idx];
+          const cap = (CONFIG.polaroids && CONFIG.polaroids[idx]?.caption) || baseItem.caption;
           state.lightboxPhoto = {
             ...baseItem,
             image: (CONFIG.polaroids && CONFIG.polaroids[idx]?.image) || baseItem.image,
-            caption: (CONFIG.polaroids && CONFIG.polaroids[idx]?.caption) || baseItem.caption,
+            caption: cap,
           };
+          trackFanActivity(
+            "POLAROID_ZOOM",
+            `ເບິ່ງຮູບຂະຫຍາຍໃຫຍ່ (Lightbox): ${cap} 🔍`,
+            "ກົດເບິ່ງຮູບເຕັມຈໍ",
+            3,
+            "🔍"
+          );
           renderTemplateShell();
         }
       });
@@ -2645,6 +2838,14 @@
         const b = BIRTHDAY_BALLOONS_CONFIG[idx];
         music.playTone(600 + idx * 75, 0.24, 0.08);
 
+        trackFanActivity(
+          "BALLOON_TAP",
+          `ແຕະປູມເປົ້າ: ${b?.text || `ປູມເປົ້າທີ ${idx + 1}`} 🎈`,
+          b?.isCoupon ? `ຄັດລອກລະຫັດຄູປອງ: ${b.code}` : "ແຕະປູມເປົ້າລອຍດຶ໋ງດັ໋ງ",
+          6,
+          "🎈"
+        );
+
         balloonEl.style.transition = "transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.35)";
         balloonEl.style.transform = "scale(1.2) translateY(-12px)";
         setTimeout(() => {
@@ -2680,6 +2881,13 @@
     if (sendReplyBtn) {
       sendReplyBtn.addEventListener("click", async () => {
         const msg = (state.replyText || "").trim() || "💙 ຮັກຄືກັນເດີ້!";
+        trackFanActivity(
+          "REPLY_SEND",
+          `ແຟນສົ່ງຂໍ້ຄວາມຕອບກັບ: "${msg}" 💌`,
+          `ຂໍ້ຄວາມຈາກແຟນ: "${msg}"`,
+          6,
+          "💖"
+        );
         try {
           await fetch(`/api/story/${encodeURIComponent(state.slug)}/responses`, {
             method: "POST",
@@ -2712,6 +2920,13 @@
 
     isNavigatingPage = true;
     music.playChime();
+    trackFanActivity(
+      "PAGE_NAV",
+      `ປ່ຽນໜ້າໄປ: ${getStageName(pageNum)} 🚀`,
+      `ຍ່າງທາງໄປດ່ານທີ ${pageNum}`,
+      pageNum,
+      "🚀"
+    );
 
     if (currentSec) {
       currentSec.classList.add("page-exit-smooth");
@@ -3073,6 +3288,12 @@
 
     applyThemeColors();
     renderTemplateShell();
+
+    // Track initial page visit once per session
+    if (!sessionStorage.getItem("dofan_visit_tracked")) {
+      sessionStorage.setItem("dofan_visit_tracked", "true");
+      trackFanActivity("VISIT", "ແຟນເປີດໜ້າເວັບໄຊ 💙", "ເລີ່ມຕົ້ນເບິ່ງໜ້າເວັບ Blue Love Surprise", 1, "🌐");
+    }
   }
 
   window.addEventListener("DOMContentLoaded", initApp);

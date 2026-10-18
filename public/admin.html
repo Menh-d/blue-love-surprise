@@ -376,6 +376,257 @@
       color: #ffffff;
       border: 1px solid #dc2626;
     }
+
+    /* ==================== LIVE ACTIVITY MONITOR STYLES ==================== */
+    .monitor-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      color: #065f46;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+    .monitor-pulse-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      animation: monitorPulse 1.8s infinite;
+    }
+    @keyframes monitorPulse {
+      0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      }
+      70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+      }
+      100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+      }
+    }
+
+    .monitor-overview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .monitor-stage-card {
+      background: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 14px 10px;
+      text-align: center;
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .monitor-stage-card.is-completed {
+      background: #f0fdf4;
+      border-color: #86efac;
+    }
+    .monitor-stage-card.is-active {
+      background: #eff6ff;
+      border-color: #93c5fd;
+      box-shadow: 0 4px 16px rgba(37, 99, 235, 0.12);
+    }
+    .monitor-stage-icon {
+      font-size: 1.6rem;
+      margin-bottom: 4px;
+    }
+    .monitor-stage-name {
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: #1e3a8a;
+      margin-bottom: 6px;
+      line-height: 1.25;
+    }
+    .monitor-stage-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #e2e8f0;
+      color: #475569;
+    }
+    .monitor-stage-card.is-completed .monitor-stage-badge {
+      background: #dcfce7;
+      color: #15803d;
+    }
+    .monitor-stage-card.is-active .monitor-stage-badge {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .monitor-reply-hero {
+      background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+      border-radius: 20px;
+      padding: 20px 24px;
+      color: #ffffff;
+      box-shadow: 0 10px 28px rgba(37, 99, 235, 0.28);
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
+      animation: popPillEntrance 0.5s ease;
+    }
+    .monitor-reply-hero::after {
+      content: '💌';
+      position: absolute;
+      right: 18px;
+      bottom: 10px;
+      font-size: 4rem;
+      opacity: 0.15;
+      pointer-events: none;
+    }
+    .monitor-reply-label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #bfdbfe;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .monitor-reply-text {
+      font-size: 1.25rem;
+      font-weight: 800;
+      line-height: 1.4;
+      margin-bottom: 8px;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .monitor-reply-meta {
+      font-size: 0.78rem;
+      color: #dbeafe;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .monitor-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 520px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .monitor-timeline-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 14px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      transition: all 0.2s ease;
+      animation: popPillEntrance 0.3s ease;
+    }
+    .monitor-timeline-item:hover {
+      background: #ffffff;
+      border-color: #bfdbfe;
+      transform: translateX(3px);
+      box-shadow: 0 4px 12px rgba(30, 58, 109, 0.06);
+    }
+    .monitor-timeline-item.is-reply {
+      background: #eff6ff;
+      border: 1.5px solid #93c5fd;
+    }
+    .monitor-timeline-icon {
+      font-size: 1.4rem;
+      line-height: 1;
+      padding-top: 2px;
+      flex-shrink: 0;
+    }
+    .monitor-timeline-content {
+      flex: 1;
+      min-width: 0;
+    }
+    .monitor-timeline-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 3px;
+      flex-wrap: wrap;
+    }
+    .monitor-timeline-title {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #0f274a;
+    }
+    .monitor-timeline-time {
+      font-size: 0.76rem;
+      color: #64748b;
+      font-family: monospace;
+      white-space: nowrap;
+    }
+    .monitor-timeline-detail {
+      font-size: 0.84rem;
+      color: #475569;
+      line-height: 1.35;
+      word-break: break-word;
+    }
+    .monitor-timeline-tags {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+      flex-wrap: wrap;
+    }
+    .monitor-tag {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: #e0f2fe;
+      color: #0369a1;
+    }
+    .monitor-device-tag {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    .monitor-filter-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    .monitor-filter-chip {
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid #bfdbfe;
+      background: #ffffff;
+      color: #1e40af;
+      transition: all 0.2s ease;
+    }
+    .monitor-filter-chip.active {
+      background: #2563eb;
+      color: #ffffff;
+      border-color: #1d4ed8;
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+    }
   </style>
 </head>
 <body class="admin-body">
