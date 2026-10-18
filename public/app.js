@@ -97,51 +97,49 @@
   const ARCHIVE_LAYOUT = [
     {
       tape: "MOMENT 01",
-      left: "5%",
-      top: "4%",
-      rotate: "-5deg",
-      pinX: 14,
+      left: "4%",
+      top: "3%",
+      rotate: "-4deg",
+      pinX: 11,
       pinY: 5,
-      extraPinX: 67,
-      extraPinY: 6,
-      centerPinX: 43,
-      centerPinY: 31,
+      centerPinX: 47,
+      centerPinY: 5,
       message: "ຈື່ມື້ທີ່ເຮົາແນມຫາກັນແລ້ວຍິ້ມໃຫ້ກັນແບບນີ້ໄດ້ບໍ່? ຮອຍຍິ້ມເຈົ້າໜ້າຮັກທີ່ສຸດເລີຍ 💙",
     },
     {
       tape: "SWEET LIGHT",
-      left: "64%",
-      top: "15%",
-      rotate: "4.5deg",
-      pinX: 69,
-      pinY: 16,
+      left: "70%",
+      top: "3%",
+      rotate: "3.5deg",
+      pinX: 77,
+      pinY: 5,
       message: "ທຸກຄັ້ງທີ່ໄດ້ຈັບມືເຈົ້າ ມັນຄືຊ່ວງເວລາທີ່ອົບອຸ່ນໃຈທີ່ສຸດໃນໂລກເລີຍ ✨",
     },
     {
       tape: "OUR WALK",
-      left: "3%",
-      top: "38%",
-      rotate: "6deg",
+      left: "4%",
+      top: "51%",
+      rotate: "3deg",
       pinX: 11,
-      pinY: 39,
+      pinY: 53,
       message: "ມື້ທີ່ເຮົາໄປຍ່າງຫຼິ້ນສວນໄຜ່ກັບກວາງນ້ອຍນຳກັນ ມ່ວນ ແລະ ມີຄວາມສຸກຫຼາຍ 🦌💙",
     },
     {
       tape: "DATE NIGHT",
-      left: "64%",
-      top: "54%",
-      rotate: "-4.5deg",
-      pinX: 69,
-      pinY: 55,
+      left: "37%",
+      top: "51%",
+      rotate: "-2.5deg",
+      pinX: 47,
+      pinY: 53,
       message: "ໄປເບິ່ງໜັງຄູ່ກັນ ນັ່ງຂ້າງໆກັນ ຢາກຢຸດເວລາໄວ້ແບບນີ້ດົນໆເລີຍ 🎬💎",
     },
     {
       tape: "FOREVER US",
-      left: "25%",
-      top: "71%",
-      rotate: "3.5deg",
-      pinX: 38,
-      pinY: 72,
+      left: "70%",
+      top: "51%",
+      rotate: "-3deg",
+      pinX: 77,
+      pinY: 53,
       message: "ຂອບໃຈທີ່ເຂົ້າມາເປັນຄວາມຊົງຈຳທີ່ດີທີ່ສຸດໃນທຸກໆມື້ຂອງຂ້ອຍເດີ້ 🌙💙",
     },
   ];
@@ -584,8 +582,8 @@
 
     const fullPathPoints = [
       `${s0.pinX},${s0.pinY}`,
-      `${s0.extraPinX},${s0.extraPinY}`,
       `${s0.centerPinX},${s0.centerPinY}`,
+      `${s1.pinX},${s1.pinY}`,
       `${s2.pinX},${s2.pinY}`,
       `${s3.pinX},${s3.pinY}`,
       `${s4.pinX},${s4.pinY}`,
@@ -593,7 +591,7 @@
 
     const activePoints = [`${s0.pinX},${s0.pinY}`];
     if (openedCount >= 1) {
-      activePoints.push(`${s0.extraPinX},${s0.extraPinY}`, `${s0.centerPinX},${s0.centerPinY}`);
+      activePoints.push(`${s0.centerPinX},${s0.centerPinY}`);
     }
     if (openedCount >= 2) {
       activePoints.push(`${s1.pinX},${s1.pinY}`);
@@ -617,14 +615,13 @@
               ? `<polyline class="archive-string-active" points="${activePoints.join(" ")}" />`
               : ""
           }
-          <circle cx="${s0.extraPinX}" cy="${s0.extraPinY}" r="1.1" fill="#1d4ed8" />
           <circle cx="${s0.centerPinX}" cy="${s0.centerPinY}" r="1.1" fill="#1d4ed8" />
         </svg>
 
         <div class="archive-center-note">
           <div class="archive-center-title">OUR<br/>ARCHIVE 💙</div>
           <div class="archive-center-sub">ບັນທຶກຮູບພາບ & ຄວາມຊົງຈຳ (${openedCount}/5)</div>
-          <div style="margin-top:12px; font-size:1.5rem;">📷 🎞️ ✨</div>
+          <div style="margin-top:8px; font-size:1.3rem;">📷 🎞️ ✨</div>
         </div>
 
         ${ARCHIVE_LAYOUT.map((lay, idx) => {
@@ -1274,18 +1271,20 @@
         <!-- PAGE 3: ARCHIVE PINBOARD MEMORY PHOTO PATH (MSR FOTO STYLE) -->
         <section class="page-section ${state.activePage === 3 ? "active" : ""}" id="page-3">
           <div class="page-content">
-            ${renderPageDots(3)}
-            <h2 class="hero-title" style="font-size:clamp(1.75rem, 4.2vw, 2.5rem);">
-              <span>ເສັ້ນທາງບັນທຶກ </span>
-              <span class="hero-title-highlight" style="font-size:clamp(2.1rem, 4.8vw, 3rem);">ຮູບພາບຄວາມຊົງຈຳຂອງເຮົາ 📌💙</span>
-            </h2>
-            <p style="color:var(--text-secondary); font-size:0.95rem; margin-top:4px;">
-              ແຕະທີ່ຂໍ້ຄວາມໃນກອບ Polaroid ແຕ່ລະອັນ ເພື່ອເປີດເບິ່ງຮູບຄວາມຊົງຈຳ (${archiveOpenedCount} / 5)
-            </p>
+            <div style="flex-shrink:0;">
+              ${renderPageDots(3)}
+              <h2 class="hero-title" style="font-size:clamp(1.22rem, 2.3vw, 1.58rem); margin:0; line-height:1.2;">
+                <span>ເສັ້ນທາງບັນທຶກ </span>
+                <span class="hero-title-highlight" style="font-size:clamp(1.3rem, 2.5vw, 1.75rem);">ຮູບພາບຄວາມຊົງຈຳຂອງເຮົາ 📌💙</span>
+              </h2>
+              <p style="color:var(--text-secondary); font-size:clamp(0.75rem, 1.3vw, 0.84rem); margin:2px 0 0;">
+                ແຕະທີ່ຂໍ້ຄວາມໃນກອບ Polaroid ແຕ່ລະອັນ ເພື່ອເປີດເບິ່ງຮູບຄວາມຊົງຈຳ (${archiveOpenedCount} / 5)
+              </p>
+            </div>
 
             ${renderArchivePinboard()}
 
-            <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:0.5rem;">
+            <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:2px; flex-shrink:0;">
               ${
                 archiveOpenedCount < 5
                   ? `
@@ -1293,14 +1292,14 @@
                     type="button"
                     class="next-page-btn"
                     id="btn-open-next-archive"
-                    style="margin-top:0; background:#ffffff; color:var(--accent-red); border:1.5px solid var(--accent-pink);"
+                    style="margin-top:0; padding:7px 16px; font-size:0.84rem; background:#ffffff; color:var(--accent-red); border:1.5px solid var(--accent-pink);"
                   >
                     📸 ເປີດຮູບຄວາມຊົງຈຳອັນຕໍ່ໄປ (${archiveOpenedCount + 1}/5)
                   </button>
                 `
                   : ""
               }
-              <button type="button" class="next-page-btn" data-target-page="4" style="margin-top:0;">
+              <button type="button" class="next-page-btn" data-target-page="4" style="margin-top:0; padding:7px 18px; font-size:0.84rem;">
                 ໄປໜ້າຕໍ່ຈິກຊໍຄວາມຊົງຈຳ ➔
               </button>
             </div>

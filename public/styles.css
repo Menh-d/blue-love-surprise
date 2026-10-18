@@ -457,6 +457,24 @@ body {
   overflow: hidden;
 }
 
+#page-3.page-section {
+  height: 100dvh;
+  min-height: 100dvh;
+  max-height: 100dvh;
+  padding: 44px 16px 14px;
+  overflow: hidden;
+  justify-content: space-between;
+}
+
+#page-3 .page-content {
+  height: 100%;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
 #page-4.page-section {
   min-height: 100dvh;
   height: auto;
@@ -1240,19 +1258,22 @@ body {
 .archive-board-container {
   position: relative;
   width: 100%;
-  max-width: 920px;
-  min-height: 1180px;
-  margin: 0.5rem auto 1.5rem;
+  max-width: 1040px;
+  height: calc(100dvh - 146px);
+  max-height: 560px;
+  min-height: 380px;
+  margin: 2px auto 4px;
   background: #f8fafc;
   background-image:
     radial-gradient(rgba(30, 58, 109, 0.04) 1px, transparent 0),
-    linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(224,242,254,0.4) 100%);
+    linear-gradient(135deg, rgba(255, 255, 255, 0.6) 0%, rgba(224, 242, 254, 0.4) 100%);
   background-size: 20px 20px, 100% 100%;
-  border-radius: 24px;
+  border-radius: 20px;
   border: 1.5px solid rgba(147, 197, 253, 0.6);
-  box-shadow: 0 22px 50px rgba(30, 58, 109, 0.12);
-  padding: 30px 20px;
+  box-shadow: 0 16px 40px rgba(30, 58, 109, 0.1);
+  padding: 10px;
   overflow: hidden;
+  flex: 1 1 auto;
 }
 
 .archive-string-svg {
@@ -1292,18 +1313,18 @@ body {
 .archive-center-note {
   position: absolute;
   left: 50%;
-  top: 44%;
+  top: 24%;
   transform: translate(-50%, -50%) rotate(-1.5deg);
-  width: 240px;
+  width: clamp(160px, 18vw, 195px);
   background: #ffffff;
   background-image:
     linear-gradient(rgba(59, 130, 246, 0.18) 1px, transparent 1px),
     linear-gradient(90deg, rgba(59, 130, 246, 0.18) 1px, transparent 1px);
-  background-size: 16px 16px;
-  padding: 28px 18px 22px;
+  background-size: 14px 14px;
+  padding: 16px 12px 14px;
   border-radius: 4px;
-  box-shadow: 0 12px 28px rgba(30, 58, 109, 0.14);
-  border-top: 6px dotted #cbd5e1;
+  box-shadow: 0 10px 24px rgba(30, 58, 109, 0.12);
+  border-top: 5px dotted #cbd5e1;
   z-index: 4;
   text-align: center;
 }
@@ -1311,11 +1332,11 @@ body {
 .archive-center-note::before {
   content: "";
   position: absolute;
-  top: -16px;
+  top: -12px;
   left: 50%;
   transform: translateX(-50%) rotate(2deg);
-  width: 96px;
-  height: 26px;
+  width: 78px;
+  height: 20px;
   background: rgba(219, 234, 254, 0.85);
   border: 1px solid rgba(147, 197, 253, 0.6);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
@@ -1323,28 +1344,28 @@ body {
 
 .archive-center-title {
   font-family: var(--font-sans);
-  font-size: 1.55rem;
+  font-size: 1.25rem;
   font-weight: 800;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
   color: #1e3a6d;
   line-height: 1.1;
   text-transform: uppercase;
 }
 
 .archive-center-sub {
-  font-size: 0.82rem;
+  font-size: 0.74rem;
   color: var(--text-secondary);
-  margin-top: 6px;
+  margin-top: 4px;
   font-weight: 600;
 }
 
 .archive-polaroid-item {
   position: absolute;
-  width: 245px;
+  width: clamp(170px, 20vw, 215px);
   background: #ffffff;
-  padding: 16px 13px 20px;
+  padding: 9px 8px 11px;
   border-radius: 3px;
-  box-shadow: 0 14px 32px rgba(30, 58, 109, 0.18);
+  box-shadow: 0 10px 24px rgba(30, 58, 109, 0.14);
   border: 1px solid rgba(147, 197, 253, 0.45);
   z-index: 8;
   cursor: pointer;
@@ -1353,54 +1374,54 @@ body {
 
 .archive-polaroid-item:hover {
   z-index: 15;
-  box-shadow: 0 20px 42px rgba(37, 99, 235, 0.28);
+  box-shadow: 0 18px 36px rgba(37, 99, 235, 0.28);
 }
 
 .archive-polaroid-item.next-target {
-  box-shadow: 0 0 0 3px #3b82f6, 0 18px 40px rgba(37, 99, 235, 0.32);
+  box-shadow: 0 0 0 3px #3b82f6, 0 16px 36px rgba(37, 99, 235, 0.32);
 }
 
 .archive-washi-tape {
   position: absolute;
-  top: -13px;
+  top: -10px;
   left: 50%;
   transform: translateX(-50%) rotate(-2deg);
   background: rgba(219, 234, 254, 0.94);
   border-left: 2px dashed rgba(147, 197, 253, 0.8);
   border-right: 2px dashed rgba(147, 197, 253, 0.8);
-  padding: 3px 16px;
+  padding: 2px 12px;
   font-family: var(--font-serif);
-  font-size: 0.76rem;
+  font-size: 0.68rem;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   color: #1e3a6d;
   text-transform: uppercase;
-  box-shadow: 0 2px 6px rgba(30, 58, 109, 0.1);
+  box-shadow: 0 2px 5px rgba(30, 58, 109, 0.1);
   white-space: nowrap;
   z-index: 9;
 }
 
 .archive-pushpin {
   position: absolute;
-  top: -9px;
-  left: 22px;
-  width: 22px;
-  height: 22px;
+  top: -7px;
+  left: 14px;
+  width: 17px;
+  height: 17px;
   border-radius: 50%;
   background: radial-gradient(circle at 35% 35%, #60a5fa 0%, #2563eb 55%, #1e3a8a 100%);
   box-shadow:
-    3px 5px 8px rgba(15, 23, 42, 0.38),
-    inset 0 2px 3px rgba(255, 255, 255, 0.6);
+    2px 3px 6px rgba(15, 23, 42, 0.35),
+    inset 0 1px 2px rgba(255, 255, 255, 0.6);
   z-index: 12;
 }
 
 .archive-pushpin::after {
   content: "";
   position: absolute;
-  top: 4px;
-  left: 4px;
-  width: 7px;
-  height: 7px;
+  top: 3px;
+  left: 3px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.65);
 }
@@ -1411,7 +1432,7 @@ body {
 
 .archive-polaroid-window {
   width: 100%;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 16 / 11;
   position: relative;
   overflow: hidden;
   background: #eff6ff;
@@ -1421,7 +1442,7 @@ body {
 .archive-message-cover {
   position: absolute;
   inset: 0;
-  padding: 14px 12px;
+  padding: 8px 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1433,21 +1454,25 @@ body {
 
 .archive-message-text {
   font-family: var(--font-serif);
-  font-size: 0.92rem;
+  font-size: clamp(0.72rem, 1.05vw, 0.82rem);
   color: #1e3a6d;
   font-weight: 600;
-  line-height: 1.45;
-  margin-bottom: 8px;
+  line-height: 1.35;
+  margin-bottom: 6px;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .archive-tap-badge {
-  font-size: 0.75rem;
+  font-size: 0.68rem;
   font-weight: 700;
   color: #ffffff;
   background: linear-gradient(135deg, #3b82f6, #2563eb);
-  padding: 4px 12px;
+  padding: 3px 10px;
   border-radius: 999px;
-  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 3px 8px rgba(37, 99, 235, 0.3);
 }
 
 .archive-photo-img {
@@ -1475,27 +1500,30 @@ body {
 }
 
 .archive-polaroid-footer {
-  margin-top: 10px;
+  margin-top: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 5px;
   font-family: var(--font-cursive);
-  font-size: 1.15rem;
+  font-size: 0.95rem;
   color: var(--text-primary);
   font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .archive-check-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   border: 1.5px solid #3b82f6;
   color: #2563eb;
-  font-size: 0.68rem;
+  font-size: 0.62rem;
   font-family: var(--font-sans);
   flex-shrink: 0;
 }
@@ -2099,16 +2127,26 @@ body {
 
 /* Mobile Responsive Adjustments */
 @media (max-width: 720px) {
+  #page-3.page-section {
+    height: auto;
+    min-height: 100dvh;
+    max-height: none;
+    overflow-y: auto;
+    padding: 54px 12px 64px;
+    justify-content: flex-start;
+  }
   .letter-card {
     padding: 2.2rem 1.2rem 2rem 2.2rem;
   }
   .archive-board-container {
+    height: auto;
+    max-height: none;
     min-height: auto;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 28px;
-    padding: 24px 14px;
+    gap: 20px;
+    padding: 20px 10px;
   }
   .archive-string-svg {
     display: none;
