@@ -458,20 +458,19 @@ body {
 }
 
 #page-3.page-section {
-  height: 100dvh;
   min-height: 100dvh;
-  max-height: 100dvh;
-  padding: 44px 16px 14px;
-  overflow: hidden;
-  justify-content: space-between;
+  height: auto;
+  overflow-y: auto;
+  padding: 48px 16px 64px;
+  justify-content: flex-start;
 }
 
 #page-3 .page-content {
-  height: 100%;
-  max-height: 100%;
+  height: auto;
+  max-height: none;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
 }
 
@@ -1252,65 +1251,27 @@ body {
 }
 
 /* ==========================================================================
-   PAGE 3: ARCHIVE PINBOARD MEMORY PHOTO PATH
-   Matches '/Users/graphic/Downloads/MSR Foto – Bilder und Erinnerungen aus dem Archiv.jpeg'
-/* ==========================================================================
-   PAGE 3: SCRAPBOOK MEMORY PINBOARD (MATCHING USER REFERENCE STYLE)
-   3 Alternating Rows: Lined Note Card + Polaroid Photo + 3D Pushpins
+   PAGE 3: SCRAPBOOK MEMORY PINBOARD (CONTINUOUS VERTICAL FLOW)
+   Alternating Rows: Lined Note Card + Polaroid Photo + 3D Pushpins
    ========================================================================== */
 .scrapbook-board-container {
   position: relative;
   width: 100%;
   max-width: 660px;
-  height: calc(100dvh - 165px);
-  max-height: 520px;
-  min-height: 380px;
-  margin: 0 auto;
+  height: auto;
+  margin: 8px auto 20px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  padding: 6px 4px 4px;
+  gap: 24px;
+  padding: 10px 4px 20px;
   overflow: visible;
-  flex: 1 1 auto;
-}
-
-.scrapbook-set-tabs {
-  display: inline-flex;
-  gap: 8px;
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(8px);
-  padding: 3px 6px;
-  border-radius: 999px;
-  border: 1px solid rgba(147, 197, 253, 0.5);
-  box-shadow: 0 2px 8px rgba(30, 58, 109, 0.08);
-  margin: 3px auto 4px;
-}
-
-.scrapbook-set-tab {
-  background: transparent;
-  border: none;
-  font-family: var(--font-sans);
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: #1e3a6d;
-  padding: 3px 12px;
-  border-radius: 999px;
-  cursor: pointer;
-  transition: all 0.25s ease;
-}
-
-.scrapbook-set-tab.active {
-  background: #2563eb;
-  color: #ffffff;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
 }
 
 .scrapbook-row {
   position: relative;
   width: 100%;
-  height: 31%;
-  min-height: 118px;
-  max-height: 158px;
+  height: 160px;
+  min-height: 150px;
 }
 
 /* Lined Note Card (Index Card / Ruled Paper) */

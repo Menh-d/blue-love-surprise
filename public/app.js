@@ -139,10 +139,13 @@
     },
   ];
 
-  // Alternating Scrapbook Row Configurations matching the user's uploaded reference image:
-  // Row 1: Card Left (Red Pin) + Polaroid Right (Blue Pin, tilted +8.5deg)
-  // Row 2: Polaroid Left (Yellow Pin, tilted -9.5deg) + Card Right (Green Pin)
-  // Row 3: Card Left (Blue Pin) + Polaroid Right (Red Pin, tilted +7.5deg)
+  // 6 Alternating Scrapbook Row Configurations for all memories flowing down:
+  // Row 1: Card Left (Red Pin) + Polaroid Right (Blue Pin, +8.5deg)
+  // Row 2: Polaroid Left (Yellow Pin, -9.5deg) + Card Right (Green Pin)
+  // Row 3: Card Left (Blue Pin) + Polaroid Right (Red Pin, +7.5deg)
+  // Row 4: Polaroid Left (Blue Pin, -9deg) + Card Right (Yellow Pin)
+  // Row 5: Card Left (Green Pin) + Polaroid Right (Blue Pin, +8deg)
+  // Row 6: Polaroid Left (Red Pin, -8.5deg) + Card Right (Green Pin)
   const SCRAPBOOK_ROW_CONFIGS = [
     {
       cardSide: "left",
@@ -164,6 +167,27 @@
       polSide: "right",
       polPin: "red",
       polRotate: "7.5deg",
+    },
+    {
+      polSide: "left",
+      polPin: "blue",
+      polRotate: "-9deg",
+      cardSide: "right",
+      cardPin: "yellow",
+    },
+    {
+      cardSide: "left",
+      cardPin: "green",
+      polSide: "right",
+      polPin: "blue",
+      polRotate: "8deg",
+    },
+    {
+      polSide: "left",
+      polPin: "red",
+      polRotate: "-8.5deg",
+      cardSide: "right",
+      cardPin: "green",
     },
   ];
 
@@ -273,7 +297,6 @@
     manualOverviewZoom: false,
     autoTransitionTimer: null,
     archiveOpened: [false, false, false, false, false, false], // 6 memories on Page 3
-    archiveSet: 0, // 0 = set 1 (0..2), 1 = set 2 (3..5)
     lightboxPhoto: null, // Holds active enlarged photo data
     jigsawPlaced: [false, false, false, false, false, false], // 6 pieces on Page 4
     selectedJigsawPiece: null, // For tap-to-place fallback
@@ -622,19 +645,16 @@
     `;
   }
 
-  // ==================== SCRAPBOOK PINBOARD (3-ROW ALTERNATING STYLE) ====================
+  // ==================== SCRAPBOOK PINBOARD (CONTINUOUS VERTICAL FLOW) ====================
   function renderScrapbookBoard() {
     const nextIdx = state.archiveOpened.findIndex((v) => !v);
-    const startIdx = state.archiveSet * 3;
-    const currentItems = SCRAPBOOK_MEMORIES.slice(startIdx, startIdx + 3);
 
     return `
       <div class="scrapbook-board-container" id="scrapbook-board-container">
-        ${currentItems.map((item, rowIdx) => {
-          const itemIdx = startIdx + rowIdx;
+        ${SCRAPBOOK_MEMORIES.map((item, itemIdx) => {
           const isRevealed = state.archiveOpened[itemIdx];
           const isNext = itemIdx === nextIdx;
-          const cfg = SCRAPBOOK_ROW_CONFIGS[rowIdx];
+          const cfg = SCRAPBOOK_ROW_CONFIGS[itemIdx % SCRAPBOOK_ROW_CONFIGS.length];
 
           const cardHtml = `
             <div class="scrapbook-card-item side-${cfg.cardSide}" data-archive-idx="${itemIdx}">
@@ -680,7 +700,7 @@
           `;
 
           return `
-            <div class="scrapbook-row scrapbook-row-${rowIdx}">
+            <div class="scrapbook-row scrapbook-row-${itemIdx}" id="scrapbook-row-${itemIdx}">
               ${cfg.cardSide === "left" ? cardHtml + polHtml : polHtml + cardHtml}
             </div>
           `;
@@ -1318,19 +1338,9 @@
                 <span>ບັນທຶກຄວາມຊົງຈຳ </span>
                 <span class="hero-title-highlight" style="font-size:clamp(1.22rem, 2.4vw, 1.62rem);">ຂອງເຮົາສອງຄົນ 📌💙</span>
               </h2>
-              <p style="color:var(--text-secondary); font-size:clamp(0.72rem, 1.2vw, 0.8rem); margin:2px 0 3px;">
+              <p style="color:var(--text-secondary); font-size:clamp(0.72rem, 1.2vw, 0.8rem); margin:2px 0 6px;">
                 ແຕະທີ່ກອບຮູບ Polaroid ຫຼື ໃບໂນ້ດ ເພື່ອເປີດເບິ່ງຮູບຄວາມຊົງຈຳ (${archiveOpenedCount} / 6)
               </p>
-
-              <!-- Sets toggle pills -->
-              <div class="scrapbook-set-tabs">
-                <button type="button" class="scrapbook-set-tab ${state.archiveSet === 0 ? "active" : ""}" data-set="0">
-                  📌 ຊຸດທີ 1 (1 - 3)
-                </button>
-                <button type="button" class="scrapbook-set-tab ${state.archiveSet === 1 ? "active" : ""}" data-set="1">
-                  📌 ຊຸດທີ 2 (4 - 6)
-                </button>
-              </div>
             </div>
 
             ${renderScrapbookBoard()}
@@ -1787,23 +1797,16 @@
       });
     });
 
-    document.querySelectorAll(".scrapbook-set-tab").forEach((tabBtn) => {
-      tabBtn.addEventListener("click", () => {
-        const setNum = Number(tabBtn.getAttribute("data-set"));
-        state.archiveSet = setNum;
-        renderTemplateShell();
-      });
-    });
-
     const openNextArchiveBtn = document.getElementById("btn-open-next-archive");
     if (openNextArchiveBtn) {
       openNextArchiveBtn.addEventListener("click", () => {
         const nextIdx = state.archiveOpened.findIndex((v) => !v);
         if (nextIdx !== -1) {
-          if (nextIdx >= 3 && state.archiveSet === 0) {
-            state.archiveSet = 1;
-          }
           openArchivePolaroid(nextIdx);
+          setTimeout(() => {
+            const rowEl = document.getElementById(`scrapbook-row-${nextIdx}`);
+            if (rowEl) rowEl.scrollIntoView({ behavior: "smooth", block: "center" });
+          }, 80);
         }
       });
     }
@@ -1843,7 +1846,6 @@
         state.envelopeOpening = false;
         state.starsConnected = 0;
         state.archiveOpened = [false, false, false, false, false, false];
-        state.archiveSet = 0;
         state.lightboxPhoto = null;
         state.jigsawPlaced = [false, false, false, false, false, false];
         state.selectedJigsawPiece = null;
