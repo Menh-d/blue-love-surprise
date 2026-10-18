@@ -1624,122 +1624,84 @@ body {
   gap: 8px;
 }
 
-/* The Assembly Arena Viewport (Clean open canvas, NO dark card!) */
-.jigsaw-interactive-arena {
-  width: 100%;
-  max-width: 660px;
-  background: transparent;
-  border: none;
-  box-shadow: none;
-  padding: 10px 10px 24px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 28px;
+/* /* Open Romantic Canvas Tabletop Jigsaw Stage (Matching user reference - NO dark boxes/cards!) */
+.jigsaw-table-stage {
   position: relative;
+  width: 100%;
+  max-width: 680px;
+  height: 420px;
+  margin: 8px auto 18px;
   overflow: visible;
+  touch-action: none;
+  user-select: none;
 }
 
-/* The 2x3 Photo Jigsaw Target Frame (240px x 360px portrait - Frosted Glass on Romantic Blue) */
-.jigsaw-target-board {
-  position: relative;
-  width: 240px;
-  height: 360px;
-  min-height: 360px;
-  flex-shrink: 0;
-  margin: 0 auto;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  border: 2px dashed rgba(59, 130, 246, 0.45);
-  border-radius: 18px;
-  box-shadow:
-    0 14px 34px rgba(30, 58, 109, 0.12),
-    inset 0 2px 6px rgba(255, 255, 255, 0.8);
+/* Individual Interlocking Photo Jigsaw Piece Element */
+.jigsaw-piece-element {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--jigsaw-piece-size, 140px);
+  height: var(--jigsaw-piece-size, 140px);
+  touch-action: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -webkit-user-drag: none !important;
+  cursor: grab;
+  will-change: transform;
+  transition: transform 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.25), filter 0.2s ease;
   overflow: visible;
-  transition: all 0.5s ease;
   z-index: 10;
 }
 
-.jigsaw-target-board.puzzle-completed {
-  border: 2.5px solid #3b82f6;
-  box-shadow:
-    0 0 25px rgba(59, 130, 246, 0.55),
-    0 0 50px rgba(96, 165, 250, 0.35);
-  animation: completedGlowPulse 2.2s infinite ease-in-out;
+.jigsaw-piece-element:hover {
+  filter: drop-shadow(0 12px 22px rgba(37, 99, 235, 0.45));
 }
 
-@keyframes completedGlowPulse {
+.jigsaw-piece-element.is-dragging {
+  cursor: grabbing !important;
+  z-index: 999999 !important;
+  transition: none !important;
+  filter: drop-shadow(0 22px 38px rgba(0, 0, 0, 0.65)) !important;
+}
+
+/* Magnetic snap proximity aura */
+.jigsaw-piece-element.can-snap-glow {
+  filter: drop-shadow(0 0 18px rgba(56, 189, 248, 0.95)) drop-shadow(0 0 35px rgba(59, 130, 246, 0.85)) !important;
+}
+
+.jigsaw-piece-element.is-connected {
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.25));
+}
+
+/* Glow pulse when all 6 pieces are assembled */
+.jigsaw-table-stage.all-connected .jigsaw-piece-element {
+  cursor: default;
+  animation: completedPhotoGlow 2.5s infinite ease-in-out;
+}
+
+@keyframes completedPhotoGlow {
   0%, 100% {
-    box-shadow: 0 0 22px rgba(59, 130, 246, 0.45), 0 0 45px rgba(96, 165, 250, 0.25);
+    filter: drop-shadow(0 8px 24px rgba(59, 130, 246, 0.45));
   }
   50% {
-    box-shadow: 0 0 34px rgba(147, 197, 253, 0.8), 0 0 70px rgba(59, 130, 246, 0.45);
+    filter: drop-shadow(0 14px 38px rgba(147, 197, 253, 0.85)) drop-shadow(0 0 52px rgba(59, 130, 246, 0.55));
   }
 }
 
-.jigsaw-board-watermark {
-  position: absolute;
-  inset: 0;
-  background-size: cover;
-  background-position: center;
-  opacity: 0.28;
-  border-radius: 16px;
-  filter: grayscale(20%) blur(0.5px);
+.photo-jigsaw-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+  filter: drop-shadow(0 5px 12px rgba(0, 0, 0, 0.28));
   pointer-events: none;
 }
 
-.jigsaw-slot-guide {
-  position: absolute;
-  width: 120px;
-  height: 120px;
-  border: 1px dashed rgba(59, 130, 246, 0.25);
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: #1e3a8a;
-  pointer-events: auto;
-  transition: all 0.22s ease;
-  user-select: none;
-  padding: 4px;
-  text-align: center;
-}
-
-.jigsaw-slot-guide .slot-number-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: rgba(37, 99, 235, 0.9);
-  border: 1.5px solid #ffffff;
-  color: #ffffff;
-  font-weight: 800;
-  font-size: 0.82rem;
-  font-family: var(--font-sans);
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
-}
-
-.jigsaw-slot-guide .slot-hint-text {
-  font-size: 0.74rem;
-  color: #1e3a8a;
-  margin-top: 4px;
-  font-weight: 700;
-  line-height: 1.2;
-}
-
-.jigsaw-slot-guide.slot-highlight {
-  background: rgba(59, 130, 246, 0.28);
-  border: 2px solid #2563eb;
-  box-shadow: 0 0 22px rgba(37, 99, 235, 0.65);
-  transform: scale(1.03);
-}
-
+/* Romantic Completion Plaque */
 .jigsaw-frame-plaque {
   position: absolute;
-  bottom: -20px;
+  bottom: 0px;
   left: 50%;
   transform: translateX(-50%);
   background: linear-gradient(135deg, #1e3a8a, #0f172a);
@@ -1762,271 +1724,13 @@ body {
   100% { transform: translate(-50%, 0) scale(1); opacity: 1; }
 }
 
-/* Scattered Jigsaw Tabletop Area (No rigid white card!) */
-.jigsaw-scatter-zone {
-  width: 100%;
-  max-width: 620px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  margin-top: 10px;
-  position: relative;
-  z-index: 50;
-  overflow: visible;
-  flex-shrink: 0;
-}
-
-.jigsaw-scatter-hint {
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: #1e3a8a;
-  text-align: center;
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(8px);
-  padding: 6px 20px;
-  border-radius: 999px;
-  border: 1px solid rgba(147, 197, 253, 0.85);
-  box-shadow: 0 4px 14px rgba(30, 58, 109, 0.08);
-}
-
-.jigsaw-scatter-board {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 18px 24px;
-  width: 100%;
-  padding: 8px 12px;
-  overflow: visible;
-}
-
-.jigsaw-scatter-piece-wrapper {
-  position: relative;
-  width: 108px;
-  height: 108px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: visible;
-}
-
-/* Organic scattered casual rotations */
-.piece-scatter-0 .jigsaw-piece-element { transform: rotate(-7deg); }
-.piece-scatter-1 .jigsaw-piece-element { transform: rotate(8deg); }
-.piece-scatter-2 .jigsaw-piece-element { transform: rotate(-5deg); }
-.piece-scatter-3 .jigsaw-piece-element { transform: rotate(9deg); }
-.piece-scatter-4 .jigsaw-piece-element { transform: rotate(-8deg); }
-.piece-scatter-5 .jigsaw-piece-element { transform: rotate(6deg); }
-
-/* The Photo Jigsaw Piece Element */
-.jigsaw-piece-element {
-  touch-action: none !important;
-  user-select: none !important;
-  -webkit-user-select: none !important;
-  -webkit-user-drag: none !important;
-  cursor: grab;
-  transition: transform 0.24s cubic-bezier(0.175, 0.885, 0.32, 1.2), box-shadow 0.2s ease, filter 0.2s ease;
-}
-
-.jigsaw-piece-element.is-scattered {
-  position: relative;
-  width: 108px;
-  height: 108px;
-  z-index: 10;
-}
-
-.jigsaw-piece-element.is-scattered:hover {
-  transform: translateY(-6px) scale(1.1) !important;
-  z-index: 50;
-  filter: drop-shadow(0 14px 22px rgba(37, 99, 235, 0.45));
-}
-
-.jigsaw-piece-element.is-placed {
-  position: absolute;
-  width: 168px;
-  height: 168px;
-  cursor: default;
-  z-index: 20;
-  pointer-events: none;
-  animation: popSnap 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.35) forwards;
-}
-
-.jigsaw-piece-element.is-selected {
-  outline: 3px solid #38bdf8;
-  border-radius: 12px;
-  box-shadow: 0 0 20px rgba(56, 189, 248, 0.85);
-  z-index: 60;
-  transform: translateY(-5px) scale(1.1) !important;
-}
-
-.jigsaw-piece-element.is-dragging {
-  cursor: grabbing !important;
-  z-index: 999999 !important;
-  pointer-events: none;
-  transition: none !important;
-  will-change: transform;
-  filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.55)) !important;
-}
-
-@keyframes popSnap {
-  0% { transform: scale(1.14); }
-  100% { transform: scale(1); }
-}
-
-.photo-jigsaw-svg {
-  width: 100%;
-  height: 100%;
-  display: block;
-  overflow: visible;
-  filter: drop-shadow(0 5px 12px rgba(0, 0, 0, 0.28));
-  pointer-events: none;
-}
-
-@media (max-width: 440px) {
-  .jigsaw-interactive-arena {
-    padding: 10px 4px 16px;
-    gap: 24px;
-  }
-  .jigsaw-target-board {
-    transform: none;
-    margin: 0 auto;
-  }
-  .jigsaw-scatter-zone {
-    margin-top: 6px;
-    gap: 14px;
-  }
-  .jigsaw-scatter-board {
-    gap: 12px 14px;
-    padding: 4px;
-  }
-  .jigsaw-scatter-piece-wrapper {
-    width: 94px;
-    height: 94px;
-  }
-  .jigsaw-piece-element.is-scattered {
-    width: 94px;
-    height: 94px;
+@media (max-width: 560px) {
+  .jigsaw-table-stage {
+    height: 440px;
+    max-width: 380px;
   }
 }
 
-/* Zooming Collage Viewport & Center Jigsaw Arena */
-.collage-zoom-viewport {
-  position: relative;
-  width: 100%;
-  max-width: 960px;
-  min-height: auto;
-  border-radius: 26px;
-  overflow: visible;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-}
-
-.collage-camera-plane {
-  position: relative;
-  width: 100%;
-  transform-origin: 50% 50%;
-  transition: all 1.1s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.collage-camera-plane.zoomed-on-jigsaw {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  transform: none !important;
-}
-
-.collage-camera-plane.zoomed-on-jigsaw .collage-side-polaroid {
-  display: none !important;
-}
-
-.collage-camera-plane.zoomed-out-collage {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  align-items: center;
-  justify-items: center;
-  animation: collageZoomOut 1.15s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-
-@keyframes collageZoomOut {
-  0% {
-    transform: scale(1.35);
-    opacity: 0.6;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-.collage-side-polaroid {
-  background: #ffffff;
-  padding: 10px 10px 18px;
-  border-radius: 8px;
-  border: 1px solid rgba(147, 197, 253, 0.55);
-  box-shadow: 0 10px 24px rgba(30, 58, 109, 0.16);
-  width: 100%;
-  max-width: 220px;
-  opacity: 0;
-  transform: scale(0.85);
-  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  will-change: transform, opacity;
-}
-
-.collage-camera-plane.zoomed-out-collage .collage-side-polaroid {
-  opacity: 1;
-}
-
-.collage-camera-plane.zoomed-out-collage .collage-side-polaroid:nth-child(1) {
-  transition-delay: 0.1s;
-  transform: rotate(-3.5deg) scale(1);
-}
-
-.collage-camera-plane.zoomed-out-collage .collage-side-polaroid:nth-child(2) {
-  transition-delay: 0.22s;
-  transform: rotate(3deg) scale(1);
-}
-
-.collage-camera-plane.zoomed-out-collage .collage-side-polaroid:nth-child(3) {
-  transition-delay: 0.34s;
-  transform: rotate(-2.5deg) scale(1);
-}
-
-.collage-camera-plane.zoomed-out-collage .collage-side-polaroid:nth-child(4) {
-  transition-delay: 0.46s;
-  transform: rotate(4deg) scale(1);
-}
-
-.collage-side-polaroid img {
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
-  border-radius: 4px;
-  display: block;
-}
-
-.collage-side-caption {
-  font-family: var(--font-cursive);
-  font-size: 1.02rem;
-  color: var(--text-primary);
-  margin-top: 8px;
-  font-weight: 600;
-  text-align: center;
-}
-
-@media (max-width: 768px) {
-  .collage-camera-plane.zoomed-out-collage {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .collage-camera-plane.zoomed-out-collage .jigsaw-interactive-arena {
-    grid-column: 1 / -1;
-  }
-}
 
 /* Grand Happy Birthday Banner revealed when Jigsaw zooms out! */
 .grand-birthday-reveal {

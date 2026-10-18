@@ -298,9 +298,9 @@
     autoTransitionTimer: null,
     archiveOpened: [false, false, false, false, false, false], // 6 memories on Page 3
     lightboxPhoto: null, // Holds active enlarged photo data
-    jigsawPlaced: [false, false, false, false, false, false], // 6 pieces on Page 4
-    selectedJigsawPiece: null, // For tap-to-place fallback
-    collageZoomedOut: false,
+    jigsawPositions: null, // Dynamic { x, y, rot } for 6 pieces on Page 4
+    jigsawGroups: null, // Clusters of connected piece indices, e.g. [[0, 1], [2], ...]
+    jigsawCompleted: false, // True when all 6 pieces are snapped into 1 unit
     confettiActive: false,
     replySent: false,
     replyText: "",
@@ -774,6 +774,48 @@
     return d;
   }
 
+  // ==================== JIGSAW METRICS & SCATTER LAYOUT ====================
+  function getJigsawMetrics(stageWidth) {
+    const isMobile = stageWidth < 520;
+    const coreSize = isMobile ? 80 : 100;
+    const pieceSize = isMobile ? 112 : 140;
+    return { coreSize, pieceSize, isMobile };
+  }
+
+  // Scatter positions matching media_1792307652569_5e4fd4f9.png:
+  // Row 1: Pieces 0, 1, 2, 3 (badges 1, 2, 3, 4)
+  // Row 2: Pieces 4, 5 (badges 5, 6)
+  function getInitialJigsawPositions(stageWidth) {
+    const { pieceSize, isMobile } = getJigsawMetrics(stageWidth);
+    if (!isMobile) {
+      const stepX = Math.min((stageWidth - pieceSize) / 3.2, 145);
+      const startX = Math.max(12, (stageWidth - (stepX * 3 + pieceSize)) / 2);
+      const row1Y = 22;
+      const row2Y = 215;
+      const startRow2X = startX + stepX * 0.7;
+
+      return [
+        { x: Math.round(startX + 0 * stepX), y: row1Y, rot: -7 },
+        { x: Math.round(startX + 1 * stepX), y: row1Y + 8, rot: 8 },
+        { x: Math.round(startX + 2 * stepX), y: row1Y + 3, rot: -5 },
+        { x: Math.round(startX + 3 * stepX), y: row1Y + 6, rot: 9 },
+        { x: Math.round(startRow2X + 0 * stepX * 1.2), y: row2Y, rot: -8 },
+        { x: Math.round(startRow2X + 1 * stepX * 1.2), y: row2Y - 5, rot: 6 },
+      ];
+    } else {
+      const colWidth = pieceSize + 18;
+      const startColX = Math.max(10, (stageWidth - colWidth * 2) / 2);
+      return [
+        { x: Math.round(startColX), y: 12, rot: -6 },
+        { x: Math.round(startColX + colWidth), y: 16, rot: 7 },
+        { x: Math.round(startColX), y: 145, rot: -5 },
+        { x: Math.round(startColX + colWidth), y: 150, rot: 8 },
+        { x: Math.round(startColX), y: 280, rot: -7 },
+        { x: Math.round(startColX + colWidth), y: 285, rot: 6 },
+      ];
+    }
+  }
+
   // ==================== REAL PHOTO JIGSAW PIECE SVG GENERATOR ====================
   // Cuts a single high-definition hero couple photo into 6 interlocking jigsaw pieces (2 cols x 3 rows)
   function renderPhotoJigsawPieceSvg(pieceIdx) {
@@ -825,9 +867,9 @@
           <!-- Diagonal Gloss Shine -->
           <polygon points="-20,-20 140,-20 -20,100" fill="url(#photoGloss${pieceIdx})" pointer-events="none" />
 
-          <!-- Corner Piece Number Badge shown only while in tray -->
+          <!-- Corner Piece Number Badge (Hidden upon full puzzle completion) -->
           ${
-            !state.jigsawPlaced[pieceIdx]
+            !state.jigsawCompleted
               ? `
             <circle cx="15" cy="15" r="9" fill="rgba(30, 58, 109, 0.9)" stroke="#ffffff" stroke-width="1.3" />
             <text x="15" y="18.5" text-anchor="middle" fill="#ffffff" font-size="8.5" font-weight="800" font-family="'Outfit', sans-serif">
@@ -861,195 +903,87 @@
 
   // ==================== PAGE 4: INTERACTIVE PHOTO JIGSAW WORKSHOP & FINALE ====================
   function renderJigsawAndCollageFinale() {
-    const placedCount = state.jigsawPlaced.filter(Boolean).length;
-    const allPlaced = placedCount >= 6;
-    const sidePhotos = CONFIG.polaroids.slice(0, 8);
-    const photoUrl = resolveMediaUrl(
-      CONFIG.jigsawImage || CONFIG.pinImage || "./media/med-do-fan-01.jpeg"
-    );
-
     return `
       <div class="jigsaw-workshop-stage">
         <!-- Header -->
         <div style="text-align:center;">
           <h2 class="hero-title" style="font-size:clamp(1.75rem, 4.2vw, 2.5rem);">
             ${
-              state.collageZoomedOut
+              state.jigsawCompleted
                 ? `<span>Happy Birthday </span><span class="hero-title-highlight" style="font-size:clamp(2.4rem, 5.5vw, 3.5rem);">My Love! 💙🎂</span>`
                 : `<span>ຕໍ່ຮູບຄູ່ແຫ່ງຄວາມຊົງຈຳ </span><span class="hero-title-highlight" style="font-size:clamp(2.1rem, 4.8vw, 2.9rem);">You & Me 💙</span>`
             }
           </h2>
         </div>
 
-        ${
-          !state.collageZoomedOut
-            ? `
-            <div class="jigsaw-instruction-pill">
-              <span>🧩</span>
-              <span>
-                ${
-                  allPlaced
-                    ? "✨ ຕໍ່ຮູບຄູ່ຄົບທັງ 6 ຊິ້ນສຳເລັດແລ້ວ! 💙"
-                    : `ຈັບຊິ້ນສ່ວນຮູບພາບມາຕໍ່ໃສ່ກອບໃຫ້ຄົບ 6 ຊິ້ນ (${placedCount} / 6)`
-                }
-              </span>
-            </div>
+        <div class="jigsaw-instruction-pill">
+          <span>🧩</span>
+          <span>
             ${
-              !allPlaced
-                ? `
-              <div style="text-align:center; margin-top:-6px;">
-                <button
-                  type="button"
-                  id="btn-quick-solve-jigsaw"
-                  style="background:transparent; border:none; color:var(--accent-red); font-weight:700; font-size:0.86rem; text-decoration:underline; cursor:pointer;"
-                >
-                  ⚡ ວາງຊິ້ນສ່ວນທັງໝົດໃຫ້ຄົບເລີຍ ➔
-                </button>
-              </div>
-            `
-                : ""
+              state.jigsawCompleted
+                ? "✨ ຕໍ່ຮູບຄູ່ຄົບທັງ 6 ຊິ້ນສຳເລັດແລ້ວ! 💙"
+                : "👇 ຄລິກເມົ້າຄ້າງ (Hold) ທີ່ຊິ້ນສ່ວນແລ້ວລາກມາປະກອບໃສ່ກັນ"
             }
-          `
+          </span>
+        </div>
+
+        ${
+          !state.jigsawCompleted
+            ? `
+          <div style="text-align:center; margin-top:-6px;">
+            <button
+              type="button"
+              id="btn-quick-solve-jigsaw"
+              style="background:transparent; border:none; color:var(--accent-red); font-weight:700; font-size:0.86rem; text-decoration:underline; cursor:pointer;"
+            >
+              ⚡ ວາງຊິ້ນສ່ວນທັງໝົດໃຫ້ຄົບເລີຍ ➔
+            </button>
+          </div>
+        `
             : ""
         }
 
-        <!-- Zooming Collage Viewport: starts focused on the Photo Jigsaw Frame, then zooms out into full photo collage! -->
-        <div class="collage-zoom-viewport">
-          <div
-            class="collage-camera-plane ${
-              state.collageZoomedOut ? "zoomed-out-collage" : "zoomed-on-jigsaw"
-            }"
-            id="collage-camera-plane"
-          >
-            <!-- 4 Surrounding Polaroids in Zoomed-Out State -->
-            ${sidePhotos
-              .slice(0, 4)
-              .map(
-                (p) => `
-                <div class="collage-side-polaroid">
-                  <img src="${escapeHtml(resolveMediaUrl(p.image))}" alt="Memory" onerror="this.src='${DEFAULT_PLACEHOLDER_IMG}'" />
-                  <div class="collage-side-caption">${escapeHtml(p.caption)}</div>
-                </div>
-              `
-              )
-              .join("")}
-
-            <!-- Center Interactive Photo Jigsaw Arena (Romantic Framed Board) -->
-            <div class="jigsaw-interactive-arena ${allPlaced ? "is-completed" : ""}" id="jigsaw-interactive-arena">
-              <!-- 2x3 Target Photo Frame (240px x 360px portrait) -->
-              <div class="jigsaw-target-board ${allPlaced ? "puzzle-completed" : ""}" id="jigsaw-target-board">
-                <!-- Faint Watermark of the Photo to Guide Assembly -->
-                <div
-                  class="jigsaw-board-watermark"
-                  style="background-image: url('${escapeHtml(photoUrl)}');"
-                ></div>
-
-                <!-- 6 Target Slot Guides on the Board (2 cols x 3 rows, 120px each) -->
-                ${JIGSAW_PIECES_CONFIG.map((p) => {
-                  const leftPx = p.col * 120;
-                  const topPx = p.row * 120;
-                  const isPlaced = state.jigsawPlaced[p.id];
-
-                  return `
-                    <div
-                      class="jigsaw-slot-guide"
-                      id="jigsaw-slot-${p.id}"
-                      data-target-slot="${p.id}"
-                      style="left:${leftPx}px; top:${topPx}px;"
-                    >
-                      ${
-                        !isPlaced
-                          ? `<span class="slot-number-badge">${p.id + 1}</span>
-                             <span class="slot-hint-text">${escapeHtml(p.hint)}</span>`
-                          : ""
-                      }
-                    </div>
-                  `;
-                }).join("")}
-
-                <!-- Already Placed Pieces Rendered Directly Inside the Board Slots -->
-                ${JIGSAW_PIECES_CONFIG.map((p) => {
-                  if (!state.jigsawPlaced[p.id]) return "";
-                  const leftPx = p.col * 120 - 24;
-                  const topPx = p.row * 120 - 24;
-
-                  return `
-                    <div
-                      class="jigsaw-piece-element is-placed"
-                      id="placed-piece-${p.id}"
-                      style="left:${leftPx}px; top:${topPx}px;"
-                    >
-                      ${renderPhotoJigsawPieceSvg(p.id)}
-                    </div>
-                  `;
-                }).join("")}
-
-                <!-- Bottom Plaque revealed upon completion -->
-                ${
-                  allPlaced
-                    ? `
-                  <div class="jigsaw-frame-plaque">
-                    <span>✨ DO &amp; FAN 💙 YOU &amp; ME FOREVER ✨</span>
-                  </div>
-                `
-                    : ""
-                }
+        <!-- Tabletop Stage with ONLY the 6 scattered jigsaw pieces (NO boxes/frames!) -->
+        <div
+          class="jigsaw-table-stage ${state.jigsawCompleted ? "all-connected" : ""}"
+          id="jigsaw-table-stage"
+        >
+          ${JIGSAW_PIECES_CONFIG.map((p) => {
+            const pos =
+              (state.jigsawPositions && state.jigsawPositions[p.id]) || {
+                x: 0,
+                y: 0,
+                rot: 0,
+              };
+            return `
+              <div
+                class="jigsaw-piece-element ${
+                  state.jigsawCompleted ? "is-connected" : ""
+                }"
+                data-draggable-piece="${p.id}"
+                id="draggable-piece-${p.id}"
+                style="transform: translate3d(${pos.x}px, ${pos.y}px, 0) rotate(${pos.rot}deg);"
+                title="ຊິ້ນສ່ວນທີ ${p.id + 1}"
+              >
+                ${renderPhotoJigsawPieceSvg(p.id)}
               </div>
+            `;
+          }).join("")}
 
-              <!-- Unplaced Pieces Scattered Zone (Free organic layout, no rigid boxes!) -->
-              ${
-                !allPlaced
-                  ? `
-                  <div class="jigsaw-scatter-zone" id="jigsaw-scatter-zone">
-                    <div class="jigsaw-scatter-hint">
-                      👇 ຄລິກເມົ້າຄ້າງ (Hold) ທີ່ຊິ້ນສ່ວນແລ້ວລາກມາປະກອບໃສ່ກອບ
-                    </div>
-                    <div class="jigsaw-scatter-board">
-                      ${JIGSAW_PIECES_CONFIG.map((p, idx) => {
-                        if (state.jigsawPlaced[p.id]) return "";
-                        const isSelected = state.selectedJigsawPiece === p.id;
-
-                        return `
-                          <div
-                            class="jigsaw-scatter-piece-wrapper piece-scatter-${idx}"
-                            id="scatter-slot-${p.id}"
-                          >
-                            <div
-                              class="jigsaw-piece-element is-scattered ${isSelected ? "is-selected" : ""}"
-                              data-draggable-piece="${p.id}"
-                              id="draggable-piece-${p.id}"
-                              title="ຊິ້ນສ່ວນທີ ${p.id + 1} (${escapeHtml(p.hint)})"
-                            >
-                              ${renderPhotoJigsawPieceSvg(p.id)}
-                            </div>
-                          </div>
-                        `;
-                      }).join("")}
-                    </div>
-                  </div>
-                `
-                  : ""
-              }
+          ${
+            state.jigsawCompleted
+              ? `
+            <div class="jigsaw-frame-plaque" style="bottom: 4px;">
+              <span>✨ DO &amp; FAN 💙 YOU &amp; ME FOREVER ✨</span>
             </div>
-
-            <!-- Remaining Surrounding Polaroids in Zoomed-Out State -->
-            ${sidePhotos
-              .slice(4, 8)
-              .map(
-                (p) => `
-                <div class="collage-side-polaroid">
-                  <img src="${escapeHtml(resolveMediaUrl(p.image))}" alt="Memory" onerror="this.src='${DEFAULT_PLACEHOLDER_IMG}'" />
-                  <div class="collage-side-caption">${escapeHtml(p.caption)}</div>
-                </div>
-              `
-              )
-              .join("")}
-          </div>
+          `
+              : ""
+          }
         </div>
 
-        <!-- Grand Happy Birthday Reveal Banner (Shown after Jigsaw Completes & Zooms Out!) -->
+        <!-- Grand Happy Birthday Reveal Banner (Shown after Jigsaw Completes) -->
         ${
-          state.collageZoomedOut
+          state.jigsawCompleted
             ? `
             <div class="grand-birthday-reveal" id="grand-birthday-reveal">
               <h3 class="grand-birthday-title">${escapeHtml(CONFIG.celebrationTitle)}</h3>
@@ -1482,47 +1416,74 @@
     }
   }
 
-  // ==================== SNAP JIGSAW PIECE INTO PLACE ====================
-  function snapJigsawPiece(pieceId) {
-    if (state.jigsawPlaced[pieceId]) return;
-    state.jigsawPlaced[pieceId] = true;
-    state.selectedJigsawPiece = null;
-    music.playTone(660, 0.25, 0.1);
-    renderTemplateShell();
-
-    // If all 6 pieces are placed, celebrate and zoom out to full collage & Happy Birthday!
-    if (state.jigsawPlaced.every(Boolean)) {
-      music.playStarArpeggio();
-      setTimeout(() => {
-        state.collageZoomedOut = true;
-        renderTemplateShell();
-        startCelebrationConfetti();
-      }, 1200);
-    }
-  }
-
-  // ==================== INTERACTIVE DRAG-AND-DROP FOR JIGSAW PIECES ====================
+  // ==================== INTERACTIVE DIRECT PIECE-TO-PIECE JIGSAW PUZZLE ====================
   function initJigsawDragSystem() {
+    const stageEl = document.getElementById("jigsaw-table-stage");
+    if (!stageEl) return;
+
+    const stageW = stageEl.clientWidth || (window.innerWidth < 680 ? window.innerWidth - 32 : 640);
+    const stageH = stageEl.clientHeight || 420;
+    const { coreSize, pieceSize } = getJigsawMetrics(stageW);
+    stageEl.style.setProperty("--jigsaw-piece-size", `${pieceSize}px`);
+
+    // Initialize positions and groups if not already created
+    if (!state.jigsawPositions) {
+      state.jigsawPositions = getInitialJigsawPositions(stageW);
+      state.jigsawGroups = [[0], [1], [2], [3], [4], [5]];
+      state.jigsawCompleted = false;
+
+      // Apply initial transforms to DOM elements immediately
+      JIGSAW_PIECES_CONFIG.forEach((p) => {
+        const el = document.getElementById(`draggable-piece-${p.id}`);
+        const pos = state.jigsawPositions[p.id];
+        if (el && pos) {
+          el.style.transform = `translate3d(${pos.x}px, ${pos.y}px, 0) rotate(${pos.rot}deg)`;
+        }
+      });
+    }
+
+    if (state.jigsawCompleted) return;
+
     const pieces = document.querySelectorAll("[data-draggable-piece]");
-    const targetBoard = document.getElementById("jigsaw-target-board");
-    if (!targetBoard || pieces.length === 0) return;
+    if (pieces.length === 0) return;
 
     pieces.forEach((el) => {
       const pieceId = Number(el.getAttribute("data-draggable-piece"));
 
-      // Stop native browser image dragging on all elements
+      // Prevent native dragging
       el.addEventListener("dragstart", (e) => e.preventDefault());
 
       const onPointerDown = (e) => {
-        if (state.jigsawPlaced[pieceId]) return;
-        if (e.button !== undefined && e.button !== 0) return; // Only primary mouse button
+        if (state.jigsawCompleted) return;
+        if (e.button !== undefined && e.button !== 0) return; // Only primary click
 
-        e.preventDefault(); // Stop native drag/selection immediately!
+        e.preventDefault();
+
+        // 1. Identify which group contains this piece
+        const curGroup = state.jigsawGroups.find((g) => g.includes(pieceId)) || [pieceId];
+
+        // 2. Elevate all pieces in this cluster above other pieces
+        curGroup.forEach((id, idx) => {
+          const pieceEl = document.getElementById(`draggable-piece-${id}`);
+          if (pieceEl) {
+            pieceEl.style.zIndex = `${10000 + idx}`;
+            pieceEl.classList.add("is-dragging");
+            pieceEl.style.transition = "none";
+          }
+        });
 
         const startX = e.clientX;
         const startY = e.clientY;
+        const initPositions = curGroup.map((id) => ({
+          id,
+          x: state.jigsawPositions[id].x,
+          y: state.jigsawPositions[id].y,
+          rot: state.jigsawPositions[id].rot,
+        }));
+
         let isDragging = false;
-        let hasMovedPastThreshold = false;
+        let lastDx = 0;
+        let lastDy = 0;
 
         const onPointerMove = (moveEvt) => {
           moveEvt.preventDefault();
@@ -1532,10 +1493,6 @@
           if (!isDragging) {
             if (Math.hypot(dx, dy) > 4) {
               isDragging = true;
-              hasMovedPastThreshold = true;
-              el.classList.add("is-dragging");
-              el.style.zIndex = "999999";
-              el.style.transition = "none";
               document.body.style.cursor = "grabbing";
               document.body.style.userSelect = "none";
             } else {
@@ -1543,22 +1500,62 @@
             }
           }
 
-          // Move piece with GPU acceleration (1:1 with cursor, scale up for grab feel)
-          el.style.transform = `translate3d(${dx}px, ${dy}px, 0) scale(1.18) rotate(0deg)`;
+          lastDx = dx;
+          lastDy = dy;
 
-          // Proximity detection to matching slot on target board
-          const slotEl = document.getElementById(`jigsaw-slot-${pieceId}`);
-          if (slotEl) {
-            const pRect = el.getBoundingClientRect();
-            const sRect = slotEl.getBoundingClientRect();
-            const pCenter = { x: pRect.left + pRect.width / 2, y: pRect.top + pRect.height / 2 };
-            const sCenter = { x: sRect.left + sRect.width / 2, y: sRect.top + sRect.height / 2 };
-            const dist = Math.hypot(pCenter.x - sCenter.x, pCenter.y - sCenter.y);
-            slotEl.classList.toggle("slot-highlight", dist < 85);
+          // Move the entire connected cluster together
+          curGroup.forEach((id) => {
+            const pieceEl = document.getElementById(`draggable-piece-${id}`);
+            const init = initPositions.find((p) => p.id === id);
+            if (pieceEl && init) {
+              const curX = init.x + dx;
+              const curY = init.y + dy;
+              pieceEl.style.transform = `translate3d(${curX}px, ${curY}px, 0) scale(1.06) rotate(${init.rot}deg)`;
+            }
+          });
+
+          // Proximity magnetic snap detection to any other piece
+          const SNAP_DISTANCE = 75;
+          let candidateTargetPiece = null;
+
+          for (const pA of curGroup) {
+            const initA = initPositions.find((p) => p.id === pA);
+            const curAx = initA.x + dx;
+            const curAy = initA.y + dy;
+            const cfgA = JIGSAW_PIECES_CONFIG[pA];
+
+            for (const otherGroup of state.jigsawGroups) {
+              if (otherGroup === curGroup) continue;
+
+              for (const pB of otherGroup) {
+                const posB = state.jigsawPositions[pB];
+                const cfgB = JIGSAW_PIECES_CONFIG[pB];
+
+                const expDx = (cfgB.col - cfgA.col) * coreSize;
+                const expDy = (cfgB.row - cfgA.row) * coreSize;
+
+                const actDx = posB.x - curAx;
+                const actDy = posB.y - curAy;
+
+                const err = Math.hypot(actDx - expDx, actDy - expDy);
+                if (err < SNAP_DISTANCE) {
+                  candidateTargetPiece = pB;
+                  break;
+                }
+              }
+              if (candidateTargetPiece !== null) break;
+            }
+            if (candidateTargetPiece !== null) break;
           }
+
+          // Highlight target pieces in proximity
+          pieces.forEach((pEl) => {
+            const id = Number(pEl.getAttribute("data-draggable-piece"));
+            pEl.classList.toggle("can-snap-glow", id === candidateTargetPiece);
+          });
         };
 
-        const onPointerUp = (upEvt) => {
+        const onPointerUp = () => {
           window.removeEventListener("pointermove", onPointerMove);
           window.removeEventListener("pointerup", onPointerUp);
           window.removeEventListener("pointercancel", onPointerUp);
@@ -1566,61 +1563,153 @@
           document.body.style.cursor = "";
           document.body.style.userSelect = "";
 
-          if (!isDragging) {
-            // It was a pure click/tap
-            if (!hasMovedPastThreshold) {
-              if (state.selectedJigsawPiece === pieceId) {
-                snapJigsawPiece(pieceId);
-              } else {
-                state.selectedJigsawPiece = pieceId;
-                music.playChime();
-                renderTemplateShell();
-              }
+          // Clear highlight aura
+          pieces.forEach((pEl) => pEl.classList.remove("can-snap-glow"));
+
+          // Reset dragging classes and z-index on cluster
+          curGroup.forEach((id) => {
+            const pieceEl = document.getElementById(`draggable-piece-${id}`);
+            if (pieceEl) {
+              pieceEl.classList.remove("is-dragging");
+              pieceEl.style.zIndex = "20";
+              pieceEl.style.transition = "transform 0.18s cubic-bezier(0.175, 0.885, 0.32, 1.25)";
             }
+          });
+
+          if (!isDragging) {
             return;
           }
 
-          isDragging = false;
-          const dx = upEvt.clientX - startX;
-          const dy = upEvt.clientY - startY;
+          // Update state positions of the dragged cluster
+          curGroup.forEach((id) => {
+            const init = initPositions.find((p) => p.id === id);
+            if (init) {
+              state.jigsawPositions[id].x = init.x + lastDx;
+              state.jigsawPositions[id].y = init.y + lastDy;
+            }
+          });
 
-          const slotEl = document.getElementById(`jigsaw-slot-${pieceId}`);
-          let snapped = false;
+          // Magnetic Snapping Loop
+          const SNAP_THRESHOLD = 75;
+          let keepSnapping = true;
+          let snappedAny = false;
 
-          if (slotEl) {
-            slotEl.classList.remove("slot-highlight");
-            const pRect = el.getBoundingClientRect();
-            const sRect = slotEl.getBoundingClientRect();
-            const pCenter = { x: pRect.left + pRect.width / 2, y: pRect.top + pRect.height / 2 };
-            const sCenter = { x: sRect.left + sRect.width / 2, y: sRect.top + sRect.height / 2 };
-            const dist = Math.hypot(pCenter.x - sCenter.x, pCenter.y - sCenter.y);
+          while (keepSnapping) {
+            keepSnapping = false;
+            let bestSnap = null;
+            let minErr = Infinity;
 
-            if (dist < 85) {
-              snapped = true;
-              // Magnetic spring animation straight to the slot target
-              const targetDx = dx + (sCenter.x - pCenter.x);
-              const targetDy = dy + (sCenter.y - pCenter.y);
+            const activeGroup = state.jigsawGroups.find((g) => g.includes(pieceId));
+            if (!activeGroup) break;
 
-              el.style.transition = "transform 0.18s cubic-bezier(0.175, 0.885, 0.32, 1.25)";
-              el.style.transform = `translate3d(${targetDx}px, ${targetDy}px, 0) scale(1) rotate(0deg)`;
+            for (const pA of activeGroup) {
+              const posA = state.jigsawPositions[pA];
+              const cfgA = JIGSAW_PIECES_CONFIG[pA];
 
-              setTimeout(() => {
-                el.classList.remove("is-dragging");
-                el.style.zIndex = "";
-                snapJigsawPiece(pieceId);
-              }, 180);
+              for (const otherGroup of state.jigsawGroups) {
+                if (otherGroup === activeGroup) continue;
+
+                for (const pB of otherGroup) {
+                  const posB = state.jigsawPositions[pB];
+                  const cfgB = JIGSAW_PIECES_CONFIG[pB];
+
+                  const expDx = (cfgB.col - cfgA.col) * coreSize;
+                  const expDy = (cfgB.row - cfgA.row) * coreSize;
+
+                  const actDx = posB.x - posA.x;
+                  const actDy = posB.y - posA.y;
+
+                  const err = Math.hypot(actDx - expDx, actDy - expDy);
+                  if (err < SNAP_THRESHOLD && err < minErr) {
+                    minErr = err;
+                    bestSnap = {
+                      activeGroup,
+                      otherGroup,
+                      pA,
+                      pB,
+                      shiftX: posB.x - expDx - posA.x,
+                      shiftY: posB.y - expDy - posA.y,
+                    };
+                  }
+                }
+              }
+            }
+
+            if (bestSnap) {
+              snappedAny = true;
+              keepSnapping = true;
+
+              // Shift activeGroup to dock directly onto otherGroup
+              bestSnap.activeGroup.forEach((id) => {
+                state.jigsawPositions[id].x += bestSnap.shiftX;
+                state.jigsawPositions[id].y += bestSnap.shiftY;
+                state.jigsawPositions[id].rot = 0; // Snap straight!
+              });
+              bestSnap.otherGroup.forEach((id) => {
+                state.jigsawPositions[id].rot = 0; // Snap straight!
+              });
+
+              // Merge groups
+              const merged = [...bestSnap.activeGroup, ...bestSnap.otherGroup];
+              state.jigsawGroups = state.jigsawGroups.filter(
+                (g) => g !== bestSnap.activeGroup && g !== bestSnap.otherGroup
+              );
+              state.jigsawGroups.push(merged);
             }
           }
 
-          if (!snapped) {
-            // Spring smoothly back to scattered resting position
-            el.style.transition = "transform 0.24s cubic-bezier(0.2, 0.8, 0.2, 1)";
-            el.style.transform = "";
-            setTimeout(() => {
-              el.classList.remove("is-dragging");
-              el.style.zIndex = "";
-              renderTemplateShell();
-            }, 240);
+          if (snappedAny) {
+            const finalGroup = state.jigsawGroups.find((g) => g.includes(pieceId)) || [];
+            music.playTone(600 + finalGroup.length * 45, 0.22, 0.09);
+
+            // Update DOM transforms for snapped pieces
+            finalGroup.forEach((id) => {
+              const pieceEl = document.getElementById(`draggable-piece-${id}`);
+              const pos = state.jigsawPositions[id];
+              if (pieceEl && pos) {
+                pieceEl.classList.add("is-connected");
+                pieceEl.style.transform = `translate3d(${pos.x}px, ${pos.y}px, 0) rotate(${pos.rot}deg)`;
+              }
+            });
+
+            // Check if all 6 pieces are assembled!
+            if (finalGroup.length >= 6) {
+              state.jigsawCompleted = true;
+
+              // Center the assembled photo neatly inside the table stage
+              const allX = state.jigsawPositions.map((p) => p.x);
+              const allY = state.jigsawPositions.map((p) => p.y);
+              const minX = Math.min(...allX);
+              const minY = Math.min(...allY);
+              const photoW = 2 * coreSize;
+              const photoH = 3 * coreSize;
+              const targetX = Math.round((stageW - photoW) / 2 - (pieceSize - coreSize) / 2);
+              const targetY = Math.round((stageH - photoH) / 2 - (pieceSize - coreSize) / 2);
+              const offX = targetX - minX;
+              const offY = targetY - minY;
+
+              state.jigsawPositions.forEach((p) => {
+                p.x += offX;
+                p.y += offY;
+                p.rot = 0;
+              });
+
+              music.playStarArpeggio();
+              setTimeout(() => {
+                renderTemplateShell();
+                startCelebrationConfetti();
+              }, 220);
+              return;
+            }
+          } else {
+            // Apply current positions without snap
+            curGroup.forEach((id) => {
+              const pieceEl = document.getElementById(`draggable-piece-${id}`);
+              const pos = state.jigsawPositions[id];
+              if (pieceEl && pos) {
+                pieceEl.style.transform = `translate3d(${pos.x}px, ${pos.y}px, 0) rotate(${pos.rot}deg)`;
+              }
+            });
           }
         };
 
@@ -1630,18 +1719,6 @@
       };
 
       el.addEventListener("pointerdown", onPointerDown);
-    });
-
-    // Tap target slot to place selected piece
-    document.querySelectorAll("[data-target-slot]").forEach((slotEl) => {
-      slotEl.addEventListener("click", () => {
-        const slotId = Number(slotEl.getAttribute("data-target-slot"));
-        if (state.selectedJigsawPiece === slotId) {
-          snapJigsawPiece(slotId);
-        } else if (state.selectedJigsawPiece !== null) {
-          snapJigsawPiece(state.selectedJigsawPiece);
-        }
-      });
     });
   }
 
@@ -1826,15 +1903,27 @@
     const quickSolveJigsawBtn = document.getElementById("btn-quick-solve-jigsaw");
     if (quickSolveJigsawBtn) {
       quickSolveJigsawBtn.addEventListener("click", () => {
-        state.jigsawPlaced = [true, true, true, true, true, true];
-        state.selectedJigsawPiece = null;
+        const stageEl = document.getElementById("jigsaw-table-stage");
+        const stageW = stageEl?.clientWidth || (window.innerWidth < 680 ? window.innerWidth - 32 : 640);
+        const stageH = stageEl?.clientHeight || 420;
+        const { coreSize, pieceSize } = getJigsawMetrics(stageW);
+
+        const photoW = 2 * coreSize;
+        const photoH = 3 * coreSize;
+        const originX = Math.round((stageW - photoW) / 2 - (pieceSize - coreSize) / 2);
+        const originY = Math.round((stageH - photoH) / 2 - (pieceSize - coreSize) / 2);
+
+        state.jigsawPositions = JIGSAW_PIECES_CONFIG.map((p) => ({
+          x: originX + p.col * coreSize,
+          y: originY + p.row * coreSize,
+          rot: 0,
+        }));
+        state.jigsawGroups = [[0, 1, 2, 3, 4, 5]];
+        state.jigsawCompleted = true;
+
         music.playStarArpeggio();
         renderTemplateShell();
-        setTimeout(() => {
-          state.collageZoomedOut = true;
-          renderTemplateShell();
-          startCelebrationConfetti();
-        }, 900);
+        startCelebrationConfetti();
       });
     }
 
@@ -1847,9 +1936,9 @@
         state.starsConnected = 0;
         state.archiveOpened = [false, false, false, false, false, false];
         state.lightboxPhoto = null;
-        state.jigsawPlaced = [false, false, false, false, false, false];
-        state.selectedJigsawPiece = null;
-        state.collageZoomedOut = false;
+        state.jigsawPositions = null;
+        state.jigsawGroups = null;
+        state.jigsawCompleted = false;
         goToPage(1);
       });
     }
