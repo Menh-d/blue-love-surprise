@@ -2192,8 +2192,8 @@
             }
           });
 
-          // Proximity magnetic snap detection to any other piece
-          const SNAP_DISTANCE = 75;
+          // Proximity magnetic snap detection to direct neighbor pieces
+          const SNAP_DISTANCE = 32;
           let candidateTargetPiece = null;
 
           for (const pA of curGroup) {
@@ -2208,6 +2208,10 @@
               for (const pB of otherGroup) {
                 const posB = state.jigsawPositions[pB];
                 const cfgB = JIGSAW_PIECES_CONFIG[pB];
+
+                // Only direct adjacent orthogonal neighbors share interlocking tabs!
+                const isAdjacent = Math.abs(cfgB.col - cfgA.col) + Math.abs(cfgB.row - cfgA.row) === 1;
+                if (!isAdjacent) continue;
 
                 const expDx = (cfgB.col - cfgA.col) * coreSize;
                 const expDy = (cfgB.row - cfgA.row) * coreSize;
@@ -2267,19 +2271,14 @@
             }
           });
 
-          // Magnetic Snapping Loop
-          const SNAP_THRESHOLD = 75;
-          let keepSnapping = true;
-          let snappedAny = false;
+          // Magnetic Snapping: snap only the single best matching direct neighbor piece on drop!
+          // (No cascading while-loop, so pieces connect one by one as the user places them)
+          const SNAP_THRESHOLD = 28;
+          let bestSnap = null;
+          let minErr = Infinity;
 
-          while (keepSnapping) {
-            keepSnapping = false;
-            let bestSnap = null;
-            let minErr = Infinity;
-
-            const activeGroup = state.jigsawGroups.find((g) => g.includes(pieceId));
-            if (!activeGroup) break;
-
+          const activeGroup = state.jigsawGroups.find((g) => g.includes(pieceId));
+          if (activeGroup) {
             for (const pA of activeGroup) {
               const posA = state.jigsawPositions[pA];
               const cfgA = JIGSAW_PIECES_CONFIG[pA];
@@ -2290,6 +2289,10 @@
                 for (const pB of otherGroup) {
                   const posB = state.jigsawPositions[pB];
                   const cfgB = JIGSAW_PIECES_CONFIG[pB];
+
+                  // Only direct adjacent orthogonal neighbors share interlocking tabs!
+                  const isAdjacent = Math.abs(cfgB.col - cfgA.col) + Math.abs(cfgB.row - cfgA.row) === 1;
+                  if (!isAdjacent) continue;
 
                   const expDx = (cfgB.col - cfgA.col) * coreSize;
                   const expDy = (cfgB.row - cfgA.row) * coreSize;
@@ -2312,28 +2315,28 @@
                 }
               }
             }
+          }
 
-            if (bestSnap) {
-              snappedAny = true;
-              keepSnapping = true;
+          let snappedAny = false;
+          if (bestSnap) {
+            snappedAny = true;
 
-              // Shift activeGroup to dock directly onto otherGroup
-              bestSnap.activeGroup.forEach((id) => {
-                state.jigsawPositions[id].x += bestSnap.shiftX;
-                state.jigsawPositions[id].y += bestSnap.shiftY;
-                state.jigsawPositions[id].rot = 0; // Snap straight!
-              });
-              bestSnap.otherGroup.forEach((id) => {
-                state.jigsawPositions[id].rot = 0; // Snap straight!
-              });
+            // Shift activeGroup to dock directly onto otherGroup
+            bestSnap.activeGroup.forEach((id) => {
+              state.jigsawPositions[id].x += bestSnap.shiftX;
+              state.jigsawPositions[id].y += bestSnap.shiftY;
+              state.jigsawPositions[id].rot = 0; // Snap straight!
+            });
+            bestSnap.otherGroup.forEach((id) => {
+              state.jigsawPositions[id].rot = 0; // Snap straight!
+            });
 
-              // Merge groups
-              const merged = [...bestSnap.activeGroup, ...bestSnap.otherGroup];
-              state.jigsawGroups = state.jigsawGroups.filter(
-                (g) => g !== bestSnap.activeGroup && g !== bestSnap.otherGroup
-              );
-              state.jigsawGroups.push(merged);
-            }
+            // Merge groups
+            const merged = [...bestSnap.activeGroup, ...bestSnap.otherGroup];
+            state.jigsawGroups = state.jigsawGroups.filter(
+              (g) => g !== bestSnap.activeGroup && g !== bestSnap.otherGroup
+            );
+            state.jigsawGroups.push(merged);
           }
 
           if (snappedAny) {
