@@ -288,19 +288,19 @@
       {
         id: 0,
         title: "01. ວິນາທີທີ່ພົບເຈົ້າ",
-        duration: "03:14",
+        duration: "00:44",
         quote: "ວິນາທີທຳອິດທີ່ໄດ້ພົບເຈົ້າ ຄືຈຸດເລີ່ມຕົ້ນຂອງຄວາມສຸກທັງໝົດໃນຊີວິດ 💙",
       },
       {
         id: 1,
         title: "02. ທ້ອງຟ້າສີຟ້າຂອງເຮົາ",
-        duration: "05:20",
+        duration: "00:44",
         quote: "ທຸກໆມື້ທີ່ມີເຈົ້າຢູ່ຄຽງຂ້າງ ທ້ອງຟ້າກໍສົດໃສ ແລະ ອົບອຸ່ນສະເໝີ ✨",
       },
       {
         id: 2,
         title: "03. ສຸກສັນວັນເກີດຄົນດີ",
-        duration: "10:17",
+        duration: "00:44",
         quote: "ຂໍໃຫ້ທຸກວັນເຕັມໄປດ້ວຍຮອຍຍິ້ມ, ຄວາມສຸກ ແລະ ຄວາມຮັກທີ່ສວຍງາມ ສຸກສັນວັນເກີດເດີ້ 🎂💙",
       },
     ],
@@ -450,6 +450,33 @@
       });
     }
 
+    playCassetteAudio(trackIdx) {
+      this.stopCassetteAudio();
+      if (this.userMuted) return;
+
+      if (!this.cassetteAudio) {
+        this.cassetteAudio = new Audio("./media/special_song.mp3");
+        this.cassetteAudio.loop = true;
+      }
+
+      this.cassetteAudio.currentTime = 0;
+      const p = this.cassetteAudio.play();
+      if (p !== undefined) {
+        p.catch((err) => {
+          console.warn("Real audio playback blocked/error, using melody fallback", err);
+          this.playCassetteMelody(trackIdx);
+        });
+      }
+    }
+
+    stopCassetteAudio() {
+      this.stopCassetteMelody();
+      if (this.cassetteAudio) {
+        this.cassetteAudio.pause();
+        this.cassetteAudio.currentTime = 0;
+      }
+    }
+
     playCassetteMelody(trackIdx) {
       this.stopCassetteMelody();
       this.ensureContext();
@@ -478,6 +505,9 @@
       if (this.cassetteTimer) {
         clearInterval(this.cassetteTimer);
         this.cassetteTimer = null;
+      }
+      if (this.cassetteAudio) {
+        this.cassetteAudio.pause();
       }
     }
   }
@@ -2033,7 +2063,7 @@
       });
 
       if (state.cassettePlaying) {
-        music.playCassetteMelody(state.cassetteActiveTrack);
+        music.playCassetteAudio(state.cassetteActiveTrack);
       }
     };
 
@@ -2050,9 +2080,9 @@
       if (notesWrap) notesWrap.classList.toggle("active", play);
 
       if (play) {
-        music.playCassetteMelody(state.cassetteActiveTrack);
+        music.playCassetteAudio(state.cassetteActiveTrack);
       } else {
-        music.stopCassetteMelody();
+        music.stopCassetteAudio();
       }
     };
 
@@ -2593,7 +2623,7 @@
         state.scratchProgress = 0;
         state.cassettePlaying = false;
         state.cassetteActiveTrack = 0;
-        music.stopCassetteMelody();
+        music.stopCassetteAudio();
         const canvas = document.getElementById("scratch-canvas");
         if (canvas) {
           canvas.removeAttribute("data-initialized");
@@ -2700,7 +2730,7 @@
       });
 
       if (pageNum !== 5 && state.cassettePlaying) {
-        music.stopCassetteMelody();
+        music.stopCassetteAudio();
         state.cassettePlaying = false;
         const playToggleBtn = document.getElementById("btn-cassette-toggle");
         if (playToggleBtn) {
