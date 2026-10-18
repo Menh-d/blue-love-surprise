@@ -1636,6 +1636,11 @@ body {
   user-select: none;
 }
 
+.jigsaw-table-stage.all-connected {
+  height: 375px;
+  margin-bottom: 4px;
+}
+
 /* Individual Interlocking Photo Jigsaw Piece Element */
 .jigsaw-piece-element {
   position: absolute;
@@ -1924,29 +1929,28 @@ body {
   50% { transform: rotate(1.5deg); }
 }
 
-/* Sleek Floating Bottom Action Pill (Reply + Restart) - NO giant card! */
+/* Sleek Action Pill Positioned Directly Under Photo & Plaque */
 .floating-celebration-action-pill {
-  position: fixed;
-  bottom: 22px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
+  position: relative;
+  margin: 20px auto 12px;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.94);
   backdrop-filter: blur(14px);
-  border: 1.5px solid rgba(147, 197, 253, 0.9);
-  padding: 6px 14px;
+  border: 1.5px solid rgba(147, 197, 253, 0.95);
+  padding: 6px 16px;
   border-radius: 999px;
-  box-shadow: 0 10px 30px rgba(30, 58, 109, 0.16);
-  z-index: 500;
-  max-width: 92vw;
+  box-shadow: 0 10px 28px rgba(30, 58, 109, 0.15);
+  z-index: 80;
+  max-width: 94vw;
   animation: popPillEntrance 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.25) forwards;
 }
 
 @keyframes popPillEntrance {
-  0% { transform: translate(-50%, 25px); opacity: 0; }
-  100% { transform: translate(-50%, 0); opacity: 1; }
+  0% { transform: translateY(18px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
 }
 
 .floating-reply-input {
@@ -2043,9 +2047,14 @@ body {
   .balloon-pos-4 { left: 4%; bottom: -44px; }
   .balloon-pos-5 { right: 4%; bottom: -48px; }
 
+  .jigsaw-table-stage.all-connected {
+    height: 300px;
+    margin-bottom: 6px;
+  }
+
   .floating-celebration-action-pill {
-    bottom: 12px;
-    padding: 4px 8px;
+    margin: 14px auto 8px;
+    padding: 5px 10px;
     gap: 6px;
   }
   .floating-reply-input {
