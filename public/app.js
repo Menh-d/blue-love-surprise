@@ -1498,20 +1498,7 @@
 
             ${renderScrapbookBoard()}
 
-            <div style="display:flex; gap:12px; justify-content:center; align-items:center; flex-wrap:wrap; margin-top:2px; flex-shrink:0;">
-              ${
-                archiveOpenedCount < 6
-                  ? `
-                  <button
-                    type="button"
-                    class="archive-open-btn"
-                    id="btn-open-next-archive"
-                  >
-                    📸 ເປີດຮູບຕໍ່ໄປ (${archiveOpenedCount + 1}/6)
-                  </button>
-                `
-                  : ""
-              }
+            <div style="display:flex; justify-content:center; align-items:center; margin-top:4px; flex-shrink:0;">
               <button type="button" class="next-page-btn" data-target-page="4" title="ໄປດ່ານຕໍ່ໄປ" aria-label="ໄປດ່ານຕໍ່ໄປ" style="margin-top:0;">
                 ${renderNextArrowIcon()}
               </button>
