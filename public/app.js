@@ -1037,16 +1037,16 @@
                 : `<span style="font-family:var(--font-serif); font-size:clamp(1.75rem, 4.2vw, 2.5rem); color:#1e3a8a; font-weight:800;">ຕໍ່ຮູບຄູ່ແຫ່ງຄວາມຊົງຈຳ </span><span class="hero-title-highlight" style="font-size:clamp(2.1rem, 4.8vw, 2.9rem); color:#2563eb;">You &amp; Me 💙</span>`
             }
           </h1>
-          <div class="jigsaw-instruction-pill">
-            <span>${state.jigsawCompleted ? "🎈" : "🧩"}</span>
-            <span>
-              ${
-                state.jigsawCompleted
-                  ? "✨ ຮູບຄູ່ຕໍ່ສຳເລັດແລ້ວ! ແຕະທີ່ລູກໂປ່ງເພື່ອເບິ່ງຄຳອວຍພອນ & ຂອງຂວັນ 💙"
-                  : "👇 ຄລິກເມົ້າຄ້າງ (Hold) ທີ່ຊິ້ນສ່ວນແລ້ວລາກມາປະກອບໃສ່ກັນ"
-              }
-            </span>
-          </div>
+          ${
+            !state.jigsawCompleted
+              ? `
+              <div class="jigsaw-instruction-pill">
+                <span>🧩</span>
+                <span>👇 ຄລິກເມົ້າຄ້າງ (Hold) ທີ່ຊິ້ນສ່ວນແລ້ວລາກມາປະກອບໃສ່ກັນ</span>
+              </div>
+            `
+              : ""
+          }
         </div>
 
         ${
@@ -1139,7 +1139,6 @@
                     <div
                       class="floating-message-balloon balloon-pos-${idx} ${b.isCoupon ? "coupon-balloon" : ""}"
                       data-balloon-idx="${idx}"
-                      title="${escapeHtml(b.title)}"
                     >
                       <div class="balloon-visual-wrap">
                         ${renderBalloonSvg(idx, b.color)}
