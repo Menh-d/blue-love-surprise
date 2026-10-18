@@ -480,7 +480,9 @@ body {
   align-items: center;
 }
 
-#page-4.page-section {
+#page-4.page-section,
+#page-5.page-section,
+#page-6.page-section {
   min-height: 100dvh;
   height: auto;
   overflow-y: auto;
@@ -2062,7 +2064,9 @@ body {
 }
 
 @media (max-width: 680px) {
-  #page-4.page-section {
+  #page-4.page-section,
+  #page-5.page-section,
+  #page-6.page-section {
     padding-top: 54px;
     padding-bottom: 48px;
   }
@@ -2304,4 +2308,632 @@ body {
     transform: rotate(-1deg) !important;
     width: min(290px, 90vw);
   }
+}
+
+/* ==================== STAGE 4: STARLIGHT SCRATCH CARD ==================== */
+.scratch-status-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 6px 0 14px;
+  flex-wrap: wrap;
+}
+
+.scratch-progress-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(147, 197, 253, 0.7);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  color: #1e3a8a;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(30, 58, 109, 0.08);
+}
+
+.scratch-progress-track {
+  width: 90px;
+  height: 8px;
+  background: #dbeafe;
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+}
+
+.scratch-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+  border-radius: 999px;
+  transition: width 0.25s ease;
+}
+
+.scratch-instant-btn {
+  background: #ffffff;
+  border: 1.5px solid #93c5fd;
+  color: #2563eb;
+  padding: 5px 14px;
+  border-radius: 999px;
+  font-family: 'Noto Sans Lao', var(--font-sans), sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+}
+
+.scratch-instant-btn:hover {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  transform: translateY(-1px);
+}
+
+.scratch-card-container {
+  width: min(390px, 94vw);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(240, 249, 255, 0.92));
+  backdrop-filter: blur(16px);
+  border: 2px solid #bfdbfe;
+  border-radius: 24px;
+  box-shadow: 0 16px 44px rgba(30, 58, 109, 0.16), 0 0 0 1px rgba(255, 255, 255, 0.8) inset;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+}
+
+.scratch-ticket-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 18px 8px;
+  border-bottom: 1.5px dashed #bfdbfe;
+  background: rgba(239, 246, 255, 0.6);
+}
+
+.scratch-ticket-tag {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #2563eb;
+}
+
+.scratch-ticket-id {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #64748b;
+  font-family: monospace;
+}
+
+.scratch-card-viewport {
+  position: relative;
+  width: 100%;
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+.scratch-secret-card {
+  width: 100%;
+  min-height: 190px;
+  background: linear-gradient(145deg, #ffffff, #f0f7ff);
+  border: 1.5px solid #93c5fd;
+  border-radius: 18px;
+  padding: 20px 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: inset 0 2px 8px rgba(37, 99, 235, 0.06);
+}
+
+.scratch-secret-heart-glow {
+  font-size: 1.8rem;
+  animation: pulseGlow 1.8s ease-in-out infinite;
+}
+
+.scratch-secret-badge {
+  display: inline-block;
+  padding: 3px 12px;
+  background: #dbeafe;
+  color: #1e40af;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.scratch-secret-quote {
+  font-size: 0.95rem;
+  color: #1e3a8a;
+  line-height: 1.6;
+  font-weight: 600;
+  margin: 4px 0;
+}
+
+.scratch-secret-signature {
+  font-size: 0.82rem;
+  color: #3b82f6;
+  font-weight: 700;
+}
+
+.scratch-secret-sparkles {
+  font-size: 0.82rem;
+  color: #60a5fa;
+  letter-spacing: 0.2em;
+}
+
+.scratch-canvas {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  right: 14px;
+  bottom: 14px;
+  width: calc(100% - 28px);
+  height: calc(100% - 28px);
+  border-radius: 18px;
+  cursor: grab;
+  touch-action: none;
+  z-index: 5;
+  box-shadow: 0 4px 16px rgba(30, 58, 109, 0.2);
+  transition: opacity 0.5s ease;
+}
+
+.scratch-canvas:active {
+  cursor: grabbing;
+}
+
+.scratch-ticket-footer {
+  padding: 8px 16px 10px;
+  border-top: 1.5px dashed #bfdbfe;
+  background: rgba(239, 246, 255, 0.6);
+  text-align: center;
+}
+
+.scratch-footer-hint {
+  font-size: 0.72rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.pulse-glow {
+  animation: buttonPulseGlow 2s infinite ease-in-out;
+}
+
+@keyframes buttonPulseGlow {
+  0%, 100% {
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.55);
+    transform: scale(1.03);
+  }
+}
+
+/* ==================== STAGE 5: VINTAGE LOVE CASSETTE TAPE ==================== */
+.cassette-player-wrapper {
+  position: relative;
+  width: min(390px, 94vw);
+  margin: 10px auto 14px;
+}
+
+.cassette-body {
+  background: linear-gradient(145deg, rgba(20, 45, 85, 0.92), rgba(15, 30, 60, 0.96));
+  backdrop-filter: blur(14px);
+  border: 2px solid rgba(147, 197, 253, 0.45);
+  border-radius: 22px;
+  padding: 16px 18px 14px;
+  box-shadow: 0 20px 48px rgba(10, 25, 55, 0.35), 0 0 24px rgba(59, 130, 246, 0.2);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: all 0.3s ease;
+}
+
+.cassette-body.is-playing {
+  border-color: rgba(96, 165, 250, 0.85);
+  box-shadow: 0 22px 52px rgba(10, 25, 55, 0.4), 0 0 35px rgba(59, 130, 246, 0.45);
+}
+
+.cassette-screw {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #cbd5e1 30%, #64748b 80%);
+  border: 1px solid #475569;
+}
+.screw-tl { top: 8px; left: 8px; }
+.screw-tr { top: 8px; right: 8px; }
+.screw-bl { bottom: 8px; left: 8px; }
+.screw-br { bottom: 8px; right: 8px; }
+
+.cassette-label {
+  background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
+  border-radius: 12px;
+  padding: 10px 14px 8px;
+  border: 1px solid #bfdbfe;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.cassette-label-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.cassette-side-pill {
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 900;
+  padding: 1px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+}
+
+.cassette-brand {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #1e3a8a;
+}
+
+.cassette-hi-fi {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #64748b;
+  letter-spacing: 0.06em;
+}
+
+.cassette-title-line {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #0f172a;
+  border-bottom: 1px solid #93c5fd;
+  padding-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cassette-window {
+  background: rgba(10, 20, 40, 0.75);
+  border: 1.5px solid rgba(147, 197, 253, 0.3);
+  border-radius: 14px;
+  height: 82px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 22px;
+  position: relative;
+  overflow: hidden;
+}
+
+.cassette-reel-wrap {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cassette-spool {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, #5b2810 55%, #3d1b08 95%);
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.6);
+}
+
+.left-spool {
+  width: 54px;
+  height: 54px;
+}
+
+.right-spool {
+  width: 46px;
+  height: 46px;
+}
+
+.cassette-reel {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #cbd5e1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  z-index: 2;
+}
+
+.cassette-reel.spinning {
+  animation: spinReel 2.2s linear infinite;
+}
+
+@keyframes spinReel {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.reel-cog {
+  position: absolute;
+  width: 4px;
+  height: 12px;
+  background: #94a3b8;
+  border-radius: 2px;
+}
+.cog-1 { transform: rotate(0deg); }
+.cog-2 { transform: rotate(60deg); }
+.cog-3 { transform: rotate(120deg); }
+
+.reel-center-hole {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #0f172a;
+  z-index: 3;
+}
+
+.cassette-mid-viewport {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  position: relative;
+  z-index: 2;
+}
+
+.cassette-equalizer {
+  display: flex;
+  align-items: flex-end;
+  gap: 3.5px;
+  height: 26px;
+}
+
+.eq-bar {
+  width: 3.5px;
+  height: 5px;
+  background: #60a5fa;
+  border-radius: 2px;
+  transition: height 0.2s ease;
+}
+
+.cassette-equalizer.active .eq-bar {
+  animation: eqBounce 0.8s ease-in-out infinite alternate;
+}
+
+.cassette-equalizer.active .bar-1 { animation-delay: 0.1s; animation-duration: 0.65s; }
+.cassette-equalizer.active .bar-2 { animation-delay: 0.3s; animation-duration: 0.85s; }
+.cassette-equalizer.active .bar-3 { animation-delay: 0.05s; animation-duration: 0.55s; }
+.cassette-equalizer.active .bar-4 { animation-delay: 0.4s; animation-duration: 0.95s; }
+.cassette-equalizer.active .bar-5 { animation-delay: 0.2s; animation-duration: 0.7s; }
+.cassette-equalizer.active .bar-6 { animation-delay: 0.35s; animation-duration: 0.8s; }
+.cassette-equalizer.active .bar-7 { animation-delay: 0.15s; animation-duration: 0.6s; }
+.cassette-equalizer.active .bar-8 { animation-delay: 0.25s; animation-duration: 0.75s; }
+
+@keyframes eqBounce {
+  0% { height: 4px; background: #60a5fa; }
+  50% { height: 22px; background: #38bdf8; }
+  100% { height: 12px; background: #93c5fd; }
+}
+
+.cassette-tape-bridge {
+  width: 60px;
+  height: 4px;
+  background: #5b2810;
+  border-radius: 2px;
+}
+
+.cassette-bottom-bay {
+  background: rgba(10, 20, 40, 0.8);
+  height: 20px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 20px;
+  border: 1px solid rgba(147, 197, 253, 0.2);
+}
+
+.cassette-tape-roller {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #94a3b8;
+}
+
+.cassette-head-plate {
+  width: 32px;
+  height: 6px;
+  background: #64748b;
+  border-radius: 3px;
+}
+
+/* Floating Music Notes */
+.cassette-floating-notes {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.cassette-floating-notes .music-note {
+  position: absolute;
+  color: #60a5fa;
+  font-size: 1.1rem;
+  opacity: 0;
+}
+
+.cassette-floating-notes.active .music-note {
+  animation: floatNote 3s ease-in-out infinite;
+}
+
+.cassette-floating-notes .note-1 { left: 10%; bottom: 20px; animation-delay: 0s; }
+.cassette-floating-notes .note-2 { left: 28%; bottom: 30px; animation-delay: 0.6s; }
+.cassette-floating-notes .note-3 { left: 50%; bottom: 15px; animation-delay: 1.2s; color: #38bdf8; }
+.cassette-floating-notes .note-4 { right: 25%; bottom: 35px; animation-delay: 1.8s; }
+.cassette-floating-notes .note-5 { right: 10%; bottom: 20px; animation-delay: 2.3s; }
+.cassette-floating-notes .note-6 { left: 40%; bottom: 30px; animation-delay: 2.7s; color: #93c5fd; }
+
+@keyframes floatNote {
+  0% {
+    transform: translateY(0) scale(0.6) rotate(0deg);
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.9;
+  }
+  80% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-80px) scale(1.2) rotate(20deg);
+    opacity: 0;
+  }
+}
+
+/* Cassette Controls */
+.cassette-controls-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 10px 0;
+}
+
+.cassette-btn-sub {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1.5px solid #bfdbfe;
+  background: #ffffff;
+  color: #1e40af;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(30, 58, 109, 0.08);
+}
+
+.cassette-btn-sub:hover {
+  background: #eff6ff;
+  transform: scale(1.06);
+}
+
+.cassette-btn-main {
+  padding: 10px 24px;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: #ffffff;
+  font-family: 'Noto Sans Lao', var(--font-sans), sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cassette-btn-main:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 26px rgba(37, 99, 235, 0.45);
+}
+
+.cassette-btn-main.playing {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  box-shadow: 0 6px 20px rgba(2, 132, 199, 0.35);
+}
+
+.cassette-tracks-pills {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 6px 0 12px;
+}
+
+.cassette-track-pill {
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1.5px solid #bfdbfe;
+  background: rgba(255, 255, 255, 0.88);
+  color: #1e3a8a;
+  font-family: 'Noto Sans Lao', var(--font-sans), sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cassette-track-pill:hover,
+.cassette-track-pill.active {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #1d4ed8;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+  transform: translateY(-1px);
+}
+
+.cassette-quote-card {
+  width: min(390px, 94vw);
+  margin: 0 auto;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(240, 249, 255, 0.92));
+  backdrop-filter: blur(14px);
+  border: 1.5px solid #bfdbfe;
+  border-radius: 18px;
+  padding: 16px 18px;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(30, 58, 109, 0.08);
+}
+
+.cassette-quote-icon {
+  font-size: 1.4rem;
+  margin-bottom: 4px;
+}
+
+.cassette-quote-text {
+  font-size: 0.92rem;
+  color: #1e3a8a;
+  font-weight: 600;
+  line-height: 1.6;
+  margin: 0 0 8px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.3s ease;
+}
+
+.cassette-quote-sub {
+  font-size: 0.72rem;
+  color: #64748b;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }

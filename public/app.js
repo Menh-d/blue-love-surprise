@@ -282,6 +282,28 @@
       { image: "./media/med-do-fan-07.jpeg", caption: "ຢູ່ຍິ້ມນຳກັນແບບນີ້ຕະຫຼອດໄປ 💫" },
       { image: "./media/med-do-fan-08.jpeg", caption: "ຄ່ຳຄືນທີ່ອົບອຸ່ນຂອງເຮົາ 🌙" },
     ],
+    scratchQuote:
+      "ບໍ່ວ່າຈະຜ່ານໄປດົນປານໃດ, ຫົວໃຈດວງນີ້ກໍຍັງເລືອກເຈົ້າສະເໝີ... ຂອບໃຈທີ່ເຂົ້າມາເປັນຂອງຂວັນທີ່ດີທີ່ສຸດໃນຊີວິດຂ້ອຍເດີ້ 💙✨",
+    cassetteTracks: [
+      {
+        id: 0,
+        title: "01. ວິນາທີທີ່ພົບເຈົ້າ",
+        duration: "03:14",
+        quote: "ວິນາທີທຳອິດທີ່ໄດ້ພົບເຈົ້າ ຄືຈຸດເລີ່ມຕົ້ນຂອງຄວາມສຸກທັງໝົດໃນຊີວິດ 💙",
+      },
+      {
+        id: 1,
+        title: "02. ທ້ອງຟ້າສີຟ້າຂອງເຮົາ",
+        duration: "05:20",
+        quote: "ທຸກໆມື້ທີ່ມີເຈົ້າຢູ່ຄຽງຂ້າງ ທ້ອງຟ້າກໍສົດໃສ ແລະ ອົບອຸ່ນສະເໝີ ✨",
+      },
+      {
+        id: 2,
+        title: "03. ສຸກສັນວັນເກີດຄົນດີ",
+        duration: "10:17",
+        quote: "ຂໍໃຫ້ທຸກວັນເຕັມໄປດ້ວຍຮອຍຍິ້ມ, ຄວາມສຸກ ແລະ ຄວາມຮັກທີ່ສວຍງາມ ສຸກສັນວັນເກີດເດີ້ 🎂💙",
+      },
+    ],
   };
 
   const state = {
@@ -290,7 +312,7 @@
     story: null,
     unlocked: false,
     tttHearts: [false, false, false], // 3 diagonal heart slots on Tic-Tac-Toe lock screen
-    activePage: 1, // 1: Envelope, 2: Love Stars Constellation, 3: MSR Foto Archive Path, 4: Jigsaw Workshop -> Collage + Happy Birthday
+    activePage: 1, // 1: Envelope, 2: Constellation, 3: Scrapbook, 4: Scratch Card, 5: Cassette Tape, 6: Jigsaw Finale
     envelopeOpening: false,
     letterOpened: false,
     typingTimer: null,
@@ -299,8 +321,12 @@
     autoTransitionTimer: null,
     archiveOpened: [false, false, false, false, false, false], // 6 memories on Page 3
     lightboxPhoto: null, // Holds active enlarged photo data
-    jigsawPositions: null, // Dynamic { x, y, rot } for 6 pieces on Page 4
-    jigsawGroups: null, // Clusters of connected piece indices, e.g. [[0, 1], [2], ...]
+    scratchRevealed: false,
+    scratchProgress: 0,
+    cassettePlaying: false,
+    cassetteActiveTrack: 0,
+    jigsawPositions: null, // Dynamic { x, y, rot } for 6 pieces on Page 6
+    jigsawGroups: null, // Clusters of connected piece indices
     jigsawCompleted: false, // True when all 6 pieces are snapped into 1 unit
     confettiActive: false,
     replySent: false,
@@ -316,6 +342,7 @@
       this.synthIdx = 0;
       this.isPlaying = false;
       this.userMuted = false;
+      this.cassetteTimer = null;
     }
 
     ensureContext() {
@@ -421,6 +448,37 @@
       chord.forEach((n, idx) => {
         setTimeout(() => this.playTone(n, 0.45, 0.09), idx * 95);
       });
+    }
+
+    playCassetteMelody(trackIdx) {
+      this.stopCassetteMelody();
+      this.ensureContext();
+      if (!this.ctx || this.userMuted) return;
+
+      const trackChords = [
+        [261.63, 329.63, 392.0, 523.25, 440.0, 392.0, 329.63, 392.0],
+        [349.23, 440.0, 523.25, 659.25, 587.33, 523.25, 440.0, 523.25],
+        [523.25, 523.25, 587.33, 523.25, 698.46, 659.25, 523.25, 783.99],
+      ];
+      const melody = trackChords[trackIdx % trackChords.length];
+      let stepIdx = 0;
+
+      const tick = () => {
+        if (!state.cassettePlaying || document.hidden || this.userMuted) return;
+        const note = melody[stepIdx % melody.length];
+        this.playTone(note, 0.42, 0.08);
+        stepIdx++;
+      };
+
+      tick();
+      this.cassetteTimer = setInterval(tick, 480);
+    }
+
+    stopCassetteMelody() {
+      if (this.cassetteTimer) {
+        clearInterval(this.cassetteTimer);
+        this.cassetteTimer = null;
+      }
     }
   }
 
@@ -1457,16 +1515,208 @@
                   : ""
               }
               <button type="button" class="next-page-btn" data-target-page="4" style="margin-top:0; padding:6px 16px; font-size:0.82rem;">
-                ໄປໜ້າຕໍ່ຈິກຊໍຄວາມຊົງຈຳ ➔
+                ໄປໜ້າບັດຂູດຄວາມລັບ ➔
               </button>
             </div>
           </div>
         </section>
 
-        <!-- PAGE 4: ACRYLIC MAGNET JIGSAW PUZZLE (MATCHING _ - 2026-10-17T185035.226.jpeg) -->
+        <!-- PAGE 4: INTERACTIVE STARLIGHT SCRATCH CARD (STAGE 4) -->
         <section class="page-section ${state.activePage === 4 ? "active" : ""}" id="page-4">
+          <div class="page-content" style="justify-content:flex-start; padding-top:4px;">
+            <div style="flex-shrink:0; text-align:center;">
+              ${renderPageDots(4)}
+              <h2 class="hero-title" style="font-size:clamp(1.15rem, 2.2vw, 1.48rem); margin:0; line-height:1.2;">
+                <span>ບັດຂູດຄວາມລັບ </span>
+                <span class="hero-title-highlight" style="font-size:clamp(1.22rem, 2.4vw, 1.62rem);">ແຫ່ງຄວາມຮັກ 🎫💙</span>
+              </h2>
+              <p style="color:var(--text-secondary); font-size:clamp(0.72rem, 1.2vw, 0.8rem); margin:2px 0 6px;">
+                ໃຊ້ນິ້ວມື ຫຼື ເມົ້າ ຂູດແຜ່ນດາວສີຟ້າເພື່ອເປີດເຜີຍຂໍ້ຄວາມລັບສຸດພິເສດ ✨
+              </p>
+            </div>
+
+            <div class="scratch-status-wrap">
+              <div class="scratch-progress-pill">
+                <span>✨ ຂູດແລ້ວ: <strong id="scratch-percent-label">${state.scratchProgress}%</strong></span>
+                <div class="scratch-progress-track">
+                  <div class="scratch-progress-fill" id="scratch-progress-fill" style="width: ${state.scratchProgress}%;"></div>
+                </div>
+              </div>
+              <button type="button" class="scratch-instant-btn" id="btn-instant-scratch">
+                🪄 ຂູດທັງໝົດ
+              </button>
+            </div>
+
+            <div class="scratch-card-container" id="scratch-card-box">
+              <div class="scratch-ticket-header">
+                <span class="scratch-ticket-tag">★ SPECIAL LOVE TICKET ★</span>
+                <span class="scratch-ticket-id">NO. 1402-BLUE</span>
+              </div>
+
+              <div class="scratch-card-viewport">
+                <div class="scratch-secret-card" id="scratch-secret-card">
+                  <div class="scratch-secret-heart-glow">💖</div>
+                  <div class="scratch-secret-badge">ຂໍ້ຄວາມລັບຈາກຫົວໃຈ</div>
+                  <p class="scratch-secret-quote" id="scratch-quote-display">
+                    "${CONFIG.scratchQuote || "ບໍ່ວ່າຈະຜ່ານໄປດົນປານໃດ, ຫົວໃຈດວງນີ້ກໍຍັງເລືອກເຈົ້າສະເໝີ... ຂອບໃຈທີ່ເຂົ້າມາເປັນຂອງຂວັນທີ່ດີທີ່ສຸດໃນຊີວິດຂ້ອຍເດີ້ 💙✨"}"
+                  </p>
+                  <div class="scratch-secret-signature">
+                    ດ້ວຍຮັກຈາກ <span>${CONFIG.senderName || "Do"} 💙</span>
+                  </div>
+                  <div class="scratch-secret-sparkles">✨ ✦ 💙 ✦ ✨</div>
+                </div>
+
+                <canvas id="scratch-canvas" class="scratch-canvas" style="${state.scratchRevealed ? "display:none;" : ""}"></canvas>
+              </div>
+
+              <div class="scratch-ticket-footer">
+                <span class="scratch-footer-hint">✨ ຖ້າຂູດຄົບ 50% ຂໍ້ຄວາມຈະເປີດເຜີຍທັງໝົດ ✨</span>
+              </div>
+            </div>
+
+            <div id="scratch-unlocked-wrap" style="display:${state.scratchRevealed ? "flex" : "none"}; margin-top:14px; flex-shrink:0;">
+              <button type="button" class="next-page-btn pulse-glow" data-target-page="5" style="margin-top:0; padding:8px 22px; font-size:0.86rem;">
+                ໄປຟັງເທັບເພງແຫ່ງຄວາມຊົງຈຳ ➔
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- PAGE 5: VINTAGE LOVE CASSETTE TAPE PLAYER (STAGE 5) -->
+        <section class="page-section ${state.activePage === 5 ? "active" : ""}" id="page-5">
+          <div class="page-content" style="justify-content:flex-start; padding-top:4px;">
+            <div style="flex-shrink:0; text-align:center;">
+              ${renderPageDots(5)}
+              <h2 class="hero-title" style="font-size:clamp(1.15rem, 2.2vw, 1.48rem); margin:0; line-height:1.2;">
+                <span>ເທັບເພງ </span>
+                <span class="hero-title-highlight" style="font-size:clamp(1.22rem, 2.4vw, 1.62rem);">ແຫ່ງຄວາມຊົງຈຳ 📼💙</span>
+              </h2>
+              <p style="color:var(--text-secondary); font-size:clamp(0.72rem, 1.2vw, 0.8rem); margin:2px 0 6px;">
+                ກົດ Play ເພື່ອໝຸນສຽງເພງ ແລະ ຟັງທວງທຳນອງແຫ່ງຄວາມຮັກຂອງເຮົາ 🎶
+              </p>
+            </div>
+
+            <div class="cassette-player-wrapper">
+              <div class="cassette-body ${state.cassettePlaying ? "is-playing" : ""}" id="cassette-body-unit">
+                <span class="cassette-screw screw-tl"></span>
+                <span class="cassette-screw screw-tr"></span>
+                <span class="cassette-screw screw-bl"></span>
+                <span class="cassette-screw screw-br"></span>
+
+                <div class="cassette-label">
+                  <div class="cassette-label-top">
+                    <span class="cassette-side-pill">SIDE A</span>
+                    <span class="cassette-brand">DO & FAN MIXTAPE 💙</span>
+                    <span class="cassette-hi-fi">HI-FI STEREO</span>
+                  </div>
+                  <div class="cassette-title-line" id="cassette-track-title">
+                    ${(CONFIG.cassetteTracks && CONFIG.cassetteTracks[state.cassetteActiveTrack]?.title) || "01. ວິນາທີທີ່ພົບເຈົ້າ"}
+                  </div>
+                </div>
+
+                <div class="cassette-window">
+                  <div class="cassette-reel-wrap">
+                    <div class="cassette-spool left-spool"></div>
+                    <div class="cassette-reel left-reel ${state.cassettePlaying ? "spinning" : ""}">
+                      <div class="reel-cog cog-1"></div>
+                      <div class="reel-cog cog-2"></div>
+                      <div class="reel-cog cog-3"></div>
+                      <div class="reel-center-hole"></div>
+                    </div>
+                  </div>
+
+                  <div class="cassette-mid-viewport">
+                    <div class="cassette-equalizer ${state.cassettePlaying ? "active" : ""}" id="cassette-equalizer">
+                      <span class="eq-bar bar-1"></span>
+                      <span class="eq-bar bar-2"></span>
+                      <span class="eq-bar bar-3"></span>
+                      <span class="eq-bar bar-4"></span>
+                      <span class="eq-bar bar-5"></span>
+                      <span class="eq-bar bar-6"></span>
+                      <span class="eq-bar bar-7"></span>
+                      <span class="eq-bar bar-8"></span>
+                    </div>
+                    <div class="cassette-tape-bridge"></div>
+                  </div>
+
+                  <div class="cassette-reel-wrap">
+                    <div class="cassette-spool right-spool"></div>
+                    <div class="cassette-reel right-reel ${state.cassettePlaying ? "spinning" : ""}">
+                      <div class="reel-cog cog-1"></div>
+                      <div class="reel-cog cog-2"></div>
+                      <div class="reel-cog cog-3"></div>
+                      <div class="reel-center-hole"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="cassette-bottom-bay">
+                  <div class="cassette-tape-roller left-roller"></div>
+                  <div class="cassette-head-plate"></div>
+                  <div class="cassette-tape-roller right-roller"></div>
+                </div>
+              </div>
+
+              <div class="cassette-floating-notes ${state.cassettePlaying ? "active" : ""}" id="cassette-floating-notes">
+                <span class="music-note note-1">♪</span>
+                <span class="music-note note-2">♫</span>
+                <span class="music-note note-3">💙</span>
+                <span class="music-note note-4">♩</span>
+                <span class="music-note note-5">♬</span>
+                <span class="music-note note-6">✨</span>
+              </div>
+            </div>
+
+            <div class="cassette-controls-bar">
+              <button type="button" class="cassette-btn-sub" id="btn-cassette-prev" title="ເພງກ່ອນໜ້າ">
+                ⏮
+              </button>
+              <button type="button" class="cassette-btn-main ${state.cassettePlaying ? "playing" : ""}" id="btn-cassette-toggle">
+                ${state.cassettePlaying ? "⏸ ຢຸດຊົ່ວຄາວ (Pause)" : "▶ ຫຼິ້ນເພງ (Play)"}
+              </button>
+              <button type="button" class="cassette-btn-sub" id="btn-cassette-next" title="ເພງຕໍ່ໄປ">
+                ⏭
+              </button>
+            </div>
+
+            <div class="cassette-tracks-pills">
+              ${(CONFIG.cassetteTracks || [])
+                .map(
+                  (t, idx) => `
+                <button
+                  type="button"
+                  class="cassette-track-pill ${state.cassetteActiveTrack === idx ? "active" : ""}"
+                  data-track-idx="${idx}"
+                >
+                  🎵 ${t.title}
+                </button>
+              `
+                )
+                .join("")}
+            </div>
+
+            <div class="cassette-quote-card" id="cassette-quote-card">
+              <div class="cassette-quote-icon">🎶</div>
+              <p class="cassette-quote-text" id="cassette-quote-text">
+                "${(CONFIG.cassetteTracks && CONFIG.cassetteTracks[state.cassetteActiveTrack]?.quote) || ""}"
+              </p>
+              <div class="cassette-quote-sub">
+                <span>⏱ ຄວາມຍາວ: ${(CONFIG.cassetteTracks && CONFIG.cassetteTracks[state.cassetteActiveTrack]?.duration) || "03:14"}</span> • <span>ແດ່: ຄົນພິເສດ 💙</span>
+              </div>
+            </div>
+
+            <div style="display:flex; justify-content:center; margin-top:12px; flex-shrink:0;">
+              <button type="button" class="next-page-btn" data-target-page="6" style="margin-top:0; padding:8px 22px; font-size:0.86rem;">
+                ໄປສູ່ດ່ານສຸດທ້າຍ: ຕໍ່ຈິກຊໍ & ສະເຫຼີມສະຫຼອງ ➔
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- PAGE 6: ACRYLIC MAGNET JIGSAW PUZZLE & CELEBRATION FINALE -->
+        <section class="page-section ${state.activePage === 6 ? "active" : ""}" id="page-6">
           <div class="page-content">
-            ${renderPageDots(4)}
+            ${renderPageDots(6)}
             ${renderJigsawAndCollageFinale()}
           </div>
         </section>
@@ -1480,7 +1730,7 @@
   function renderPageDots(currentPage) {
     return `
       <nav class="page-step-dots" aria-label="ເລືອກໜ້າ">
-        ${[1, 2, 3, 4]
+        ${[1, 2, 3, 4, 5, 6]
           .map(
             (p) => `
             <button
@@ -1578,6 +1828,288 @@
       music.playTone(480 + state.starsConnected * 55, 0.28, 0.085);
       updateConstellationInPlace();
     }
+  }
+
+  // ==================== STAGE 4: STARLIGHT SCRATCH CARD ====================
+  function initScratchCardCanvas() {
+    const canvas = document.getElementById("scratch-canvas");
+    if (!canvas) return;
+
+    if (state.scratchRevealed) {
+      canvas.style.display = "none";
+      const unlockWrap = document.getElementById("scratch-unlocked-wrap");
+      if (unlockWrap) unlockWrap.style.display = "flex";
+      const label = document.getElementById("scratch-percent-label");
+      if (label) label.textContent = "100%";
+      const fill = document.getElementById("scratch-progress-fill");
+      if (fill) fill.style.width = "100%";
+      return;
+    }
+
+    if (canvas.getAttribute("data-initialized") === "1") {
+      return;
+    }
+    canvas.setAttribute("data-initialized", "1");
+
+    const parentRect = canvas.parentElement?.getBoundingClientRect();
+    const w = parentRect?.width ? Math.floor(parentRect.width - 28) : 340;
+    const h = parentRect?.height ? Math.floor(parentRect.height - 28) : 190;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    canvas.width = Math.floor(w * dpr);
+    canvas.height = Math.floor(h * dpr);
+    canvas.style.width = w + "px";
+    canvas.style.height = h + "px";
+
+    const ctx = canvas.getContext("2d");
+    ctx.scale(dpr, dpr);
+
+    // Deep royal blue starlight scratch foil
+    const grad = ctx.createLinearGradient(0, 0, w, h);
+    grad.addColorStop(0, "#1d4ed8");
+    grad.addColorStop(0.45, "#2563eb");
+    grad.addColorStop(1, "#1e40af");
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, w, h);
+
+    // Subtle metallic decorative border
+    ctx.strokeStyle = "rgba(191, 219, 254, 0.6)";
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(6, 6, w - 12, h - 12);
+
+    // Star dust particles
+    ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
+    for (let i = 0; i < 42; i++) {
+      const sx = ((i * 47 + 13) % (w - 20)) + 10;
+      const sy = ((i * 31 + 7) % (h - 20)) + 10;
+      const r = (i % 3) + 1;
+      ctx.beginPath();
+      ctx.arc(sx, sy, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Golden sparks
+    ctx.fillStyle = "#fef08a";
+    ctx.font = "14px 'Noto Sans Lao', sans-serif";
+    ctx.fillText("✦", w * 0.12, h * 0.28);
+    ctx.fillText("✦", w * 0.85, h * 0.32);
+    ctx.fillText("✦", w * 0.18, h * 0.78);
+    ctx.fillText("✦", w * 0.82, h * 0.72);
+
+    // Instruction text
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 15px 'Noto Sans Lao', sans-serif";
+    ctx.fillText("✨ ຂູດບ່ອນນີ້ເພື່ອເປີດເຜີຍຄວາມລັບ ✨", w / 2, h / 2 - 12);
+
+    ctx.fillStyle = "#bfdbfe";
+    ctx.font = "12px 'Noto Sans Lao', sans-serif";
+    ctx.fillText("🪙 ໃຊ້ນິ້ວມື ຫຼື ເມົ້າຂູດແຜ່ນດາວສີຟ້າ", w / 2, h / 2 + 14);
+
+    let isScratching = false;
+    let strokeCount = 0;
+
+    const getPos = (e) => {
+      const b = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return {
+        x: clientX - b.left,
+        y: clientY - b.top,
+      };
+    };
+
+    const scratch = (x, y) => {
+      ctx.globalCompositeOperation = "destination-out";
+      ctx.beginPath();
+      ctx.arc(x, y, 24, 0, Math.PI * 2);
+      ctx.fill();
+
+      strokeCount++;
+      if (strokeCount % 4 === 0) {
+        music.playTone(850 + Math.random() * 300, 0.05, 0.02);
+      }
+      if (strokeCount % 8 === 0) {
+        checkProgress();
+      }
+    };
+
+    const checkProgress = () => {
+      try {
+        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imgData.data;
+        let transparent = 0;
+        const step = 64; // Sample every 16th pixel
+        let total = 0;
+        for (let i = 3; i < data.length; i += step) {
+          total++;
+          if (data[i] === 0) transparent++;
+        }
+        const pct = Math.min(100, Math.round((transparent / total) * 100));
+        state.scratchProgress = pct;
+
+        const label = document.getElementById("scratch-percent-label");
+        if (label) label.textContent = `${pct}%`;
+        const fill = document.getElementById("scratch-progress-fill");
+        if (fill) fill.style.width = `${pct}%`;
+
+        if (pct >= 50 && !state.scratchRevealed) {
+          revealScratchCard();
+        }
+      } catch (e) {}
+    };
+
+    const revealScratchCard = () => {
+      state.scratchRevealed = true;
+      state.scratchProgress = 100;
+      const label = document.getElementById("scratch-percent-label");
+      if (label) label.textContent = "100%";
+      const fill = document.getElementById("scratch-progress-fill");
+      if (fill) fill.style.width = "100%";
+
+      canvas.style.transition = "opacity 0.6s ease";
+      canvas.style.opacity = "0";
+      canvas.style.pointerEvents = "none";
+      setTimeout(() => {
+        canvas.style.display = "none";
+      }, 600);
+
+      const unlockWrap = document.getElementById("scratch-unlocked-wrap");
+      if (unlockWrap) {
+        unlockWrap.style.display = "flex";
+      }
+
+      music.playStarArpeggio();
+      startCelebrationConfetti();
+    };
+
+    const onStart = (e) => {
+      if (state.scratchRevealed) return;
+      isScratching = true;
+      const pos = getPos(e);
+      scratch(pos.x, pos.y);
+      if (e.cancelable && e.type.startsWith("touch")) e.preventDefault();
+    };
+
+    const onMove = (e) => {
+      if (!isScratching || state.scratchRevealed) return;
+      const pos = getPos(e);
+      scratch(pos.x, pos.y);
+      if (e.cancelable && e.type.startsWith("touch")) e.preventDefault();
+    };
+
+    const onEnd = () => {
+      isScratching = false;
+      if (!state.scratchRevealed) checkProgress();
+    };
+
+    canvas.addEventListener("mousedown", onStart);
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onEnd);
+
+    canvas.addEventListener("touchstart", onStart, { passive: false });
+    window.addEventListener("touchmove", onMove, { passive: false });
+    window.addEventListener("touchend", onEnd);
+
+    const instantBtn = document.getElementById("btn-instant-scratch");
+    if (instantBtn) {
+      instantBtn.onclick = () => {
+        revealScratchCard();
+      };
+    }
+  }
+
+  // ==================== STAGE 5: VINTAGE LOVE CASSETTE TAPE ====================
+  function initCassettePlayer() {
+    const playToggleBtn = document.getElementById("btn-cassette-toggle");
+    const prevBtn = document.getElementById("btn-cassette-prev");
+    const nextBtn = document.getElementById("btn-cassette-next");
+    const cassetteBody = document.getElementById("cassette-body-unit");
+    const leftReel = document.querySelector(".left-reel");
+    const rightReel = document.querySelector(".right-reel");
+    const eqBars = document.getElementById("cassette-equalizer");
+    const notesWrap = document.getElementById("cassette-floating-notes");
+    const trackTitleEl = document.getElementById("cassette-track-title");
+    const quoteTextEl = document.getElementById("cassette-quote-text");
+    const tracks = CONFIG.cassetteTracks || [];
+
+    const updateTrackUI = () => {
+      const cur = tracks[state.cassetteActiveTrack] || {
+        title: "01. ວິນາທີທີ່ພົບເຈົ້າ",
+        quote: "ວິນາທີທຳອິດທີ່ໄດ້ພົບເຈົ້າ ຄືຈຸດເລີ່ມຕົ້ນຂອງຄວາມສຸກທັງໝົດໃນຊີວິດ 💙",
+        duration: "03:14",
+      };
+
+      if (trackTitleEl) trackTitleEl.textContent = cur.title;
+      if (quoteTextEl) {
+        quoteTextEl.style.opacity = "0";
+        setTimeout(() => {
+          quoteTextEl.textContent = `"${cur.quote}"`;
+          quoteTextEl.style.opacity = "1";
+        }, 150);
+      }
+
+      document.querySelectorAll(".cassette-track-pill").forEach((pill) => {
+        const idx = Number(pill.getAttribute("data-track-idx"));
+        pill.classList.toggle("active", idx === state.cassetteActiveTrack);
+      });
+
+      if (state.cassettePlaying) {
+        music.playCassetteMelody(state.cassetteActiveTrack);
+      }
+    };
+
+    const setPlaying = (play) => {
+      state.cassettePlaying = play;
+      if (playToggleBtn) {
+        playToggleBtn.classList.toggle("playing", play);
+        playToggleBtn.innerHTML = play ? "⏸ ຢຸດຊົ່ວຄາວ (Pause)" : "▶ ຫຼິ້ນເພງ (Play)";
+      }
+      if (cassetteBody) cassetteBody.classList.toggle("is-playing", play);
+      if (leftReel) leftReel.classList.toggle("spinning", play);
+      if (rightReel) rightReel.classList.toggle("spinning", play);
+      if (eqBars) eqBars.classList.toggle("active", play);
+      if (notesWrap) notesWrap.classList.toggle("active", play);
+
+      if (play) {
+        music.playCassetteMelody(state.cassetteActiveTrack);
+      } else {
+        music.stopCassetteMelody();
+      }
+    };
+
+    if (playToggleBtn) {
+      playToggleBtn.onclick = () => {
+        setPlaying(!state.cassettePlaying);
+      };
+    }
+
+    if (prevBtn) {
+      prevBtn.onclick = () => {
+        state.cassetteActiveTrack = (state.cassetteActiveTrack - 1 + tracks.length) % tracks.length;
+        updateTrackUI();
+      };
+    }
+
+    if (nextBtn) {
+      nextBtn.onclick = () => {
+        state.cassetteActiveTrack = (state.cassetteActiveTrack + 1) % tracks.length;
+        updateTrackUI();
+      };
+    }
+
+    document.querySelectorAll(".cassette-track-pill").forEach((pill) => {
+      pill.onclick = () => {
+        const idx = Number(pill.getAttribute("data-track-idx"));
+        state.cassetteActiveTrack = idx;
+        if (!state.cassettePlaying) {
+          setPlaying(true);
+        } else {
+          updateTrackUI();
+        }
+      };
+    });
   }
 
   // ==================== INTERACTIVE DIRECT PIECE-TO-PIECE JIGSAW PUZZLE ====================
@@ -2066,7 +2598,13 @@
     const lightboxBackdrop = document.getElementById("scrapbook-lightbox-backdrop");
     if (lightboxBackdrop) lightboxBackdrop.addEventListener("click", closeLightbox);
 
-    // 5. Page 4: Interactive Acrylic Jigsaw Drag-and-Drop & Tap
+    // 5. Page 4: Interactive Starlight Scratch Card
+    initScratchCardCanvas();
+
+    // 6. Page 5: Vintage Love Cassette Player
+    initCassettePlayer();
+
+    // 7. Page 6: Interactive Acrylic Jigsaw Drag-and-Drop & Tap
     initJigsawDragSystem();
 
     const quickSolveJigsawBtn = document.getElementById("btn-quick-solve-jigsaw");
@@ -2105,6 +2643,18 @@
         state.starsConnected = 0;
         state.archiveOpened = [false, false, false, false, false, false];
         state.lightboxPhoto = null;
+        state.scratchRevealed = false;
+        state.scratchProgress = 0;
+        state.cassettePlaying = false;
+        state.cassetteActiveTrack = 0;
+        music.stopCassetteMelody();
+        const canvas = document.getElementById("scratch-canvas");
+        if (canvas) {
+          canvas.removeAttribute("data-initialized");
+          canvas.style.display = "";
+          canvas.style.opacity = "";
+          canvas.style.pointerEvents = "";
+        }
         state.jigsawPositions = null;
         state.jigsawGroups = null;
         state.jigsawCompleted = false;
@@ -2203,8 +2753,32 @@
         }
       });
 
+      if (pageNum !== 5 && state.cassettePlaying) {
+        music.stopCassetteMelody();
+        state.cassettePlaying = false;
+        const playToggleBtn = document.getElementById("btn-cassette-toggle");
+        if (playToggleBtn) {
+          playToggleBtn.classList.remove("playing");
+          playToggleBtn.innerHTML = "▶ ຫຼິ້ນເພງ (Play)";
+        }
+        const cassetteBody = document.getElementById("cassette-body-unit");
+        if (cassetteBody) cassetteBody.classList.remove("is-playing");
+        const reels = document.querySelectorAll(".cassette-reel");
+        reels.forEach((r) => r.classList.remove("spinning"));
+        const eq = document.getElementById("cassette-equalizer");
+        if (eq) eq.classList.remove("active");
+        const notes = document.getElementById("cassette-floating-notes");
+        if (notes) notes.classList.remove("active");
+      }
+
       if (pageNum === 2) {
         updateConstellationInPlace();
+      } else if (pageNum === 4) {
+        setTimeout(() => initScratchCardCanvas(), 60);
+      } else if (pageNum === 5) {
+        initCassettePlayer();
+      } else if (pageNum === 6) {
+        initJigsawDragSystem();
       }
       window.scrollTo({ top: 0, behavior: "smooth" });
 

@@ -58,6 +58,28 @@
       "🌌 ດາວດວງທີ 7 (ຄຳສັນຍາ): ສັນຍາວ່າຈະດູແລ ແລະ ຢູ່ຄຽງຂ້າງເຈົ້າແບບນີ້ໄປດົນໆ",
       "💙 ດາວແຫ່ງຄວາມຮັກທັງ 8 ດວງລຽງກັນເປັນ 'ຮູບຫົວໃຈສີຟ້າ' ແລ້ວ... ກຳລັງພາເຈົ້າໄປສູ່ເສັ້ນທາງຮູບຄວາມຊົງຈຳ ✨",
     ],
+    scratchQuote:
+      "ບໍ່ວ່າຈະຜ່ານໄປດົນປານໃດ, ຫົວໃຈດວງນີ້ກໍຍັງເລືອກເຈົ້າສະເໝີ... ຂອບໃຈທີ່ເຂົ້າມາເປັນຂອງຂວັນທີ່ດີທີ່ສຸດໃນຊີວິດຂ້ອຍເດີ້ 💙✨",
+    cassetteTracks: [
+      {
+        id: 0,
+        title: "01. ວິນາທີທີ່ພົບເຈົ້າ",
+        duration: "03:14",
+        quote: "ວິນາທີທຳອິດທີ່ໄດ້ພົບເຈົ້າ ຄືຈຸດເລີ່ມຕົ້ນຂອງຄວາມສຸກທັງໝົດໃນຊີວິດ 💙",
+      },
+      {
+        id: 1,
+        title: "02. ທ້ອງຟ້າສີຟ້າຂອງເຮົາ",
+        duration: "05:20",
+        quote: "ທຸກໆມື້ທີ່ມີເຈົ້າຢູ່ຄຽງຂ້າງ ທ້ອງຟ້າກໍສົດໃສ ແລະ ອົບອຸ່ນສະເໝີ ✨",
+      },
+      {
+        id: 2,
+        title: "03. ສຸກສັນວັນເກີດຄົນດີ",
+        duration: "10:17",
+        quote: "ຂໍໃຫ້ທຸກວັນເຕັມໄປດ້ວຍຮອຍຍິ້ມ, ຄວາມສຸກ ແລະ ຄວາມຮັກທີ່ສວຍງາມ ສຸກສັນວັນເກີດເດີ້ 🎂💙",
+      },
+    ],
   };
 
   const PRESET_IMAGES = [
@@ -541,12 +563,53 @@
           .join("")}
       </div>
 
+      <!-- Scratch Card & Cassette Tape (Pages 4 & 5) -->
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <div class="admin-card-title">
+            <span>🎫</span>
+            <span>4. ບັດຂູດຄວາມລັບ & ເທັບເພງ (Pages 4 & 5)</span>
+          </div>
+        </div>
+
+        <div class="admin-input-group">
+          <label class="admin-input-label">ຂໍ້ຄວາມລັບໃນບັດຂູດດວງດາວ (Scratch Card Secret Quote):</label>
+          <textarea id="ed-scratchQuote" class="admin-input-field" rows="3">${escapeHtml(
+            adminConfig.scratchQuote || DEFAULT_CONFIG.scratchQuote
+          )}</textarea>
+        </div>
+
+        <div class="admin-input-group" style="margin-top: 14px;">
+          <label class="admin-input-label">ຄຳເວົ້າເພງທີ 1: ວິນາທີທີ່ພົບເຈົ້າ (Track 01 Quote):</label>
+          <textarea id="ed-cassetteQuote0" class="admin-input-field" rows="2">${escapeHtml(
+            (adminConfig.cassetteTracks && adminConfig.cassetteTracks[0]?.quote) ||
+              DEFAULT_CONFIG.cassetteTracks[0].quote
+          )}</textarea>
+        </div>
+
+        <div class="admin-input-group">
+          <label class="admin-input-label">ຄຳເວົ້າເພງທີ 2: ທ້ອງຟ້າສີຟ້າຂອງເຮົາ (Track 02 Quote):</label>
+          <textarea id="ed-cassetteQuote1" class="admin-input-field" rows="2">${escapeHtml(
+            (adminConfig.cassetteTracks && adminConfig.cassetteTracks[1]?.quote) ||
+              DEFAULT_CONFIG.cassetteTracks[1].quote
+          )}</textarea>
+        </div>
+
+        <div class="admin-input-group">
+          <label class="admin-input-label">ຄຳເວົ້າເພງທີ 3: ສຸກສັນວັນເກີດຄົນດີ (Track 03 Quote):</label>
+          <textarea id="ed-cassetteQuote2" class="admin-input-field" rows="2">${escapeHtml(
+            (adminConfig.cassetteTracks && adminConfig.cassetteTracks[2]?.quote) ||
+              DEFAULT_CONFIG.cassetteTracks[2].quote
+          )}</textarea>
+        </div>
+      </div>
+
       <!-- Birthday Celebration & Coupon -->
       <div class="admin-card">
         <div class="admin-card-header">
           <div class="admin-card-title">
             <span>🎂</span>
-            <span>4. ຫົວຂໍ້ວັນເກີດ & ຄູປອງ (Page 4 Finale)</span>
+            <span>5. ຫົວຂໍ້ວັນເກີດ & ຄູປອງ (Page 6 Finale)</span>
           </div>
         </div>
 
@@ -1006,6 +1069,20 @@
       if (!adminConfig.whispers) adminConfig.whispers = [...DEFAULT_CONFIG.whispers];
       if (adminConfig.whispers[idx] !== undefined) {
         adminConfig.whispers[idx] = inp.value;
+      }
+    });
+
+    // Scratch Card & Cassette Tape
+    const sQuote = document.getElementById("ed-scratchQuote");
+    if (sQuote) adminConfig.scratchQuote = sQuote.value;
+
+    if (!adminConfig.cassetteTracks) {
+      adminConfig.cassetteTracks = JSON.parse(JSON.stringify(DEFAULT_CONFIG.cassetteTracks));
+    }
+    [0, 1, 2].forEach((idx) => {
+      const cq = document.getElementById(`ed-cassetteQuote${idx}`);
+      if (cq && adminConfig.cassetteTracks[idx]) {
+        adminConfig.cassetteTracks[idx].quote = cq.value;
       }
     });
 
