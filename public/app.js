@@ -1356,12 +1356,9 @@
                     <span id="sender-name">${escapeHtml(CONFIG.senderName)} 💙</span>
                   </h3>
 
-                  <div class="journey-cta-box">
-                    <div class="journey-cta-hint">
-                      👇 ກົດປຸ່ມ "ອອກເດີນທາງ" ດ້ານລຸ່ມນີ້ ເພື່ອເລີ່ມເດີນທາງໄປຫາໝູ່ດາວແຫ່ງຄວາມຮັກ
-                    </div>
-                    <button type="button" class="next-page-btn" id="letter-next-btn" data-target-page="2" style="margin-top:4px;">
-                      🚀 ອອກເດີນທາງ ➔
+                  <div class="journey-cta-box" style="display:flex; flex-direction:column; align-items:center;">
+                    <button type="button" class="next-page-btn" id="letter-next-btn" data-target-page="2" title="ໄປດ່ານຕໍ່ໄປ" aria-label="ໄປດ່ານຕໍ່ໄປ">
+                      ${renderNextArrowIcon()}
                     </button>
                   </div>
                 </article>
@@ -1471,12 +1468,14 @@
                 </button>
                 <button
                   type="button"
-                  class="constellation-mini-btn ${allStarsDone ? "" : "hidden"}"
+                  class="next-page-btn ${allStarsDone ? "" : "hidden"}"
                   id="btn-after-constellation"
                   data-target-page="3"
-                  style="padding:9px 20px; font-size:0.9rem; background:linear-gradient(135deg,#3b82f6,#2563eb);"
+                  title="ໄປດ່ານຕໍ່ໄປ"
+                  aria-label="ໄປດ່ານຕໍ່ໄປ"
+                  style="margin-top:0;"
                 >
-                  ໄປໜ້າເສັ້ນທາງຮູບຄວາມຊົງຈຳ ➔
+                  ${renderNextArrowIcon()}
                 </button>
               </div>
             </div>
@@ -1499,23 +1498,22 @@
 
             ${renderScrapbookBoard()}
 
-            <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:2px; flex-shrink:0;">
+            <div style="display:flex; gap:12px; justify-content:center; align-items:center; flex-wrap:wrap; margin-top:2px; flex-shrink:0;">
               ${
                 archiveOpenedCount < 6
                   ? `
                   <button
                     type="button"
-                    class="next-page-btn"
+                    class="archive-open-btn"
                     id="btn-open-next-archive"
-                    style="margin-top:0; padding:6px 14px; font-size:0.82rem; background:#ffffff; color:var(--accent-red); border:1.5px solid var(--accent-pink);"
                   >
                     📸 ເປີດຮູບຕໍ່ໄປ (${archiveOpenedCount + 1}/6)
                   </button>
                 `
                   : ""
               }
-              <button type="button" class="next-page-btn" data-target-page="4" style="margin-top:0; padding:6px 16px; font-size:0.82rem;">
-                ໄປໜ້າບັດຂູດຄວາມລັບ ➔
+              <button type="button" class="next-page-btn" data-target-page="4" title="ໄປດ່ານຕໍ່ໄປ" aria-label="ໄປດ່ານຕໍ່ໄປ" style="margin-top:0;">
+                ${renderNextArrowIcon()}
               </button>
             </div>
           </div>
@@ -1574,9 +1572,9 @@
               </div>
             </div>
 
-            <div id="scratch-unlocked-wrap" style="display:${state.scratchRevealed ? "flex" : "none"}; margin-top:14px; flex-shrink:0;">
-              <button type="button" class="next-page-btn pulse-glow" data-target-page="5" style="margin-top:0; padding:8px 22px; font-size:0.86rem;">
-                ໄປຟັງເທັບເພງແຫ່ງຄວາມຊົງຈຳ ➔
+            <div id="scratch-unlocked-wrap" style="display:${state.scratchRevealed ? "flex" : "none"}; margin-top:14px; flex-shrink:0; justify-content:center;">
+              <button type="button" class="next-page-btn pulse-glow" data-target-page="5" title="ໄປດ່ານຕໍ່ໄປ" aria-label="ໄປດ່ານຕໍ່ໄປ" style="margin-top:0;">
+                ${renderNextArrowIcon()}
               </button>
             </div>
           </div>
@@ -1706,8 +1704,8 @@
             </div>
 
             <div style="display:flex; justify-content:center; margin-top:12px; flex-shrink:0;">
-              <button type="button" class="next-page-btn" data-target-page="6" style="margin-top:0; padding:8px 22px; font-size:0.86rem;">
-                ໄປສູ່ດ່ານສຸດທ້າຍ: ຕໍ່ຈິກຊໍ & ສະເຫຼີມສະຫຼອງ ➔
+              <button type="button" class="next-page-btn" data-target-page="6" title="ໄປດ່ານຕໍ່ໄປ" aria-label="ໄປດ່ານຕໍ່ໄປ" style="margin-top:0;">
+                ${renderNextArrowIcon()}
               </button>
             </div>
           </div>
@@ -1743,6 +1741,15 @@
           )
           .join("")}
       </nav>
+    `;
+  }
+
+  function renderNextArrowIcon() {
+    return `
+      <svg class="next-arrow-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+        <polyline points="12 5 19 12 12 19"></polyline>
+      </svg>
     `;
   }
 
