@@ -1533,19 +1533,7 @@
               </p>
             </div>
 
-            <div class="scratch-status-wrap">
-              <div class="scratch-progress-pill">
-                <span>✨ ຂູດແລ້ວ: <strong id="scratch-percent-label">${state.scratchProgress}%</strong></span>
-                <div class="scratch-progress-track">
-                  <div class="scratch-progress-fill" id="scratch-progress-fill" style="width: ${state.scratchProgress}%;"></div>
-                </div>
-              </div>
-              <button type="button" class="scratch-instant-btn" id="btn-instant-scratch">
-                🪄 ຂູດທັງໝົດ
-              </button>
-            </div>
-
-            <div class="scratch-card-container" id="scratch-card-box">
+            <div class="scratch-card-container" id="scratch-card-box" style="margin-top:10px;">
               <div class="scratch-ticket-header">
                 <span class="scratch-ticket-tag">★ SPECIAL LOVE TICKET ★</span>
                 <span class="scratch-ticket-id">NO. 1402-BLUE</span>
