@@ -918,6 +918,68 @@
     `;
   }
 
+  // ==================== STAGE 5: 35MM MEMORY FILM STRIP ====================
+  function getFilmStripPhotos() {
+    const polaroids = (CONFIG.polaroids && CONFIG.polaroids.length > 0)
+      ? CONFIG.polaroids
+      : [];
+
+    const defaultItems = [
+      { image: "./media/med-do-fan-01.jpeg", caption: "ຮອຍຍິ້ມທີ່ເຮັດໃຫ້ໃຈຟູ 💙" },
+      { image: "./media/med-do-fan-02.jpeg", caption: "ຈັບມືກັນໄວ້ດົນໆເດີ້ ✨" },
+      { image: "./media/med-do-fan-03.jpeg", caption: "ຍ່າງຫຼິ້ນສວນໄຜ່ກັບກວາງນ້ອຍ 🦌" },
+      { image: "./media/med-do-fan-04.jpeg", caption: "ດີໃຈທີ່ມີເຈົ້າຢູ່ຂ້າງໆ 💎" },
+      { image: "./media/med-do-fan-05.jpeg", caption: "ເດດເບິ່ງໜັງຄູ່ກັນ 🎬" },
+      { image: "./media/med-do-fan-06.jpeg", caption: "ທຸກມຸມທີ່ມີເຈົ້າຄືຄວາມສຸກ 🌟" },
+      { image: "./media/med-do-fan-07.jpeg", caption: "ຄວາມຊົງຈຳທີ່ສວຍງາມທີ່ສຸດ 💙" },
+      { image: "./media/med-do-fan-08.jpeg", caption: "ຮອຍຍິ້ມຂອງຄົນດີ 🎂" },
+      { image: "./media/med-do-fan-01.jpeg", caption: "YOU & ME FOREVER 💙" },
+      { image: "./media/med-do-fan-02.jpeg", caption: "DO & FAN 14.02 ✨" },
+    ];
+
+    const result = [];
+    for (let i = 0; i < 10; i++) {
+      const p = polaroids[i % Math.max(1, polaroids.length)];
+      const def = defaultItems[i % defaultItems.length];
+      result.push({
+        image: (p && p.image) || def.image,
+        caption: (p && p.caption) || def.caption,
+        frameNum: String(i + 1).padStart(2, "0"),
+      });
+    }
+    return result;
+  }
+
+  function renderFilmFramesHtml() {
+    const photos = getFilmStripPhotos();
+    return photos
+      .map(
+        (p, idx) => `
+      <div class="film-frame-card" data-film-idx="${idx}">
+        <div class="film-sprocket-col left-col"></div>
+        <div class="film-frame-inner">
+          <div class="film-frame-top-info">
+            <span>KODAK LOVE 400</span>
+            <span>FRAME ${p.frameNum}A</span>
+            <span>SAFETY FILM</span>
+          </div>
+          <div class="film-photo-wrap">
+            <img src="${escapeHtml(resolveMediaUrl(p.image))}" class="film-photo-img" alt="${escapeHtml(p.caption)}" loading="lazy" />
+            <div class="film-frame-gloss"></div>
+          </div>
+          <div class="film-frame-bottom-info">
+            <span>DO & FAN 💙</span>
+            <span class="film-caption-text">${escapeHtml(p.caption)}</span>
+            <span>★ 1402</span>
+          </div>
+        </div>
+        <div class="film-sprocket-col right-col"></div>
+      </div>
+    `
+      )
+      .join("");
+  }
+
   // ==================== LIGHTBOX MODAL FOR SCRAPBOOK PHOTO ====================
   function renderScrapbookLightbox() {
     if (!state.lightboxPhoto) return "";
@@ -929,13 +991,37 @@
           <img
             src="${escapeHtml(resolveMediaUrl(state.lightboxPhoto.image))}"
             class="scrapbook-lightbox-img"
-            alt="${escapeHtml(state.lightboxPhoto.title)}"
+            alt="${escapeHtml(state.lightboxPhoto.caption || state.lightboxPhoto.title || "Photo")}"
           />
-          <div class="scrapbook-lightbox-caption">${escapeHtml(state.lightboxPhoto.caption)}</div>
-          <div class="scrapbook-lightbox-message">“${escapeHtml(state.lightboxPhoto.message)}”</div>
+          <div class="scrapbook-lightbox-caption">${escapeHtml(state.lightboxPhoto.caption || "")}</div>
+          ${state.lightboxPhoto.message ? `<div class="scrapbook-lightbox-message">“${escapeHtml(state.lightboxPhoto.message)}”</div>` : ""}
         </div>
       </div>
     `;
+  }
+
+  function openPhotoLightbox(photo) {
+    state.lightboxPhoto = photo;
+    let lb = document.getElementById("scrapbook-lightbox");
+    if (!lb) {
+      const holder = document.createElement("div");
+      holder.id = "lightbox-dynamic-container";
+      holder.innerHTML = renderScrapbookLightbox();
+      document.body.appendChild(holder);
+    } else {
+      lb.outerHTML = renderScrapbookLightbox();
+    }
+    const closeBtn = document.getElementById("btn-close-lightbox");
+    const backdrop = document.getElementById("scrapbook-lightbox-backdrop");
+    const closeHandler = () => {
+      state.lightboxPhoto = null;
+      const el = document.getElementById("scrapbook-lightbox");
+      if (el) el.remove();
+      const dyn = document.getElementById("lightbox-dynamic-container");
+      if (dyn) dyn.remove();
+    };
+    if (closeBtn) closeBtn.onclick = closeHandler;
+    if (backdrop) backdrop.onclick = closeHandler;
   }
 
   // ==================== JIGSAW PIECE SVG PATH GENERATOR ====================
@@ -1700,7 +1786,7 @@
                     <span class="cassette-hi-fi">HI-FI STEREO</span>
                   </div>
                   <div class="cassette-title-line" id="cassette-track-title">
-                    ${(CONFIG.cassetteTracks && CONFIG.cassetteTracks[state.cassetteActiveTrack]?.title) || "01. ວິນາທີທີ່ພົບເຈົ້າ"}
+                    ✨ OUR SPECIAL LOVE MEMORIES 💙 14.02
                   </div>
                 </div>
 
@@ -1716,6 +1802,9 @@
                   </div>
 
                   <div class="cassette-mid-viewport">
+                    <button type="button" class="cassette-center-play-btn ${state.cassettePlaying ? "is-playing" : ""}" id="btn-cassette-center-play" title="${state.cassettePlaying ? "ຢຸດຊົ່ວຄາວ (Pause)" : "ຫຼິ້ນເພງ (Play)"}">
+                      <span class="cassette-center-play-icon">${state.cassettePlaying ? "⏸" : "▶"}</span>
+                    </button>
                     <div class="cassette-equalizer ${state.cassettePlaying ? "active" : ""}" id="cassette-equalizer">
                       <span class="eq-bar bar-1"></span>
                       <span class="eq-bar bar-2"></span>
@@ -1757,41 +1846,25 @@
               </div>
             </div>
 
-            <div class="cassette-controls-bar">
-              <button type="button" class="cassette-btn-sub" id="btn-cassette-prev" title="ເພງກ່ອນໜ້າ">
-                ⏮
-              </button>
-              <button type="button" class="cassette-btn-main ${state.cassettePlaying ? "playing" : ""}" id="btn-cassette-toggle">
-                ${state.cassettePlaying ? "⏸ ຢຸດຊົ່ວຄາວ (Pause)" : "▶ ຫຼິ້ນເພງ (Play)"}
-              </button>
-              <button type="button" class="cassette-btn-sub" id="btn-cassette-next" title="ເພງຕໍ່ໄປ">
-                ⏭
-              </button>
-            </div>
+            <!-- 35mm Memory Film Strip Roll flowing downward -->
+            <div class="cassette-film-container">
+              <div class="film-container-badge ${state.cassettePlaying ? "is-playing" : ""}">
+                <span class="film-live-dot ${state.cassettePlaying ? "active" : ""}"></span>
+                <span>🎞️ ມ້ວນຟີມແຫ່ງຄວາມຊົງຈຳ (Love Memory Film) 💙</span>
+              </div>
 
-            <div class="cassette-tracks-pills">
-              ${(CONFIG.cassetteTracks || [])
-                .map(
-                  (t, idx) => `
-                <button
-                  type="button"
-                  class="cassette-track-pill ${state.cassetteActiveTrack === idx ? "active" : ""}"
-                  data-track-idx="${idx}"
-                >
-                  🎵 ${t.title}
-                </button>
-              `
-                )
-                .join("")}
-            </div>
+              <div class="cassette-film-viewport" id="cassette-film-viewport">
+                <div class="film-paused-overlay ${state.cassettePlaying ? "hidden" : ""}" id="film-paused-overlay">
+                  <div class="film-overlay-hint">
+                    <span class="film-overlay-icon">▶</span>
+                    <span>ກົດປຸ່ມ Play ຢູ່ກາງເທັບເພງເພື່ອເບິ່ງມ້ວນຟີມ 🎞️✨</span>
+                  </div>
+                </div>
 
-            <div class="cassette-quote-card" id="cassette-quote-card">
-              <div class="cassette-quote-icon">🎶</div>
-              <p class="cassette-quote-text" id="cassette-quote-text">
-                "${(CONFIG.cassetteTracks && CONFIG.cassetteTracks[state.cassetteActiveTrack]?.quote) || ""}"
-              </p>
-              <div class="cassette-quote-sub">
-                <span>⏱ ຄວາມຍາວ: ${(CONFIG.cassetteTracks && CONFIG.cassetteTracks[state.cassetteActiveTrack]?.duration) || "03:14"}</span> • <span>ແດ່: ຄົນພິເສດ 💙</span>
+                <div class="film-strip-track ${state.cassettePlaying ? "is-playing" : ""}" id="film-strip-track">
+                  ${renderFilmFramesHtml()}
+                  ${renderFilmFramesHtml()}
+                </div>
               </div>
             </div>
 
@@ -2139,70 +2212,42 @@
 
   // ==================== STAGE 5: VINTAGE LOVE CASSETTE TAPE ====================
   function initCassettePlayer() {
-    const playToggleBtn = document.getElementById("btn-cassette-toggle");
-    const prevBtn = document.getElementById("btn-cassette-prev");
-    const nextBtn = document.getElementById("btn-cassette-next");
+    const centerPlayBtn = document.getElementById("btn-cassette-center-play");
     const cassetteBody = document.getElementById("cassette-body-unit");
+    const filmTrack = document.getElementById("film-strip-track");
+    const filmOverlay = document.getElementById("film-paused-overlay");
+    const filmBadge = document.querySelector(".film-container-badge");
+    const liveDot = document.querySelector(".film-live-dot");
     const leftReel = document.querySelector(".left-reel");
     const rightReel = document.querySelector(".right-reel");
     const eqBars = document.getElementById("cassette-equalizer");
     const notesWrap = document.getElementById("cassette-floating-notes");
-    const trackTitleEl = document.getElementById("cassette-track-title");
-    const quoteTextEl = document.getElementById("cassette-quote-text");
-    const tracks = CONFIG.cassetteTracks || [];
-
-    const updateTrackUI = () => {
-      const cur = tracks[state.cassetteActiveTrack] || {
-        title: "01. ວິນາທີທີ່ພົບເຈົ້າ",
-        quote: "ວິນາທີທຳອິດທີ່ໄດ້ພົບເຈົ້າ ຄືຈຸດເລີ່ມຕົ້ນຂອງຄວາມສຸກທັງໝົດໃນຊີວິດ 💙",
-        duration: "03:14",
-      };
-
-      if (trackTitleEl) trackTitleEl.textContent = cur.title;
-      if (quoteTextEl) {
-        quoteTextEl.style.opacity = "0";
-        setTimeout(() => {
-          quoteTextEl.textContent = `"${cur.quote}"`;
-          quoteTextEl.style.opacity = "1";
-        }, 150);
-      }
-
-      document.querySelectorAll(".cassette-track-pill").forEach((pill) => {
-        const idx = Number(pill.getAttribute("data-track-idx"));
-        pill.classList.toggle("active", idx === state.cassetteActiveTrack);
-      });
-
-      if (state.cassettePlaying) {
-        music.playCassetteAudio(state.cassetteActiveTrack);
-      }
-      trackFanActivity(
-        "CASSETTE_TRACK",
-        `ປ່ຽນແທຣັກເພງ: ${cur.title} 🎶`,
-        `ເລືອກຟັງເພງ: "${cur.quote}"`,
-        5,
-        "🎵"
-      );
-    };
 
     const setPlaying = (play) => {
       state.cassettePlaying = play;
-      if (playToggleBtn) {
-        playToggleBtn.classList.toggle("playing", play);
-        playToggleBtn.innerHTML = play ? "⏸ ຢຸດຊົ່ວຄາວ (Pause)" : "▶ ຫຼິ້ນເພງ (Play)";
+      if (centerPlayBtn) {
+        centerPlayBtn.classList.toggle("is-playing", play);
+        const icon = centerPlayBtn.querySelector(".cassette-center-play-icon");
+        if (icon) icon.textContent = play ? "⏸" : "▶";
+        centerPlayBtn.setAttribute("title", play ? "ຢຸດຊົ່ວຄາວ (Pause)" : "ຫຼິ້ນເພງ (Play)");
       }
+      if (filmTrack) filmTrack.classList.toggle("is-playing", play);
+      if (filmOverlay) filmOverlay.classList.toggle("hidden", play);
+      if (filmBadge) filmBadge.classList.toggle("is-playing", play);
+      if (liveDot) liveDot.classList.toggle("active", play);
+
       if (cassetteBody) cassetteBody.classList.toggle("is-playing", play);
       if (leftReel) leftReel.classList.toggle("spinning", play);
       if (rightReel) rightReel.classList.toggle("spinning", play);
       if (eqBars) eqBars.classList.toggle("active", play);
       if (notesWrap) notesWrap.classList.toggle("active", play);
 
-      const curTrack = tracks[state.cassetteActiveTrack] || { title: "ເພງພິເສດ" };
       if (play) {
-        music.playCassetteAudio(state.cassetteActiveTrack);
+        music.playCassetteAudio(0);
         trackFanActivity(
           "CASSETTE_PLAY",
-          `ກົດຫຼິ້ນເພງຄາເຊັດ: ${curTrack.title} 🎵`,
-          "ກຳລັງຟັງເພງຮັກໃນເທບຄາເຊັດ",
+          "ກົດຫຼິ້ນເພງຄາເຊັດ & ເບິ່ງມ້ວນຟີມ 🎞️🎵",
+          "ກຳລັງຟັງເພງຮັກພິເສດ ແລະ ຊົມມ້ວນຟີມແຫ່ງຄວາມຊົງຈຳ 10 ຮູບ",
           5,
           "▶️"
         );
@@ -2210,42 +2255,59 @@
         music.stopCassetteAudio();
         trackFanActivity(
           "CASSETTE_PAUSE",
-          `ກົດຢຸດເພງຄາເຊັດຊົ່ວຄາວ ⏸`,
-          `${curTrack.title}`,
+          "ກົດຢຸດເພງຄາເຊັດຊົ່ວຄາວ ⏸",
+          "ຢຸດຟັງເພງ ແລະ ຢຸດມ້ວນຟີມ",
           5,
           "⏸"
         );
       }
     };
 
-    if (playToggleBtn) {
-      playToggleBtn.onclick = () => {
+    if (centerPlayBtn) {
+      centerPlayBtn.onclick = (e) => {
+        e.stopPropagation();
         setPlaying(!state.cassettePlaying);
       };
     }
 
-    if (prevBtn) {
-      prevBtn.onclick = () => {
-        state.cassetteActiveTrack = (state.cassetteActiveTrack - 1 + tracks.length) % tracks.length;
-        updateTrackUI();
+    if (cassetteBody) {
+      cassetteBody.onclick = (e) => {
+        if (
+          e.target.closest(".cassette-reel") ||
+          e.target.closest(".cassette-mid-viewport") ||
+          e.target.closest(".cassette-window-plate")
+        ) {
+          setPlaying(!state.cassettePlaying);
+        }
       };
     }
 
-    if (nextBtn) {
-      nextBtn.onclick = () => {
-        state.cassetteActiveTrack = (state.cassetteActiveTrack + 1) % tracks.length;
-        updateTrackUI();
+    if (filmOverlay) {
+      filmOverlay.onclick = () => {
+        setPlaying(true);
       };
     }
 
-    document.querySelectorAll(".cassette-track-pill").forEach((pill) => {
-      pill.onclick = () => {
-        const idx = Number(pill.getAttribute("data-track-idx"));
-        state.cassetteActiveTrack = idx;
-        if (!state.cassettePlaying) {
-          setPlaying(true);
-        } else {
-          updateTrackUI();
+    // Clicking any film frame opens photo in full lightbox
+    const filmCards = document.querySelectorAll(".film-frame-card");
+    const filmPhotos = getFilmStripPhotos();
+    filmCards.forEach((card) => {
+      card.onclick = () => {
+        const idx = Number(card.getAttribute("data-film-idx")) || 0;
+        const targetPhoto = filmPhotos[idx % filmPhotos.length];
+        if (targetPhoto) {
+          openPhotoLightbox({
+            image: targetPhoto.image,
+            caption: targetPhoto.caption,
+            message: "ຄວາມຊົງຈຳທີ່ສວຍງາມ ແລະ ມີຄ່າທີ່ສຸດ 💙",
+          });
+          trackFanActivity(
+            "FILM_PHOTO_CLICK",
+            `ເປີດເບິ່ງຮູບມ້ວນຟີມ #${targetPhoto.frameNum}A 🎞️`,
+            targetPhoto.caption,
+            5,
+            "🔍"
+          );
         }
       };
     });
@@ -2947,11 +3009,22 @@
       if (pageNum !== 5 && state.cassettePlaying) {
         music.stopCassetteAudio();
         state.cassettePlaying = false;
-        const playToggleBtn = document.getElementById("btn-cassette-toggle");
-        if (playToggleBtn) {
-          playToggleBtn.classList.remove("playing");
-          playToggleBtn.innerHTML = "▶ ຫຼິ້ນເພງ (Play)";
+        const centerPlayBtn = document.getElementById("btn-cassette-center-play");
+        if (centerPlayBtn) {
+          centerPlayBtn.classList.remove("is-playing");
+          const icon = centerPlayBtn.querySelector(".cassette-center-play-icon");
+          if (icon) icon.textContent = "▶";
+          centerPlayBtn.setAttribute("title", "ຫຼິ້ນເພງ (Play)");
         }
+        const filmTrack = document.getElementById("film-strip-track");
+        if (filmTrack) filmTrack.classList.remove("is-playing");
+        const filmOverlay = document.getElementById("film-paused-overlay");
+        if (filmOverlay) filmOverlay.classList.remove("hidden");
+        const filmBadge = document.querySelector(".film-container-badge");
+        if (filmBadge) filmBadge.classList.remove("is-playing");
+        const liveDot = document.querySelector(".film-live-dot");
+        if (liveDot) liveDot.classList.remove("active");
+
         const cassetteBody = document.getElementById("cassette-body-unit");
         if (cassetteBody) cassetteBody.classList.remove("is-playing");
         const reels = document.querySelectorAll(".cassette-reel");
