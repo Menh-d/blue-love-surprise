@@ -1107,21 +1107,6 @@
           }
         </div>
 
-        ${
-          !state.jigsawCompleted
-            ? `
-          <div style="text-align:center; margin-top:-6px;">
-            <button
-              type="button"
-              id="btn-quick-solve-jigsaw"
-              style="background:transparent; border:none; color:var(--accent-red); font-weight:700; font-size:0.86rem; text-decoration:underline; cursor:pointer;"
-            >
-              ⚡ ວາງຊິ້ນສ່ວນທັງໝົດໃຫ້ຄົບເລີຍ ➔
-            </button>
-          </div>
-        `
-            : ""
-        }
 
         <!-- Tabletop Stage with ONLY the 6 scattered jigsaw pieces OR the seamless photo -->
         <div
@@ -1299,13 +1284,6 @@
             <div style="font-size:0.86rem; color:var(--text-secondary); font-weight:600;">
               ວາງຫົວໃຈສີຟ້າຄົບ ${state.tttHearts.filter(Boolean).length} / 3 ດວງ
             </div>
-            <button
-              type="button"
-              id="btn-quick-unlock"
-              style="background:transparent; border:none; color:var(--accent-red); font-weight:700; font-size:0.88rem; text-decoration:underline; cursor:pointer;"
-            >
-              ວາງຫົວໃຈທັງ 3 ດວງ & ເປີດເຂົ້າເບິ່ງເລີຍ ➔
-            </button>
           </div>
         </div>
 
@@ -1994,12 +1972,6 @@
     window.addEventListener("touchmove", onMove, { passive: false });
     window.addEventListener("touchend", onEnd);
 
-    const instantBtn = document.getElementById("btn-instant-scratch");
-    if (instantBtn) {
-      instantBtn.onclick = () => {
-        revealScratchCard();
-      };
-    }
   }
 
   // ==================== STAGE 5: VINTAGE LOVE CASSETTE TAPE ====================
@@ -2446,14 +2418,6 @@
       });
     });
 
-    const quickUnlockBtn = document.getElementById("btn-quick-unlock");
-    if (quickUnlockBtn) {
-      quickUnlockBtn.addEventListener("click", () => {
-        state.tttHearts = [true, true, true];
-        renderTemplateShell();
-        unlockFromTicTacToe();
-      });
-    }
 
     // 1. Page Navigation Buttons & Step Dots
     document.querySelectorAll("[data-target-page]").forEach((btn) => {
@@ -2592,32 +2556,6 @@
     // 7. Page 6: Interactive Acrylic Jigsaw Drag-and-Drop & Tap
     initJigsawDragSystem();
 
-    const quickSolveJigsawBtn = document.getElementById("btn-quick-solve-jigsaw");
-    if (quickSolveJigsawBtn) {
-      quickSolveJigsawBtn.addEventListener("click", () => {
-        const stageEl = document.getElementById("jigsaw-table-stage");
-        const stageW = stageEl?.clientWidth || (window.innerWidth < 680 ? window.innerWidth - 32 : 640);
-        const stageH = stageEl?.clientHeight || 420;
-        const { coreSize, pieceSize } = getJigsawMetrics(stageW);
-
-        const photoW = 2 * coreSize;
-        const photoH = 3 * coreSize;
-        const originX = Math.round((stageW - photoW) / 2 - (pieceSize - coreSize) / 2);
-        const originY = Math.round((stageH - photoH) / 2 - (pieceSize - coreSize) / 2);
-
-        state.jigsawPositions = JIGSAW_PIECES_CONFIG.map((p) => ({
-          x: originX + p.col * coreSize,
-          y: originY + p.row * coreSize,
-          rot: 0,
-        }));
-        state.jigsawGroups = [[0, 1, 2, 3, 4, 5]];
-        state.jigsawCompleted = true;
-
-        music.playStarArpeggio();
-        renderTemplateShell();
-        startCelebrationConfetti();
-      });
-    }
 
     const restartBtn = document.getElementById("restart-btn");
     if (restartBtn) {
