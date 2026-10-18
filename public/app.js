@@ -1965,7 +1965,6 @@
       }
 
       music.playStarArpeggio();
-      startCelebrationConfetti();
     };
 
     const onStart = (e) => {
@@ -2584,7 +2583,7 @@
     const restartBtn = document.getElementById("restart-btn");
     if (restartBtn) {
       restartBtn.addEventListener("click", () => {
-        state.confettiActive = false;
+        stopCelebrationConfetti();
         state.letterOpened = false;
         state.envelopeOpening = false;
         state.starsConnected = 0;
@@ -2726,6 +2725,13 @@
         initCassettePlayer();
       } else if (pageNum === 6) {
         initJigsawDragSystem();
+        if (state.jigsawCompleted) {
+          startCelebrationConfetti();
+        }
+      }
+
+      if (pageNum !== 6) {
+        stopCelebrationConfetti();
       }
       window.scrollTo({ top: 0, behavior: "smooth" });
 
@@ -2774,8 +2780,26 @@
     typeNext();
   }
 
-  // ==================== BLUE CELEBRATION CONFETTI ENGINE ====================
+  // ==================== BLUE CELEBRATION CONFETTI ENGINE (STAGE 6 FINALE ONLY) ====================
+  let confettiAnimId = null;
+
+  function stopCelebrationConfetti() {
+    state.confettiActive = false;
+    if (confettiAnimId) {
+      cancelAnimationFrame(confettiAnimId);
+      confettiAnimId = null;
+    }
+    const canvas = document.getElementById("canvas-confetti");
+    if (canvas) {
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  }
+
   function startCelebrationConfetti() {
+    // Strictly restrict falling heart glitter to Stage 6 (the finale)!
+    if (state.activePage !== 6) return;
+
     const canvas = document.getElementById("canvas-confetti");
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -2803,11 +2827,19 @@
       isHeart: Math.random() > 0.35,
     }));
 
+    if (confettiAnimId) {
+      cancelAnimationFrame(confettiAnimId);
+      confettiAnimId = null;
+    }
+
     state.confettiActive = true;
     let lastTime = performance.now();
 
     function animate(currentTime) {
-      if (!state.confettiActive) return;
+      if (!state.confettiActive || state.activePage !== 6) {
+        if (canvas) ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        return;
+      }
       const dt = Math.min((currentTime - lastTime) / 16.67, 2.5) || 1;
       lastTime = currentTime;
 
@@ -2839,9 +2871,9 @@
         }
         ctx.restore();
       });
-      requestAnimationFrame(animate);
+      confettiAnimId = requestAnimationFrame(animate);
     }
-    requestAnimationFrame(animate);
+    confettiAnimId = requestAnimationFrame(animate);
   }
 
   // ==================== DIGITAL WISHBOX LIVE PERSONALIZATION STUDIO ====================
