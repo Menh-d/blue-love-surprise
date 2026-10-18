@@ -1637,7 +1637,7 @@ body {
 }
 
 .jigsaw-table-stage.all-connected {
-  height: 375px;
+  height: 420px;
   margin-bottom: 4px;
 }
 
@@ -1692,7 +1692,7 @@ body {
     0 0 65px rgba(147, 197, 253, 0.45);
   border: 3.5px solid rgba(255, 255, 255, 0.95);
   animation: seamlessPhotoReveal 0.65s cubic-bezier(0.175, 0.885, 0.32, 1.25) forwards, completedPhotoGlow 2.5s infinite ease-in-out 0.65s;
-  z-index: 40;
+  z-index: 120;
 }
 
 @keyframes seamlessPhotoReveal {
@@ -1748,25 +1748,26 @@ body {
   pointer-events: none;
 }
 
-/* Romantic Completion Plaque */
+/* Romantic Completion Plaque - Elevated Z-Index so NEVER obscured */
 .jigsaw-frame-plaque {
   position: absolute;
-  bottom: 0px;
+  bottom: -16px;
   left: 50%;
   transform: translateX(-50%);
   background: linear-gradient(135deg, #1e3a8a, #0f172a);
   border: 1.5px solid #93c5fd;
-  padding: 6px 24px;
+  padding: 5px 22px;
   border-radius: 999px;
   font-family: 'Outfit', sans-serif;
-  font-size: 0.84rem;
+  font-size: 0.82rem;
   font-weight: 800;
   color: #ffffff;
-  letter-spacing: 1px;
+  letter-spacing: 0.8px;
   white-space: nowrap;
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
   animation: plaquePop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  z-index: 50;
+  z-index: 130;
+  pointer-events: none;
 }
 
 @keyframes plaquePop {
@@ -1775,14 +1776,14 @@ body {
 }
 
 /* ==========================================================================
-   FLOATING ROMANTIC BIRTHDAY BALLOONS (NO CARD AT THE BOTTOM!)
+   FLOATING ROMANTIC BIRTHDAY BALLOONS (BEHIND PHOTO & OUTWARDLY SPREAD)
    ========================================================================== */
 .balloons-floating-arena {
   position: absolute;
-  inset: -40px -90px;
+  inset: -20px -70px;
   pointer-events: none;
   overflow: visible;
-  z-index: 60;
+  z-index: 25;
 }
 
 .floating-message-balloon {
@@ -1880,193 +1881,283 @@ body {
   letter-spacing: 0.5px;
 }
 
-/* Balloon Spatial Layout on Table Stage */
+/* Balloon Spatial Layout on Table Stage (Outwardly placed, clearing center photo & plaque) */
 .balloon-pos-0 {
-  left: -2%;
+  left: -28px;
   top: 0%;
   animation: balloonDrift0 7s infinite ease-in-out;
 }
 .balloon-pos-1 {
-  right: -2%;
+  right: -28px;
   top: 2%;
   animation: balloonDrift1 6.5s infinite ease-in-out 0.4s;
 }
 .balloon-pos-2 {
-  left: -6%;
-  top: 50%;
+  left: -52px;
+  top: 30%;
   animation: balloonDrift2 7.5s infinite ease-in-out 0.8s;
 }
 .balloon-pos-3 {
-  right: -6%;
-  top: 48%;
+  right: -52px;
+  top: 32%;
   animation: balloonDrift0 6.8s infinite ease-in-out 1.2s;
 }
 .balloon-pos-4 {
-  left: 6%;
-  bottom: -36px;
+  left: -24px;
+  bottom: 0px;
   animation: balloonDrift1 8s infinite ease-in-out 0.6s;
 }
 .balloon-pos-5 {
-  right: 6%;
-  bottom: -40px;
+  right: -24px;
+  bottom: 4px;
   animation: balloonDrift2 7.2s infinite ease-in-out 1.5s;
 }
 
 @keyframes balloonDrift0 {
   0%, 100% { transform: translate3d(0, 0, 0) rotate(-3deg); }
-  50% { transform: translate3d(8px, -18px, 0) rotate(3deg); }
+  50% { transform: translate3d(6px, -14px, 0) rotate(3deg); }
 }
 @keyframes balloonDrift1 {
   0%, 100% { transform: translate3d(0, 0, 0) rotate(3deg); }
-  50% { transform: translate3d(-10px, -20px, 0) rotate(-2deg); }
+  50% { transform: translate3d(-6px, -16px, 0) rotate(-2deg); }
 }
 @keyframes balloonDrift2 {
   0%, 100% { transform: translate3d(0, 0, 0) rotate(-2deg); }
-  50% { transform: translate3d(6px, -16px, 0) rotate(2.5deg); }
+  50% { transform: translate3d(5px, -12px, 0) rotate(2.5deg); }
 }
 @keyframes tagGentleSway {
   0%, 100% { transform: rotate(-1.5deg); }
   50% { transform: rotate(1.5deg); }
 }
 
-/* Sleek Action Pill Positioned Directly Under Photo & Plaque */
-.floating-celebration-action-pill {
-  position: relative;
-  margin: 20px auto 12px;
+/* Reply Bar Directly Attached Under the Plaque "DO & FAN" */
+.plaque-attached-reply-pill {
+  position: absolute;
+  bottom: -62px;
+  left: 50%;
+  transform: translateX(-50%);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  background: rgba(255, 255, 255, 0.94);
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(14px);
   border: 1.5px solid rgba(147, 197, 253, 0.95);
-  padding: 6px 16px;
+  padding: 4px 12px;
   border-radius: 999px;
-  box-shadow: 0 10px 28px rgba(30, 58, 109, 0.15);
-  z-index: 80;
+  box-shadow: 0 8px 24px rgba(30, 58, 109, 0.16);
+  z-index: 140;
+  white-space: nowrap;
   max-width: 94vw;
   animation: popPillEntrance 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.25) forwards;
 }
 
 @keyframes popPillEntrance {
-  0% { transform: translateY(18px); opacity: 0; }
-  100% { transform: translateY(0); opacity: 1; }
+  0% { transform: translate(-50%, 14px); opacity: 0; }
+  100% { transform: translate(-50%, 0); opacity: 1; }
 }
 
-.floating-reply-input {
+.attached-reply-input {
   border: 1px solid #bfdbfe;
   background: #f8fafc;
-  padding: 8px 14px;
+  padding: 7px 14px;
   border-radius: 999px;
-  font-size: 0.86rem;
+  font-size: 0.84rem;
   color: #1e3a8a;
   outline: none;
-  min-width: 180px;
-  max-width: 260px;
+  width: 190px;
+  max-width: 220px;
   transition: all 0.2s ease;
 }
 
-.floating-reply-input:focus {
+.attached-reply-input:focus {
   background: #ffffff;
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
 }
 
-.floating-send-btn {
+.attached-send-btn {
   background: linear-gradient(135deg, #2563eb, #1d4ed8);
   color: #ffffff;
   border: none;
-  padding: 8px 16px;
+  padding: 7px 16px;
   border-radius: 999px;
-  font-size: 0.86rem;
+  font-size: 0.84rem;
   font-weight: 700;
   cursor: pointer;
   white-space: nowrap;
   transition: transform 0.18s ease;
 }
 
-.floating-send-btn:hover {
+.attached-send-btn:hover {
   transform: scale(1.05);
 }
 
-.floating-restart-btn {
-  background: #eff6ff;
-  color: #1e3a8a;
-  border: 1px solid #bfdbfe;
-  padding: 8px 14px;
-  border-radius: 999px;
-  font-size: 0.84rem;
-  font-weight: 700;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.18s ease;
-}
-
-.floating-restart-btn:hover {
-  background: #dbeafe;
+.attached-send-btn:active {
+  transform: scale(0.96);
 }
 
 .reply-sent-badge {
   color: #1d4ed8;
   font-weight: 700;
-  font-size: 0.88rem;
+  font-size: 0.84rem;
   padding: 4px 10px;
+}
+
+/* Standalone Small ↺ Restart Button in Bottom-Right Corner */
+.corner-restart-btn {
+  position: fixed;
+  bottom: 18px;
+  right: 18px;
+  z-index: 1000;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  border: 1.2px solid #bfdbfe;
+  color: #1e40af;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  box-shadow: 0 4px 16px rgba(30, 58, 109, 0.15);
+  cursor: pointer;
+  transition: all 0.22s ease;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.corner-restart-btn:hover {
+  background: #ffffff;
+  color: #1d4ed8;
+  border-color: #60a5fa;
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.25);
+}
+
+.corner-restart-btn:active {
+  transform: scale(0.96);
+}
+
+.corner-restart-icon {
+  font-size: 0.92rem;
+  font-weight: 800;
+  line-height: 1;
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+.corner-restart-btn:hover .corner-restart-icon {
+  transform: rotate(-180deg);
 }
 
 @media (max-width: 680px) {
   #page-4.page-section {
-    padding-top: 74px;
-    padding-bottom: 90px;
+    padding-top: 54px;
+    padding-bottom: 48px;
+  }
+  .jigsaw-birthday-header h1 {
+    margin: 0 0 3px 0 !important;
+  }
+  .jigsaw-instruction-pill {
+    padding: 5px 14px;
+    font-size: 0.8rem;
   }
   .jigsaw-table-stage {
-    height: 440px;
-    max-width: 380px;
+    height: 420px;
+    max-width: 360px;
+  }
+  .jigsaw-table-stage.all-connected {
+    height: 360px;
+    margin-bottom: 2px;
   }
   .balloons-floating-arena {
-    inset: -30px -10px;
+    inset: -15px -8px;
   }
   .balloon-msg-tag {
-    max-width: 126px;
-    padding: 4px 8px;
+    max-width: 104px;
+    padding: 3px 6px;
+    border-radius: 10px;
   }
   .balloon-msg-header {
-    font-size: 0.7rem;
+    font-size: 0.66rem;
+    gap: 3px;
   }
   .balloon-msg-text {
-    font-size: 0.66rem;
-    line-height: 1.25;
+    font-size: 0.62rem;
+    line-height: 1.2;
+  }
+  .coupon-balloon .coupon-code-pill {
+    font-size: 0.62rem;
+    padding: 1px 5px;
   }
   .balloon-visual-wrap {
-    width: 48px;
-    height: 62px;
+    width: 42px;
+    height: 54px;
   }
-  .balloon-pos-0 { left: -4px; top: -15px; }
-  .balloon-pos-1 { right: -4px; top: -12px; }
-  .balloon-pos-2 { left: -8px; top: 46%; }
-  .balloon-pos-3 { right: -8px; top: 44%; }
-  .balloon-pos-4 { left: 4%; bottom: -44px; }
-  .balloon-pos-5 { right: 4%; bottom: -48px; }
-
-  .jigsaw-table-stage.all-connected {
-    height: 300px;
-    margin-bottom: 6px;
+  .balloon-string-tail {
+    height: 16px;
   }
 
-  .floating-celebration-action-pill {
-    margin: 14px auto 8px;
-    padding: 5px 10px;
-    gap: 6px;
+  /* Keep mobile balloons strictly to the sides, far away from the center column */
+  .balloon-pos-0 { left: -10px; top: -10px; }
+  .balloon-pos-1 { right: -10px; top: -8px; }
+  .balloon-pos-2 { left: -16px; top: 26%; }
+  .balloon-pos-3 { right: -16px; top: 28%; }
+  .balloon-pos-4 { left: -8px; bottom: 8px; }
+  .balloon-pos-5 { right: -8px; bottom: 8px; }
+
+  .jigsaw-frame-plaque {
+    padding: 4px 14px;
+    font-size: 0.72rem;
+    bottom: -14px;
   }
-  .floating-reply-input {
-    min-width: 130px;
+  .plaque-attached-reply-pill {
+    bottom: -56px;
+    padding: 3px 8px;
+    gap: 4px;
+  }
+  .attached-reply-input {
+    width: 140px;
     max-width: 160px;
-    font-size: 0.78rem;
-    padding: 6px 10px;
+    font-size: 0.74rem;
+    padding: 5px 10px;
   }
-  .floating-send-btn,
-  .floating-restart-btn {
-    padding: 6px 10px;
-    font-size: 0.76rem;
+  .attached-send-btn {
+    padding: 5px 12px;
+    font-size: 0.74rem;
+  }
+  .corner-restart-btn {
+    bottom: 12px;
+    right: 12px;
+    padding: 4px 10px;
+    font-size: 0.68rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .balloon-msg-tag {
+    max-width: 90px;
+    padding: 2px 4px;
+  }
+  .balloon-msg-header {
+    font-size: 0.6rem;
+  }
+  .balloon-msg-text {
+    font-size: 0.56rem;
+  }
+  .jigsaw-frame-plaque {
+    font-size: 0.66rem;
+    padding: 3px 10px;
+  }
+  .attached-reply-input {
+    width: 115px;
+    font-size: 0.7rem;
+  }
+  .attached-send-btn {
+    font-size: 0.7rem;
+    padding: 4px 10px;
   }
 }
 

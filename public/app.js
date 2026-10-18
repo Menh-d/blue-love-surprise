@@ -1093,8 +1093,30 @@
                     onerror="this.src='${DEFAULT_PLACEHOLDER_IMG}'"
                   />
                   <div class="jigsaw-seamless-glass-gloss"></div>
-                  <div class="jigsaw-frame-plaque" style="bottom:-18px;">
+                  <div class="jigsaw-frame-plaque" id="jigsaw-frame-plaque">
                     <span>✨ DO &amp; FAN 💙 YOU &amp; ME FOREVER ✨</span>
+                  </div>
+
+                  <!-- Reply bar directly anchored under the DO & FAN plaque -->
+                  <div class="plaque-attached-reply-pill" id="celebration-reply-pill">
+                    ${
+                      state.replySent
+                        ? `<span class="reply-sent-badge">✓ ສົ່ງຫົວໃຈ ແລະ ຄຳຕອບກັບໄປຫາ ${escapeHtml(
+                            CONFIG.senderName
+                          )} ແລ້ວ 💙</span>`
+                        : `
+                        <input
+                          type="text"
+                          id="celebration-reply-input"
+                          class="attached-reply-input"
+                          placeholder="ພິມຂໍ້ຄວາມຕອບກັບຫາ ${escapeHtml(CONFIG.senderName)}..."
+                          value="${escapeHtml(state.replyText)}"
+                        />
+                        <button type="button" id="btn-send-reply" class="attached-send-btn">
+                          ສົ່ງ 💙
+                        </button>
+                      `
+                    }
                   </div>
                 </div>
 
@@ -1133,33 +1155,20 @@
           }
         </div>
 
-        <!-- Sleek Floating Bottom Action Pill (Reply + Restart) - NO giant card! -->
+        <!-- Small ↺ Restart Button anchored in bottom-right corner -->
         ${
           state.jigsawCompleted
             ? `
-            <div class="floating-celebration-action-pill" id="celebration-action-pill">
-              ${
-                state.replySent
-                  ? `<span class="reply-sent-badge">✓ ສົ່ງຫົວໃຈ ແລະ ຄຳຕອບກັບໄປຫາ ${escapeHtml(
-                      CONFIG.senderName
-                    )} ແລ້ວ 💙</span>`
-                  : `
-                  <input
-                    type="text"
-                    id="celebration-reply-input"
-                    class="floating-reply-input"
-                    placeholder="ພິມຂໍ້ຄວາມຕອບກັບຫາ ${escapeHtml(CONFIG.senderName)}..."
-                    value="${escapeHtml(state.replyText)}"
-                  />
-                  <button type="button" id="btn-send-reply" class="floating-send-btn">
-                    ສົ່ງ 💙
-                  </button>
-                `
-              }
-              <button type="button" id="restart-btn" class="floating-restart-btn">
-                ↺ ຫຼິ້ນໃໝ່
-              </button>
-            </div>
+            <button
+              type="button"
+              id="restart-btn"
+              class="corner-restart-btn"
+              title="ເລີ່ມຕົ້ນຫຼິ້ນໃໝ່"
+              aria-label="ເລີ່ມຕົ້ນຫຼິ້ນໃໝ່"
+            >
+              <span class="corner-restart-icon">↺</span>
+              <span class="corner-restart-text">ຫຼິ້ນໃໝ່</span>
+            </button>
           `
             : ""
         }
