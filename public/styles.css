@@ -945,32 +945,42 @@ body {
   opacity: 1;
 }
 
-.constellation-active-line {
+/* ==========================================================================
+   CONSTELLATION HEART LINES (ONLY REVEALED ONCE ALL 8 STARS ARE TAPPED)
+   ========================================================================== */
+.constellation-heart-line {
   stroke: #93c5fd;
-  stroke-width: 1.35;
+  stroke-width: 2.2;
   stroke-linecap: round;
-  filter: drop-shadow(0 0 4px #60a5fa);
-  will-change: opacity, stroke-width;
+  filter: drop-shadow(0 0 6px #60a5fa) drop-shadow(0 0 14px #3b82f6);
+  opacity: 0;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: revealHeartLine 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.constellation-active-line.is-newest-line {
-  animation: drawStarLine 0.32s ease-out forwards;
+@keyframes revealHeartLine {
+  0% {
+    opacity: 0;
+    stroke-dashoffset: 100;
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    stroke-dashoffset: 0;
+  }
 }
 
-.constellation-active-line.is-solid-line {
-  opacity: 1;
-}
-
-@keyframes drawStarLine {
-  from { opacity: 0.3; stroke-width: 0.6; }
-  to { opacity: 1; stroke-width: 1.35; }
-}
-
+/* ==========================================================================
+   3D EXTRUDED LOVE STARS (MATCHING star.css 3D TEXT-SHADOW SPEC)
+   ========================================================================== */
 .star-node-btn {
   position: absolute;
   transform: translate(-50%, -50%);
-  width: 48px;
-  height: 48px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   border: none;
   background: transparent;
@@ -981,88 +991,181 @@ body {
   align-items: center;
   justify-content: center;
   padding: 0;
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  transition: transform 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.25), opacity 0.35s ease;
+  transform-style: preserve-3d;
+  perspective: 600px;
 }
 
-.star-node-core {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: rgba(148, 163, 184, 0.35);
-  border: 1.5px solid rgba(226, 232, 240, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.65rem;
-  font-weight: 800;
-  color: transparent;
-  transition: all 0.3s ease;
+.star-3d-glyph {
+  position: relative;
+  display: block;
+  font-size: clamp(34px, 7.5vmin, 44px);
+  line-height: 1;
+  text-align: center;
+  user-select: none;
+  -webkit-user-select: none;
+  font-family: Arial, "Apple Symbols", "Segoe UI Symbol", sans-serif;
+  transition: all 0.45s ease;
+  transform-style: preserve-3d;
 }
 
-.star-node-label {
-  position: absolute;
-  top: 36px;
-  white-space: nowrap;
-  font-size: 0.68rem;
-  font-weight: 600;
-  color: #bae6fd;
-  background: rgba(15, 23, 42, 0.82);
-  border: 1px solid rgba(147, 197, 253, 0.4);
-  padding: 3px 9px;
-  border-radius: 999px;
-  opacity: 0;
-  transform: translateY(-3px);
-  transition: all 0.25s ease;
-  pointer-events: none;
+/* 1. UNCHECKED / DORMANT STAR (Exact match to star.css unchecked:before) */
+.star-node-btn .star-3d-glyph {
+  color: #18242f;
+  transform: translateY(4px) scale(0.92);
+  filter: none;
+  text-shadow:
+    1px 1px 1px rgba(255, 255, 255, 0.28),
+    -1px -1px 1px rgba(255, 255, 255, 0.28),
+    -1px 0px 1px rgba(255, 255, 255, 0.28),
+    1px 0px 1px rgba(255, 255, 255, 0.28),
+    0 1px 0 #1d8be1,
+    0 2px 0 #1972b7,
+    0 3px 0 #155f97,
+    0 4px 0 #104e7d,
+    0 5px 0 #0e4169,
+    0 6px 0 #072239,
+    0 7px 2px rgba(0, 0, 0, 0.4);
 }
 
+.star-node-btn:hover .star-3d-glyph {
+  color: #2196F3;
+  transform: translateY(1px) scale(1);
+  filter: drop-shadow(0 0 10px rgba(33, 150, 243, 0.65));
+}
+
+/* 2. CURRENT TARGET STAR (Pulsing in 3D to draw attention) */
 .star-node-btn.current-target {
+  z-index: 25;
+}
+
+.star-node-btn.current-target .star-3d-glyph {
+  color: #e2f2ff;
+  animation: pulseTargetStar3D 1.35s infinite ease-in-out;
+  text-shadow:
+    1px 1px 1px rgba(255, 255, 255, 0.6),
+    -1px -1px 1px rgba(255, 255, 255, 0.6),
+    -1px 0px 1px rgba(255, 255, 255, 0.6),
+    1px 0px 1px rgba(255, 255, 255, 0.6),
+    0 1px 0 #1d8be1,
+    0 2px 0 #1b81d1,
+    0 3px 0 #1972b7,
+    0 4px 0 #1a76bd,
+    0 5px 0 #196fb1,
+    0 6px 0 #1868a5,
+    0 7px 0 #155f97,
+    0 8px 0 #125689,
+    0 9px 0 #104e7d,
+    0 10px 0 #0e4169,
+    0 11px 0 #072239,
+    0 12px 3px rgba(0, 0, 0, 0.45);
+  filter: drop-shadow(0 4px 12px #008dff) drop-shadow(0 6px 26px #008dff);
+}
+
+@keyframes pulseTargetStar3D {
+  0%, 100% {
+    transform: translateY(-2px) scale(1.05);
+    filter: drop-shadow(0 3px 10px #008dff) drop-shadow(0 6px 20px #008dff);
+  }
+  50% {
+    transform: translateY(-6px) scale(1.18);
+    filter: drop-shadow(0 5px 16px #38bdf8) drop-shadow(0 8px 32px #60a5fa);
+  }
+}
+
+/* 3. LIT / CONNECTED STAR (Exact match to star.css label:before) */
+.star-node-btn.lit {
   z-index: 18;
 }
 
-.star-node-btn.current-target .star-node-core {
-  width: 28px;
-  height: 28px;
-  background: radial-gradient(circle, #ffffff 0%, #fde047 55%, #3b82f6 100%);
-  border: 2px solid #ffffff;
-  color: #1e3a8a;
-  box-shadow:
-    0 0 0 7px rgba(96, 165, 250, 0.32),
-    0 0 20px #60a5fa,
-    0 0 36px #3b82f6;
-  animation: pulseTargetStar 1.3s infinite ease-in-out;
+.star-node-btn.lit .star-3d-glyph {
+  color: #b1ddff;
+  transform: translateY(-3px) scale(1.08);
+  text-shadow:
+    1px 1px 1px rgba(255, 255, 255, 0.45),
+    -1px -1px 1px rgba(255, 255, 255, 0.45),
+    -1px 0px 1px rgba(255, 255, 255, 0.45),
+    1px 0px 1px rgba(255, 255, 255, 0.45),
+    0 1px 0 #1d8be1,
+    0 2px 0 #1b81d1,
+    0 3px 0 #1972b7,
+    0 4px 0 #1a76bd,
+    0 5px 0 #196fb1,
+    0 6px 0 #1868a5,
+    0 7px 0 #155f97,
+    0 8px 0 #125689,
+    0 9px 0 #104e7d,
+    0 10px 0 #104975,
+    0 11px 0 #0e4169,
+    0 12px 0 #0c395d,
+    0 13px 0 #0a3151,
+    0 14px 0 #072239,
+    0 15px 3px rgba(0, 0, 0, 0.45);
+  filter: drop-shadow(0 4px 10px #008dff) drop-shadow(0 6px 25px #008dff);
 }
 
-.star-node-btn.current-target .star-node-label {
+.star-node-btn.lit:hover .star-3d-glyph {
+  color: #e2f2ff;
+  transform: translateY(-5px) scale(1.15);
+  filter: drop-shadow(0 5px 16px #b1ddff) drop-shadow(0 8px 32px #b1ddff);
+}
+
+/* Star Index Number Badge */
+.star-node-num {
+  position: absolute;
+  top: 48%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: clamp(0.68rem, 1.8vmin, 0.8rem);
+  font-weight: 800;
+  pointer-events: none;
+  z-index: 5;
+  transition: all 0.35s ease;
+}
+
+.star-node-btn .star-node-num {
+  color: #64748b;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+}
+
+.star-node-btn.current-target .star-node-num {
+  color: #0f172a;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.95);
+  font-size: clamp(0.74rem, 2vmin, 0.86rem);
+}
+
+.star-node-btn.lit .star-node-num {
+  color: #0c2340;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.9);
+}
+
+/* Star Romantic Tooltip Label */
+.star-node-label {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translate(-50%, 4px);
+  white-space: nowrap;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #e0f2fe;
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(147, 197, 253, 0.45);
+  padding: 3px 10px;
+  border-radius: 999px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 30;
+}
+
+.star-node-btn.current-target .star-node-label,
+.star-node-btn.lit:hover .star-node-label,
+.star-node-btn:hover .star-node-label {
   opacity: 1;
-  transform: translateY(0);
-  color: #fef08a;
-  border-color: rgba(250, 204, 21, 0.65);
-}
-
-@keyframes pulseTargetStar {
-  0%, 100% {
-    transform: scale(1);
-    box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.25), 0 0 16px #60a5fa;
-  }
-  50% {
-    transform: scale(1.2);
-    box-shadow: 0 0 0 11px rgba(96, 165, 250, 0.44), 0 0 30px #93c5fd;
-  }
-}
-
-.star-node-btn.lit .star-node-core {
-  width: 22px;
-  height: 22px;
-  background: radial-gradient(circle, #ffffff 0%, #93c5fd 65%, #2563eb 100%);
-  border-color: #ffffff;
-  color: #1e3a8a;
-  box-shadow: 0 0 14px #60a5fa, 0 0 26px #3b82f6;
-}
-
-.star-node-btn.lit .star-node-label {
-  opacity: 0.95;
-  transform: translateY(0);
+  transform: translate(-50%, 8px);
 }
 
 .constellation-center-heart {

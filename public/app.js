@@ -522,17 +522,7 @@
 
   // ==================== CONSTELLATION CAMERA & LINES ====================
   function getConstellationCameraTransform() {
-    const completed = state.starsConnected >= HEART_STARS.length;
-    if (completed || state.manualOverviewZoom) {
-      return "translate3d(0%, 0%, 0) scale(1)";
-    }
-    const targetStar = HEART_STARS[state.starsConnected] || HEART_STARS[0];
-    const scale = 2.1;
-    const rawTx = (50 - targetStar.x) * 0.65 * scale;
-    const rawTy = (50 - targetStar.y) * 0.65 * scale;
-    const tx = Math.max(-38, Math.min(38, rawTx));
-    const ty = Math.max(-32, Math.min(32, rawTy));
-    return `translate3d(${tx.toFixed(2)}%, ${ty.toFixed(2)}%, 0) scale(${scale})`;
+    return "translate3d(0%, 0%, 0) scale(1)";
   }
 
   function getHeartPolygonPoints() {
@@ -541,30 +531,42 @@
 
   function renderConstellationSvgLines() {
     const completed = state.starsConnected >= HEART_STARS.length;
-    const activeLines = [];
-    for (let i = 1; i < state.starsConnected; i++) {
-      const from = HEART_STARS[i - 1];
-      const to = HEART_STARS[i];
-      const isLatest = i === state.starsConnected - 1 && !completed;
-      activeLines.push(
-        `<line class="constellation-active-line ${isLatest ? "is-newest-line" : "is-solid-line"}" x1="${from.x}" y1="${from.y}" x2="${to.x}" y2="${to.y}" />`
+    if (!completed) {
+      return `
+        <polygon
+          id="heart-constellation-polygon"
+          class="heart-constellation-fill"
+          points="${getHeartPolygonPoints()}"
+        />
+        <g id="constellation-active-lines-group"></g>
+      `;
+    }
+
+    // ALL 8 STARS ARE CONNECTED -> REVEAL THE FULL HEART CONSTELLATION!
+    const lines = [];
+    for (let i = 0; i < HEART_STARS.length; i++) {
+      const from = HEART_STARS[i];
+      const to = HEART_STARS[(i + 1) % HEART_STARS.length];
+      lines.push(
+        `<line
+          class="constellation-heart-line"
+          style="animation-delay: ${(i * 0.1).toFixed(2)}s;"
+          x1="${from.x}"
+          y1="${from.y}"
+          x2="${to.x}"
+          y2="${to.y}"
+        />`
       );
     }
-    if (completed) {
-      const last = HEART_STARS[HEART_STARS.length - 1];
-      const first = HEART_STARS[0];
-      activeLines.push(
-        `<line class="constellation-active-line is-newest-line" x1="${last.x}" y1="${last.y}" x2="${first.x}" y2="${first.y}" />`
-      );
-    }
+
     return `
       <polygon
         id="heart-constellation-polygon"
-        class="heart-constellation-fill ${completed ? "revealed" : ""}"
+        class="heart-constellation-fill revealed"
         points="${getHeartPolygonPoints()}"
       />
       <g id="constellation-active-lines-group">
-        ${activeLines.join("")}
+        ${lines.join("")}
       </g>
     `;
   }
@@ -1166,7 +1168,7 @@
               <h1 class="constellation-sky-title" id="anniversary-title">
                 ${
                   allStarsDone
-                    ? "ດວງດາວແຫ່ງຄວາມຮັກທັງ 8 ລຽງກັນເປັນຮູບຫົວໃຈສີຟ້າ 💙"
+                    ? "✨ ສະເລີຍ: ດວງດາວແຫ່ງຄວາມຮັກທັງ 8 ລຽງກັນເປັນຮູບຫົວໃຈສີຟ້າ! 💙"
                     : "ດວງດາວແຫ່ງຄວາມຮັກ — ແຕະດາວທີ່ກະພິບເທື່ອລະດວງ ✨"
                 }
               </h1>
@@ -1175,7 +1177,7 @@
                   <span>✨</span>
                   <span id="constellation-progress-text">${
                     allStarsDone
-                      ? "ຄົບທັງ 8 ດວງແລ້ວ 💙"
+                      ? "✨ ຄົບທັງ 8 ດວງແລ້ວ — ເປັນຮູບຫົວໃຈສີຟ້າ 💙"
                       : `ດາວແຫ່ງຄວາມຮັກດວງທີ ${state.starsConnected + 1} / ${HEART_STARS.length}`
                   }</span>
                 </div>
@@ -1233,7 +1235,8 @@
                       style="left:${star.x}%; top:${star.y}%;"
                       aria-label="${escapeHtml(star.label)}"
                     >
-                      <span class="star-node-core">${isLit || isTarget ? star.icon : ""}</span>
+                      <span class="star-3d-glyph" aria-hidden="true">&#9733;</span>
+                      <span class="star-node-num">${idx + 1}</span>
                       <span class="star-node-label">${escapeHtml(star.label)}</span>
                     </button>
                   `;
@@ -1357,7 +1360,7 @@
     }
     if (progressText) {
       progressText.textContent = allDone
-        ? "ຄົບທັງ 8 ດວງແລ້ວ 💙"
+        ? "✨ ຄົບທັງ 8 ດວງແລ້ວ — ເປັນຮູບຫົວໃຈສີຟ້າ 💙"
         : `ດາວແຫ່ງຄວາມຮັກດວງທີ ${state.starsConnected + 1} / ${HEART_STARS.length}`;
     }
     if (whisperBar) {
@@ -1371,7 +1374,7 @@
     }
     if (titleEl) {
       titleEl.textContent = allDone
-        ? "ດວງດາວແຫ່ງຄວາມຮັກທັງ 8 ລຽງກັນເປັນຮູບຫົວໃຈສີຟ້າ 💙"
+        ? "✨ ສະເລີຍ: ດວງດາວແຫ່ງຄວາມຮັກທັງ 8 ລຽງກັນເປັນຮູບຫົວໃຈສີຟ້າ! 💙"
         : "ດວງດາວແຫ່ງຄວາມຮັກ — ແຕະດາວທີ່ກະພິບເທື່ອລະດວງ ✨";
     }
     if (tapNextBtn) {
@@ -1391,10 +1394,6 @@
       const isTarget = idx === state.starsConnected;
       btn.classList.toggle("lit", isLit);
       btn.classList.toggle("current-target", isTarget);
-      const core = btn.querySelector(".star-node-core");
-      if (core) {
-        core.textContent = isLit || isTarget ? HEART_STARS[idx].icon : "";
-      }
     });
   }
 
@@ -1415,7 +1414,7 @@
         if (state.activePage === 2) {
           goToPage(3);
         }
-      }, 1300);
+      }, 4200);
     } else {
       music.playTone(480 + state.starsConnected * 55, 0.28, 0.085);
       updateConstellationInPlace();
