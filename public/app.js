@@ -901,30 +901,140 @@
     `;
   }
 
+  // ==================== BIRTHDAY BALLOONS & WISHES CONFIG ====================
+  const BIRTHDAY_BALLOONS_CONFIG = [
+    {
+      id: 0,
+      color: "sky",
+      icon: "🎂",
+      title: "Happy Birthday!",
+      text: "ສຸກສັນວັນເກີດເດີ້ຄົນພິເສດ! ຂໍໃຫ້ປີນີ້ເຕັມໄປດ້ວຍຮອຍຍິ້ມ ແລະ ສຸຂະພາບແຂງແຮງ 💙",
+    },
+    {
+      id: 1,
+      color: "royal",
+      icon: "✨",
+      title: "My Happiness",
+      text: "ຂອບໃຈທີ່ເຂົ້າມາເປັນຄວາມສຸກ ແລະ ຮອຍຍິ້ມທີ່ດີທີ່ສຸດໃນໂລກເລີຍ 🌟",
+    },
+    {
+      id: 2,
+      color: "pastel",
+      icon: "🌟",
+      title: "Best Wishes",
+      text: "ຂໍໃຫ້ທຸກໆມື້ຂອງເຈົ້າມີແຕ່ຄວາມສຸກ, ຄວາມສະບາຍໃຈ ແລະ ໂຊກດີຕະຫຼອດໄປ ✨",
+    },
+    {
+      id: 3,
+      color: "indigo",
+      icon: "💫",
+      title: "Stay Together",
+      text: "ຢູ່ສ້າງຄວາມຊົງຈຳດີໆນຳກັນ ແລະ ຍິ້ມນຳກັນແບບນີ້ໄປທຸກໆປີເລີຍເດີ້ 😘💙",
+    },
+    {
+      id: 4,
+      color: "gold",
+      isCoupon: true,
+      icon: "🎁",
+      title: "Special Gift",
+      text: "ຄູປອງວັນເກີດ: ຕາມໃຈເຈົ້າ 1 ມື້ເຕັມ 💙",
+      code: "BLUE-BIRTHDAY",
+    },
+    {
+      id: 5,
+      color: "heart",
+      icon: "💙",
+      title: "Forever Love",
+      text: "YOU & ME FOREVER — ຮັກເຈົ້າຫຼາຍໆເດີ້ຄົນເກັ່ງ 💙",
+    },
+  ];
+
+  function renderBalloonSvg(idx, colorType) {
+    const gradients = {
+      sky: { light: "#e0f2fe", mid: "#38bdf8", dark: "#0284c7", deep: "#0369a1" },
+      royal: { light: "#dbeafe", mid: "#60a5fa", dark: "#2563eb", deep: "#1d4ed8" },
+      pastel: { light: "#eff6ff", mid: "#93c5fd", dark: "#3b82f6", deep: "#1e40af" },
+      indigo: { light: "#e0e7ff", mid: "#818cf8", dark: "#4f46e5", deep: "#3730a3" },
+      gold: { light: "#fef9c3", mid: "#facc15", dark: "#ca8a04", deep: "#854d0e" },
+      heart: { light: "#93c5fd", mid: "#3b82f6", dark: "#1d4ed8", deep: "#1e3a8a" },
+    };
+
+    const g = gradients[colorType] || gradients.royal;
+
+    if (colorType === "heart") {
+      return `
+        <svg class="balloon-svg-element" viewBox="0 0 70 85" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="balloonHeartGrad${idx}" cx="35%" cy="30%" r="70%">
+              <stop offset="0%" stop-color="${g.light}" />
+              <stop offset="42%" stop-color="${g.mid}" />
+              <stop offset="78%" stop-color="${g.dark}" />
+              <stop offset="100%" stop-color="${g.deep}" />
+            </radialGradient>
+          </defs>
+          <path
+            fill="url(#balloonHeartGrad${idx})"
+            d="M35,68 C35,68 8,48 8,26 C8,14 18,7 27,7 C33,7 34,11 35,16 C36,11 37,7 43,7 C52,7 62,14 62,26 C62,48 35,68 35,68 Z"
+          />
+          <ellipse cx="23" cy="20" rx="7" ry="4" fill="rgba(255,255,255,0.4)" transform="rotate(-30 23 20)" />
+          <polygon points="32,68 38,68 35,74" fill="${g.dark}" />
+        </svg>
+      `;
+    }
+
+    return `
+      <svg class="balloon-svg-element" viewBox="0 0 70 85" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="balloonRoundGrad${idx}" cx="35%" cy="30%" r="65%">
+            <stop offset="0%" stop-color="${g.light}" />
+            <stop offset="45%" stop-color="${g.mid}" />
+            <stop offset="85%" stop-color="${g.dark}" />
+            <stop offset="100%" stop-color="${g.deep}" />
+          </radialGradient>
+        </defs>
+        <!-- Teardrop Helium Balloon Body -->
+        <path
+          d="M 35,6 C 16,6 8,22 8,42 C 8,62 26,73 32,77 L 30,81 L 40,81 L 38,77 C 44,73 62,62 62,42 C 62,22 54,6 35,6 Z"
+          fill="url(#balloonRoundGrad${idx})"
+        />
+        <!-- Specular 3D Gloss Highlight -->
+        <ellipse cx="23" cy="23" rx="9" ry="5.5" fill="rgba(255, 255, 255, 0.45)" transform="rotate(-35 23 23)" />
+      </svg>
+    `;
+  }
+
   // ==================== PAGE 4: INTERACTIVE PHOTO JIGSAW WORKSHOP & FINALE ====================
   function renderJigsawAndCollageFinale() {
+    const photoUrl = resolveMediaUrl(
+      CONFIG.jigsawImage || CONFIG.pinImage || "./media/med-do-fan-01.jpeg"
+    );
+
+    const isMobile = window.innerWidth < 520;
+    const coreSize = isMobile ? 80 : 100;
+    const photoW = 2 * coreSize;
+    const photoH = 3 * coreSize;
+
     return `
       <div class="jigsaw-workshop-stage">
-        <!-- Header -->
-        <div style="text-align:center;">
-          <h2 class="hero-title" style="font-size:clamp(1.75rem, 4.2vw, 2.5rem);">
+        <!-- Top Birthday Header (Prominently displayed, ample margin, not clipped!) -->
+        <div class="jigsaw-birthday-header" style="text-align:center; margin-top:6px; margin-bottom:2px;">
+          <h1 style="margin:0 0 6px 0; line-height:1.25;">
             ${
               state.jigsawCompleted
-                ? `<span>Happy Birthday </span><span class="hero-title-highlight" style="font-size:clamp(2.4rem, 5.5vw, 3.5rem);">My Love! 💙🎂</span>`
-                : `<span>ຕໍ່ຮູບຄູ່ແຫ່ງຄວາມຊົງຈຳ </span><span class="hero-title-highlight" style="font-size:clamp(2.1rem, 4.8vw, 2.9rem);">You & Me 💙</span>`
+                ? `<span style="font-family:var(--font-serif); font-size:clamp(1.85rem, 4.6vw, 2.6rem); color:#1e3a8a; font-weight:800;">Happy Birthday </span><span class="hero-title-highlight" style="font-size:clamp(2.3rem, 5.8vw, 3.4rem); color:#2563eb;">My Love! 🎂💙</span>`
+                : `<span style="font-family:var(--font-serif); font-size:clamp(1.75rem, 4.2vw, 2.5rem); color:#1e3a8a; font-weight:800;">ຕໍ່ຮູບຄູ່ແຫ່ງຄວາມຊົງຈຳ </span><span class="hero-title-highlight" style="font-size:clamp(2.1rem, 4.8vw, 2.9rem); color:#2563eb;">You &amp; Me 💙</span>`
             }
-          </h2>
-        </div>
-
-        <div class="jigsaw-instruction-pill">
-          <span>🧩</span>
-          <span>
-            ${
-              state.jigsawCompleted
-                ? "✨ ຕໍ່ຮູບຄູ່ຄົບທັງ 6 ຊິ້ນສຳເລັດແລ້ວ! 💙"
-                : "👇 ຄລິກເມົ້າຄ້າງ (Hold) ທີ່ຊິ້ນສ່ວນແລ້ວລາກມາປະກອບໃສ່ກັນ"
-            }
-          </span>
+          </h1>
+          <div class="jigsaw-instruction-pill">
+            <span>${state.jigsawCompleted ? "🎈" : "🧩"}</span>
+            <span>
+              ${
+                state.jigsawCompleted
+                  ? "✨ ຮູບຄູ່ຕໍ່ສຳເລັດແລ້ວ! ແຕະທີ່ລູກໂປ່ງເພື່ອເບິ່ງຄຳອວຍພອນ & ຂອງຂວັນ 💙"
+                  : "👇 ຄລິກເມົ້າຄ້າງ (Hold) ທີ່ຊິ້ນສ່ວນແລ້ວລາກມາປະກອບໃສ່ກັນ"
+              }
+            </span>
+          </div>
         </div>
 
         ${
@@ -943,83 +1053,111 @@
             : ""
         }
 
-        <!-- Tabletop Stage with ONLY the 6 scattered jigsaw pieces (NO boxes/frames!) -->
+        <!-- Tabletop Stage with ONLY the 6 scattered jigsaw pieces OR the seamless photo -->
         <div
           class="jigsaw-table-stage ${state.jigsawCompleted ? "all-connected" : ""}"
           id="jigsaw-table-stage"
         >
-          ${JIGSAW_PIECES_CONFIG.map((p) => {
-            const pos =
-              (state.jigsawPositions && state.jigsawPositions[p.id]) || {
-                x: 0,
-                y: 0,
-                rot: 0,
-              };
-            return `
-              <div
-                class="jigsaw-piece-element ${
-                  state.jigsawCompleted ? "is-connected" : ""
-                }"
-                data-draggable-piece="${p.id}"
-                id="draggable-piece-${p.id}"
-                style="transform: translate3d(${pos.x}px, ${pos.y}px, 0) rotate(${pos.rot}deg);"
-                title="ຊິ້ນສ່ວນທີ ${p.id + 1}"
-              >
-                ${renderPhotoJigsawPieceSvg(p.id)}
-              </div>
-            `;
-          }).join("")}
-
           ${
-            state.jigsawCompleted
-              ? `
-            <div class="jigsaw-frame-plaque" style="bottom: 4px;">
-              <span>✨ DO &amp; FAN 💙 YOU &amp; ME FOREVER ✨</span>
-            </div>
-          `
-              : ""
+            !state.jigsawCompleted
+              ? JIGSAW_PIECES_CONFIG.map((p) => {
+                  const pos =
+                    (state.jigsawPositions && state.jigsawPositions[p.id]) || {
+                      x: 0,
+                      y: 0,
+                      rot: 0,
+                    };
+                  return `
+                    <div
+                      class="jigsaw-piece-element"
+                      data-draggable-piece="${p.id}"
+                      id="draggable-piece-${p.id}"
+                      style="transform: translate3d(${pos.x}px, ${pos.y}px, 0) rotate(${pos.rot}deg);"
+                      title="ຊິ້ນສ່ວນທີ ${p.id + 1}"
+                    >
+                      ${renderPhotoJigsawPieceSvg(p.id)}
+                    </div>
+                  `;
+                }).join("")
+              : `
+                <!-- 100% Seamless Continuous Real Photograph (Zero Jigsaw Cuts/Seams!) -->
+                <div
+                  class="jigsaw-seamless-photo-container"
+                  id="jigsaw-seamless-photo"
+                  style="width:${photoW}px; height:${photoH}px; left:calc(50% - ${photoW / 2}px); top:calc(50% - ${photoH / 2}px);"
+                >
+                  <img
+                    src="${escapeHtml(photoUrl)}"
+                    alt="Do &amp; Fan"
+                    class="jigsaw-seamless-real-img"
+                    onerror="this.src='${DEFAULT_PLACEHOLDER_IMG}'"
+                  />
+                  <div class="jigsaw-seamless-glass-gloss"></div>
+                  <div class="jigsaw-frame-plaque" style="bottom:-18px;">
+                    <span>✨ DO &amp; FAN 💙 YOU &amp; ME FOREVER ✨</span>
+                  </div>
+                </div>
+
+                <!-- Floating Romantic Message Balloons floating around the photo -->
+                <div class="balloons-floating-arena">
+                  ${BIRTHDAY_BALLOONS_CONFIG.map(
+                    (b, idx) => `
+                    <div
+                      class="floating-message-balloon balloon-pos-${idx} ${b.isCoupon ? "coupon-balloon" : ""}"
+                      data-balloon-idx="${idx}"
+                      title="${escapeHtml(b.title)}"
+                    >
+                      <div class="balloon-visual-wrap">
+                        ${renderBalloonSvg(idx, b.color)}
+                      </div>
+                      <div class="balloon-string-tail"></div>
+                      <div class="balloon-msg-tag">
+                        <div class="balloon-msg-header">
+                          <span>${b.icon}</span>
+                          <span>${escapeHtml(b.title)}</span>
+                        </div>
+                        <div class="balloon-msg-text">
+                          ${escapeHtml(b.text)}
+                          ${
+                            b.isCoupon
+                              ? `<div class="coupon-code-pill">${escapeHtml(b.code)}</div>`
+                              : ""
+                          }
+                        </div>
+                      </div>
+                    </div>
+                  `
+                  ).join("")}
+                </div>
+              `
           }
         </div>
 
-        <!-- Grand Happy Birthday Reveal Banner (Shown after Jigsaw Completes) -->
+        <!-- Sleek Floating Bottom Action Pill (Reply + Restart) - NO giant card! -->
         ${
           state.jigsawCompleted
             ? `
-            <div class="grand-birthday-reveal" id="grand-birthday-reveal">
-              <h3 class="grand-birthday-title">${escapeHtml(CONFIG.celebrationTitle)}</h3>
-              <p class="grand-birthday-sub">${escapeHtml(CONFIG.celebrationMessage)}</p>
-
-              <div class="love-coupon">
-                <div class="coupon-tag">🎁 SPECIAL BIRTHDAY GIFT COUPON</div>
-                <div class="coupon-title">${escapeHtml(CONFIG.couponTitle)}</div>
-                <div class="coupon-code">${escapeHtml(CONFIG.couponCode)}</div>
-              </div>
-
-              <div style="width:100%; margin: 10px 0;">
-                ${
-                  state.replySent
-                    ? `<div style="color:#1d4ed8; font-weight:700; font-size:0.98rem;">✓ ສົ່ງຫົວໃຈສີຟ້າ ແລະ ຄຳຕອບກັບໄປຫາ ${escapeHtml(
-                        CONFIG.senderName
-                      )} ແລ້ວ 💙</div>`
-                    : `
-                    <div style="display:flex; gap:8px; width:100%;">
-                      <input
-                        type="text"
-                        id="celebration-reply-input"
-                        class="editor-input"
-                        placeholder="ພິມຂໍ້ຄວາມສົ່ງກັບຫາ ${escapeHtml(CONFIG.senderName)}..."
-                        value="${escapeHtml(state.replyText)}"
-                      />
-                      <button type="button" id="btn-send-reply" class="next-page-btn" style="margin-top:0; padding:10px 22px; font-size:0.94rem; white-space:nowrap;">
-                        ສົ່ງ 💙
-                      </button>
-                    </div>
-                  `
-                }
-              </div>
-
-              <button type="button" id="restart-btn" class="next-page-btn" style="margin-top:8px;">
-                ↺ ຫຼິ້ນເລີ່ມຕົ້ນໃໝ່ແຕ່ໜ້າທຳອິດ
+            <div class="floating-celebration-action-pill" id="celebration-action-pill">
+              ${
+                state.replySent
+                  ? `<span class="reply-sent-badge">✓ ສົ່ງຫົວໃຈ ແລະ ຄຳຕອບກັບໄປຫາ ${escapeHtml(
+                      CONFIG.senderName
+                    )} ແລ້ວ 💙</span>`
+                  : `
+                  <input
+                    type="text"
+                    id="celebration-reply-input"
+                    class="floating-reply-input"
+                    placeholder="ພິມຂໍ້ຄວາມຕອບກັບຫາ ${escapeHtml(CONFIG.senderName)}..."
+                    value="${escapeHtml(state.replyText)}"
+                  />
+                  <button type="button" id="btn-send-reply" class="floating-send-btn">
+                    ສົ່ງ 💙
+                  </button>
+                `
+              }
+              <button type="button" id="restart-btn" class="floating-restart-btn">
+                ↺ ຫຼິ້ນໃໝ່
               </button>
             </div>
           `
@@ -1942,6 +2080,37 @@
         goToPage(1);
       });
     }
+
+    // Balloon Click Interactions: Bounce sound + Copy coupon code
+    document.querySelectorAll("[data-balloon-idx]").forEach((balloonEl) => {
+      balloonEl.addEventListener("click", () => {
+        const idx = Number(balloonEl.getAttribute("data-balloon-idx"));
+        const b = BIRTHDAY_BALLOONS_CONFIG[idx];
+        music.playTone(600 + idx * 75, 0.24, 0.08);
+
+        balloonEl.style.transition = "transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.35)";
+        balloonEl.style.transform = "scale(1.2) translateY(-12px)";
+        setTimeout(() => {
+          balloonEl.style.transform = "";
+        }, 300);
+
+        if (b && b.isCoupon) {
+          try {
+            navigator.clipboard?.writeText(b.code || "BLUE-BIRTHDAY");
+          } catch (e) {}
+          const tagText = balloonEl.querySelector(".balloon-msg-text");
+          if (tagText) {
+            const original = tagText.innerHTML;
+            tagText.innerHTML = `<span style="color:#1d4ed8; font-weight:800;">✓ ຄັດລອກລະຫັດ ${escapeHtml(
+              b.code
+            )} ແລ້ວ! 🎁</span>`;
+            setTimeout(() => {
+              tagText.innerHTML = original;
+            }, 2600);
+          }
+        }
+      });
+    });
 
     const replyInput = document.getElementById("celebration-reply-input");
     if (replyInput) {

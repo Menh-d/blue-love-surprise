@@ -479,8 +479,8 @@ body {
   height: auto;
   overflow-y: auto;
   justify-content: flex-start;
-  padding-top: 54px;
-  padding-bottom: 74px;
+  padding-top: 76px;
+  padding-bottom: 84px;
 }
 
 .page-section.active {
@@ -1674,10 +1674,55 @@ body {
   filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.25));
 }
 
+/* Seamless Assembled Real Photo (No jigsaw cuts/seams!) */
+.jigsaw-seamless-photo-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 18px;
+  overflow: visible;
+  box-shadow:
+    0 16px 40px rgba(30, 58, 109, 0.28),
+    0 0 35px rgba(59, 130, 246, 0.55),
+    0 0 65px rgba(147, 197, 253, 0.45);
+  border: 3.5px solid rgba(255, 255, 255, 0.95);
+  animation: seamlessPhotoReveal 0.65s cubic-bezier(0.175, 0.885, 0.32, 1.25) forwards, completedPhotoGlow 2.5s infinite ease-in-out 0.65s;
+  z-index: 40;
+}
+
+@keyframes seamlessPhotoReveal {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.3;
+    filter: brightness(1.4) blur(4px);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+    filter: brightness(1) blur(0px);
+  }
+}
+
+.jigsaw-seamless-real-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 14px;
+  display: block;
+}
+
+.jigsaw-seamless-glass-gloss {
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0.1) 35%, rgba(255, 255, 255, 0) 65%);
+  pointer-events: none;
+}
+
 /* Glow pulse when all 6 pieces are assembled */
 .jigsaw-table-stage.all-connected .jigsaw-piece-element {
   cursor: default;
-  animation: completedPhotoGlow 2.5s infinite ease-in-out;
+  display: none !important; /* Hide piece fragments when seamless photo is displayed */
 }
 
 @keyframes completedPhotoGlow {
@@ -1716,7 +1761,7 @@ body {
   white-space: nowrap;
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
   animation: plaquePop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  z-index: 30;
+  z-index: 50;
 }
 
 @keyframes plaquePop {
@@ -1724,79 +1769,296 @@ body {
   100% { transform: translate(-50%, 0) scale(1); opacity: 1; }
 }
 
-@media (max-width: 560px) {
+/* ==========================================================================
+   FLOATING ROMANTIC BIRTHDAY BALLOONS (NO CARD AT THE BOTTOM!)
+   ========================================================================== */
+.balloons-floating-arena {
+  position: absolute;
+  inset: -40px -90px;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 60;
+}
+
+.floating-message-balloon {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: auto;
+  cursor: pointer;
+  transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.25), filter 0.24s ease;
+  will-change: transform;
+}
+
+.floating-message-balloon:hover,
+.floating-message-balloon:active {
+  transform: scale(1.12) !important;
+  z-index: 100 !important;
+  filter: drop-shadow(0 14px 26px rgba(37, 99, 235, 0.5));
+}
+
+.balloon-visual-wrap {
+  position: relative;
+  width: 62px;
+  height: 78px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.balloon-svg-element {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+  filter: drop-shadow(0 8px 15px rgba(30, 58, 109, 0.25));
+}
+
+.balloon-string-tail {
+  width: 1.5px;
+  height: 22px;
+  background: linear-gradient(to bottom, rgba(147, 197, 253, 0.95), rgba(59, 130, 246, 0.55));
+  margin: -2px 0 0;
+}
+
+/* Translucent message card hanging from balloon string */
+.balloon-msg-tag {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  border: 1.5px solid #93c5fd;
+  border-radius: 14px;
+  padding: 6px 12px;
+  box-shadow: 0 8px 22px rgba(30, 58, 109, 0.12);
+  max-width: 180px;
+  text-align: center;
+  margin-top: 0px;
+  animation: tagGentleSway 4s infinite ease-in-out;
+  transition: all 0.22s ease;
+}
+
+.balloon-msg-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-family: var(--font-sans);
+  font-weight: 800;
+  font-size: 0.78rem;
+  color: #1e3a8a;
+  margin-bottom: 2px;
+}
+
+.balloon-msg-text {
+  font-family: var(--font-serif);
+  font-size: 0.76rem;
+  color: #1e293b;
+  line-height: 1.32;
+  font-weight: 600;
+}
+
+.coupon-balloon .balloon-msg-tag {
+  border: 1.5px dashed #3b82f6;
+  background: linear-gradient(135deg, #ffffff, #eff6ff);
+}
+
+.coupon-balloon .coupon-code-pill {
+  display: inline-block;
+  background: #1e3a8a;
+  color: #ffffff;
+  padding: 1px 8px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-weight: 800;
+  font-size: 0.76rem;
+  margin-top: 3px;
+  letter-spacing: 0.5px;
+}
+
+/* Balloon Spatial Layout on Table Stage */
+.balloon-pos-0 {
+  left: -2%;
+  top: 0%;
+  animation: balloonDrift0 7s infinite ease-in-out;
+}
+.balloon-pos-1 {
+  right: -2%;
+  top: 2%;
+  animation: balloonDrift1 6.5s infinite ease-in-out 0.4s;
+}
+.balloon-pos-2 {
+  left: -6%;
+  top: 50%;
+  animation: balloonDrift2 7.5s infinite ease-in-out 0.8s;
+}
+.balloon-pos-3 {
+  right: -6%;
+  top: 48%;
+  animation: balloonDrift0 6.8s infinite ease-in-out 1.2s;
+}
+.balloon-pos-4 {
+  left: 6%;
+  bottom: -36px;
+  animation: balloonDrift1 8s infinite ease-in-out 0.6s;
+}
+.balloon-pos-5 {
+  right: 6%;
+  bottom: -40px;
+  animation: balloonDrift2 7.2s infinite ease-in-out 1.5s;
+}
+
+@keyframes balloonDrift0 {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(-3deg); }
+  50% { transform: translate3d(8px, -18px, 0) rotate(3deg); }
+}
+@keyframes balloonDrift1 {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(3deg); }
+  50% { transform: translate3d(-10px, -20px, 0) rotate(-2deg); }
+}
+@keyframes balloonDrift2 {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(-2deg); }
+  50% { transform: translate3d(6px, -16px, 0) rotate(2.5deg); }
+}
+@keyframes tagGentleSway {
+  0%, 100% { transform: rotate(-1.5deg); }
+  50% { transform: rotate(1.5deg); }
+}
+
+/* Sleek Floating Bottom Action Pill (Reply + Restart) - NO giant card! */
+.floating-celebration-action-pill {
+  position: fixed;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(14px);
+  border: 1.5px solid rgba(147, 197, 253, 0.9);
+  padding: 6px 14px;
+  border-radius: 999px;
+  box-shadow: 0 10px 30px rgba(30, 58, 109, 0.16);
+  z-index: 500;
+  max-width: 92vw;
+  animation: popPillEntrance 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.25) forwards;
+}
+
+@keyframes popPillEntrance {
+  0% { transform: translate(-50%, 25px); opacity: 0; }
+  100% { transform: translate(-50%, 0); opacity: 1; }
+}
+
+.floating-reply-input {
+  border: 1px solid #bfdbfe;
+  background: #f8fafc;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 0.86rem;
+  color: #1e3a8a;
+  outline: none;
+  min-width: 180px;
+  max-width: 260px;
+  transition: all 0.2s ease;
+}
+
+.floating-reply-input:focus {
+  background: #ffffff;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+}
+
+.floating-send-btn {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 0.18s ease;
+}
+
+.floating-send-btn:hover {
+  transform: scale(1.05);
+}
+
+.floating-restart-btn {
+  background: #eff6ff;
+  color: #1e3a8a;
+  border: 1px solid #bfdbfe;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.18s ease;
+}
+
+.floating-restart-btn:hover {
+  background: #dbeafe;
+}
+
+.reply-sent-badge {
+  color: #1d4ed8;
+  font-weight: 700;
+  font-size: 0.88rem;
+  padding: 4px 10px;
+}
+
+@media (max-width: 680px) {
+  #page-4.page-section {
+    padding-top: 74px;
+    padding-bottom: 90px;
+  }
   .jigsaw-table-stage {
     height: 440px;
     max-width: 380px;
   }
-}
+  .balloons-floating-arena {
+    inset: -30px -10px;
+  }
+  .balloon-msg-tag {
+    max-width: 126px;
+    padding: 4px 8px;
+  }
+  .balloon-msg-header {
+    font-size: 0.7rem;
+  }
+  .balloon-msg-text {
+    font-size: 0.66rem;
+    line-height: 1.25;
+  }
+  .balloon-visual-wrap {
+    width: 48px;
+    height: 62px;
+  }
+  .balloon-pos-0 { left: -4px; top: -15px; }
+  .balloon-pos-1 { right: -4px; top: -12px; }
+  .balloon-pos-2 { left: -8px; top: 46%; }
+  .balloon-pos-3 { right: -8px; top: 44%; }
+  .balloon-pos-4 { left: 4%; bottom: -44px; }
+  .balloon-pos-5 { right: 4%; bottom: -48px; }
 
-
-/* Grand Happy Birthday Banner revealed when Jigsaw zooms out! */
-.grand-birthday-reveal {
-  width: 100%;
-  max-width: 680px;
-  background: rgba(255, 255, 255, 0.94);
-  border: 2px solid #93c5fd;
-  border-radius: 26px;
-  padding: 2.2rem 1.8rem;
-  box-shadow: 0 24px 55px rgba(37, 99, 235, 0.22);
-  text-align: center;
-  animation: fadeInUpPage 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.grand-birthday-title {
-  font-family: var(--font-cursive);
-  font-size: clamp(2.5rem, 6vw, 3.8rem);
-  color: var(--accent-red);
-  line-height: 1.15;
-  margin-bottom: 0.5rem;
-}
-
-.grand-birthday-sub {
-  font-family: var(--font-serif);
-  font-size: 1.12rem;
-  color: var(--text-primary);
-  line-height: 1.65;
-  margin-bottom: 1.2rem;
-}
-
-.love-coupon {
-  border: 2px dashed var(--accent-rose);
-  background-color: var(--bg-primary);
-  border-radius: 14px;
-  padding: 1.1rem;
-  width: 100%;
-  margin-bottom: 1rem;
-}
-
-.coupon-tag {
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--accent-pink);
-  letter-spacing: 2px;
-  margin-bottom: 4px;
-}
-
-.coupon-title {
-  font-family: var(--font-serif);
-  font-size: 1.12rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 6px;
-}
-
-.coupon-code {
-  font-family: monospace;
-  font-size: 1rem;
-  font-weight: 700;
-  background: #ffffff;
-  border: 1px solid var(--accent-rose);
-  padding: 4px 14px;
-  border-radius: 6px;
-  display: inline-block;
-  color: var(--accent-red);
+  .floating-celebration-action-pill {
+    bottom: 12px;
+    padding: 4px 8px;
+    gap: 6px;
+  }
+  .floating-reply-input {
+    min-width: 130px;
+    max-width: 160px;
+    font-size: 0.78rem;
+    padding: 6px 10px;
+  }
+  .floating-send-btn,
+  .floating-restart-btn {
+    padding: 6px 10px;
+    font-size: 0.76rem;
+  }
 }
 
 #canvas-confetti {
